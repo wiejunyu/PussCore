@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Puss.Api</name>
+    </assembly>
+    <members>
+        <member name="M:Puss.Api.Controllers.ApiBaseController.GetPostData">
+            <summary>
+            获取POST传过来的数据
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Puss.Api.Controllers.ApiBaseController.Url">
+            <summary>
+            获取请求url
+            </summary>
+        </member>
+        <member name="T:Puss.Api.Controllers.HomeController">
+            <summary>
+            首页
+            </summary>
+        </member>
+        <member name="M:Puss.Api.Controllers.HomeController.Index">
+            <summary>
+            测试首页
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Puss.Api.Controllers.HomeController.Test">
+            <summary>
+            测试首页1
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Puss.Api.Controllers.UserController">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="M:Puss.Api.Controllers.UserController.#ctor(Microsoft.AspNetCore.Http.IHttpContextAccessor)">
+            <summary>
+            用户
+            </summary>
+            <param name="accessor"></param>
+        </member>
+        <member name="M:Puss.Api.Controllers.UserController.ShowValidateCode(System.String)">
+            <summary>
+            生成验证码图片并返回图片
+            </summary>
+            <param name="CodeKey">验证码缓存标记</param>
+            <returns></returns>
+        </member>
+        <member name="M:Puss.Api.Controllers.UserController.EmaliGetCode(System.String,System.String)">
+            <summary>
+            生成验邮箱验证码
+            </summary>
+            <param name="CodeKey">验证码缓存标记</param>
+            <param name="Emali">邮箱</param>
+            <returns></returns>
+        </member>
+        <member name="M:Puss.Api.Controllers.UserController.UserRegister(Puss.Data.Models.RegisterRequest)">
+            <summary>
+            用户注册
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Puss.Api.Controllers.UserController.Login(Puss.Data.Models.LoginRequest)">
+            <summary>
+            登录接口
+            </summary>
+            <param name="request">登陆模型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Puss.Api.Manager.LoginManager.Login(Puss.Data.Models.LoginRequest)">
+            <summary>
+            登录接口
+            </summary>
+            <param name="request">登陆模型</param>
+            <returns></returns>
+        </member>
+        <member name="M:Puss.Api.Manager.LoginManager.ShowValidateCode(System.String)">
+            <summary>
+            生成验证码图片并返回图片
+            </summary>
+            <param name="CodeKey">验证码缓存标记</param>
+            <returns></returns>
+        </member>
+        <member name="M:Puss.Api.Manager.LoginManager.DelCode">
+            <summary>
+            删除冗余验证码
+            </summary>
+        </member>
+        <member name="M:Puss.Api.Manager.LoginManager.UserRegister(Puss.Data.Models.RegisterRequest,System.String)">
+            <summary>
+            用户注册
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

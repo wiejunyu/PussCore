@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="sqlSugarCore" Version="5.0.0.11" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Puss.Enties\Puss.Enties.csproj">
+      <Name>Puss.Enties</Name>
+      <Project>{925e192a-95e5-405b-8d93-a74a6b238ea2}</Project>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
