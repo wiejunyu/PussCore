@@ -5,6 +5,7 @@ using Puss.Data;
 using Puss.Data.Config;
 using Puss.Data.Enum;
 using Puss.Data.Models;
+using Puss.Email;
 using Puss.RabbitMq;
 using Puss.RabbitMQ;
 using Puss.Redis;
@@ -93,7 +94,7 @@ namespace Puss.Api.Manager
             Cms_Sysconfig sys = new Cms_SysconfigManager().GetSingle(x => x.Id == 1);
 #if DEBUG
 #else
-            if (!Mail.MailSending(Emali, "宇宙物流验证码", $"您在宇宙物流的验证码是:{code},10分钟内有效", sys.Mail_From, sys.Mail_Code, sys.Mail_Host)) throw new AppException("发送失败");
+            if (!EmailHelper.MailSending(Emali, "宇宙物流验证码", $"您在宇宙物流的验证码是:{code},10分钟内有效", sys.Mail_From, sys.Mail_Code, sys.Mail_Host)) throw new AppException("发送失败");
 #endif
             #region 保存验证码统计
             if (cModel == null)

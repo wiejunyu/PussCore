@@ -20,6 +20,9 @@ using Sugar.Enties;
 
 namespace Puss.Api.Controllers
 {
+    /// <summary>
+    /// Api控制器
+    /// </summary>
     [Authorize]
     public class ApiBaseController : ControllerBase
     {

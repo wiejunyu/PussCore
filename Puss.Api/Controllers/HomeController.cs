@@ -30,12 +30,13 @@ namespace Puss.Api.Controllers
         /// 测试首页
         /// </summary>
         /// <returns></returns>
-        [HttpPost("Index")]
-        public ReturnResult<string> Index()
+        [AllowAnonymous]
+        [HttpPost("Test")]
+        public ReturnResult<string> Test()
         {
             return InvokeFunc(() =>
             {
-                return "";
+                return "OK";
             });
         }
 
