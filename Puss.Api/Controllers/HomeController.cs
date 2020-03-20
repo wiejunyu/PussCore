@@ -30,9 +30,22 @@ namespace Puss.Api.Controllers
         /// 测试首页
         /// </summary>
         /// <returns></returns>
+        [HttpPost("Login")]
+        public ReturnResult<string> Login()
+        {
+            return InvokeFunc(() =>
+            {
+                return "OK";
+            });
+        }
+
+        /// <summary>
+        /// 测试首页
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("NotLogin")]
         [AllowAnonymous]
-        [HttpPost("Test")]
-        public ReturnResult<string> Test()
+        public ReturnResult<string> NotLogin()
         {
             return InvokeFunc(() =>
             {
