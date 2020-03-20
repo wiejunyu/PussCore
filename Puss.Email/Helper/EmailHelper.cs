@@ -7,7 +7,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Puss.EmailHelper
+namespace Puss.Email
 {
     public class EmailHelper
     {

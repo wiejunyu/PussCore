@@ -76,7 +76,7 @@ namespace Puss.Api.Controllers
         }
 
         /// <summary>
-        /// 登录接口
+        /// 登录返回Token
         /// </summary>
         /// <param name="request">登陆模型</param>
         /// <returns></returns>

@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Puss.Data;
 using Puss.Data.Config;
 using Puss.Data.Models;
+using Puss.Email;
 using Puss.RabbitMq;
 using Puss.RabbitMQ;
 using Puss.Redis;
@@ -29,13 +30,11 @@ namespace Puss.Api.Controllers
         /// 测试首页
         /// </summary>
         /// <returns></returns>
-        [AllowAnonymous]
         [HttpPost("Index")]
         public ReturnResult<string> Index()
         {
             return InvokeFunc(() =>
             {
-                RedisHelper.Set(CommentConfig.ImageCacheCode + "1", "1");
                 return "";
             });
         }
@@ -63,7 +62,7 @@ namespace Puss.Api.Controllers
         {
             return InvokeFunc(() =>
             {
-                RabbitMQPushHelper.PullMessage(RabbitMQKey.SendRegisterMessageIsEmail, EmailHelper.EmailHelper.MailSending);
+                RabbitMQPushHelper.PullMessage(RabbitMQKey.SendRegisterMessageIsEmail, EmailHelper.MailSending);
                 return true;
             });
         }

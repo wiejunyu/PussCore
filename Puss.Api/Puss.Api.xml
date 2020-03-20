@@ -26,9 +26,15 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:Puss.Api.Controllers.HomeController.Test">
+        <member name="M:Puss.Api.Controllers.HomeController.PushMessage">
             <summary>
-            测试首页1
+            MQ入队
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Puss.Api.Controllers.HomeController.PullMessage">
+            <summary>
+            MQ出队
             </summary>
             <returns></returns>
         </member>
@@ -67,7 +73,7 @@
         </member>
         <member name="M:Puss.Api.Controllers.UserController.Login(Puss.Data.Models.LoginRequest)">
             <summary>
-            登录接口
+            登录返回Token
             </summary>
             <param name="request">登陆模型</param>
             <returns></returns>

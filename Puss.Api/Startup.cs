@@ -115,6 +115,9 @@ namespace Puss.Api
 
             app.UseRouting();
 
+            #region JWT身份验证，必须在UseAuthorization之前，否者会返回401
+            app.UseAuthentication();
+            #endregion
             app.UseAuthorization();
 
             #region Swagger
@@ -125,8 +128,18 @@ namespace Puss.Api
             });
             #endregion
 
-            #region JWT身份验证，必须在UseAuthorization之前，否者会返回401
-            app.UseAuthentication();
+            #region 默认起始页和重定向到起始页
+            //默认起始页
+            DefaultFilesOptions options = new DefaultFilesOptions();
+            options.DefaultFileNames.Add("index.html");    //将index.html改为需要默认起始页的文件名.
+            app.UseDefaultFiles(options);
+            app.UseStaticFiles();
+            //重定向到起始页
+            app.Run(ctx =>
+            {
+                ctx.Response.Redirect("/swagger/"); //可以支持虚拟路径或者index.html这类起始页.
+                return Task.FromResult(0);
+            });
             #endregion
 
             app.UseEndpoints(endpoints =>

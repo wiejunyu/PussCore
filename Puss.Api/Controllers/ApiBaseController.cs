@@ -20,6 +20,7 @@ using Sugar.Enties;
 
 namespace Puss.Api.Controllers
 {
+    [Authorize]
     public class ApiBaseController : ControllerBase
     {
         private string requestBody = "";
