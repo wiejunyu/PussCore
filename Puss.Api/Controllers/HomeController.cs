@@ -27,7 +27,7 @@ namespace Puss.Api.Controllers
     public class HomeController : ApiBaseController
     {
         /// <summary>
-        /// 测试首页
+        /// 登录测试
         /// </summary>
         /// <returns></returns>
         [HttpPost("Login")]
@@ -40,7 +40,7 @@ namespace Puss.Api.Controllers
         }
 
         /// <summary>
-        /// 测试首页
+        /// 非登录测试
         /// </summary>
         /// <returns></returns>
         [HttpPost("NotLogin")]
@@ -58,6 +58,7 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("PushMessage")]
+        [AllowAnonymous]
         public ReturnResult<bool> PushMessage()
         {
             return InvokeFunc(() =>
@@ -72,6 +73,7 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("PullMessage")]
+        [AllowAnonymous]
         public ReturnResult<bool> PullMessage()
         {
             return InvokeFunc(() =>
