@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using App.Metrics;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -103,6 +104,47 @@ namespace Puss.Api
             #endregion
 
             services.AddControllers();
+
+            #region Metrics¼à¿ØÅäÖÃ
+            string IsOpen = GlobalsConfig.Configuration[ConfigurationKeys.InfluxDB_IsOpen].ToLower();
+            if (IsOpen == "true")
+            {
+                string database = GlobalsConfig.Configuration[ConfigurationKeys.InfluxDB_DataBase];
+                string InfluxDBConStr = GlobalsConfig.Configuration[ConfigurationKeys.InfluxDB_Connection];
+                string app = GlobalsConfig.Configuration[ConfigurationKeys.InfluxDB_App];
+                string env = GlobalsConfig.Configuration[ConfigurationKeys.InfluxDB_Env];
+                string username = GlobalsConfig.Configuration[ConfigurationKeys.InfluxDB_UserName];
+                string password = GlobalsConfig.Configuration[ConfigurationKeys.InfluxDB_PassWord];
+
+                var uri = new Uri(InfluxDBConStr);
+
+                var metrics = AppMetrics.CreateDefaultBuilder()
+                .Configuration.Configure(
+                options =>
+                {
+                    options.AddAppTag(app);
+                    options.AddEnvTag(env);
+                })
+                .Report.ToInfluxDb(
+                options =>
+                {
+                    options.InfluxDb.BaseUri = uri;
+                    options.InfluxDb.Database = database;
+                    options.InfluxDb.UserName = username;
+                    options.InfluxDb.Password = password;
+                    options.HttpPolicy.BackoffPeriod = TimeSpan.FromSeconds(30);
+                    options.HttpPolicy.FailuresBeforeBackoff = 5;
+                    options.HttpPolicy.Timeout = TimeSpan.FromSeconds(10);
+                    options.FlushInterval = TimeSpan.FromSeconds(5);
+                })
+                .Build();
+
+                services.AddMetrics(metrics);
+                services.AddMetricsReportingHostedService();
+                services.AddMetricsTrackingMiddleware();
+                services.AddMetricsEndpoints();
+            }
+            #endregion
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -128,6 +170,27 @@ namespace Puss.Api
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
+            #endregion
+
+            #region ×¢ÈëMetrics
+            string IsOpen = GlobalsConfig.Configuration[ConfigurationKeys.InfluxDB_IsOpen].ToLower(); 
+            if (IsOpen == "true")
+            {
+                app.UseMetricsAllMiddleware();
+                // Or to cherry-pick the tracking of interest
+                app.UseMetricsActiveRequestMiddleware();
+                app.UseMetricsErrorTrackingMiddleware();
+                app.UseMetricsPostAndPutSizeTrackingMiddleware();
+                app.UseMetricsRequestTrackingMiddleware();
+                app.UseMetricsOAuth2TrackingMiddleware();
+                app.UseMetricsApdexTrackingMiddleware();
+
+                app.UseMetricsAllEndpoints();
+                // Or to cherry-pick endpoint of interest
+                app.UseMetricsEndpoint();
+                app.UseMetricsTextEndpoint();
+                app.UseEnvInfoEndpoint();
+            }
             #endregion
 
             app.UseEndpoints(endpoints =>

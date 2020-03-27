@@ -60,5 +60,36 @@ namespace Puss.Data.Config
         /// </summary>
         public static string Redis_DefaultDB = "Redis:DefaultDB";
         #endregion
+
+        #region InfluxDB
+        /// <summary>
+        /// IsOpen
+        /// </summary>
+        public static string InfluxDB_IsOpen = "InfluxDB:IsOpen";
+        /// <summary>
+        /// DataBaseName
+        /// </summary>
+        public static string InfluxDB_DataBase = "InfluxDB:DataBase";
+        /// <summary>
+        /// Connection
+        /// </summary>
+        public static string InfluxDB_Connection = "InfluxDB:Connection";
+        /// <summary>
+        /// UserName
+        /// </summary>
+        public static string InfluxDB_UserName = "InfluxDB:UserName";
+        /// <summary>
+        /// PassWord
+        /// </summary>
+        public static string InfluxDB_PassWord = "InfluxDB:PassWord";
+        /// <summary>
+        /// App
+        /// </summary>
+        public static string InfluxDB_App = "InfluxDB:App";
+        /// <summary>
+        /// Env
+        /// </summary>
+        public static string InfluxDB_Env = "InfluxDB:Env";
+        #endregion
     }
 }
