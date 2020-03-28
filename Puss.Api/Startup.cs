@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Puss.Api.Filters;
 using Puss.Data.Config;
 using Puss.Redis;
 
@@ -90,7 +91,11 @@ namespace Puss.Api
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(GlobalsConfig.Configuration[ConfigurationKeys.Token_SecurityKey]))//拿到SecurityKey
                     };
                 });
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options => 
+            {
+                //全局注册log4net的异常捕获
+                options.Filters.Add<HttpGlobalExceptionFilter>();
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             #endregion
 
             #region Redis
@@ -147,7 +152,7 @@ namespace Puss.Api
             #endregion
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -191,6 +196,10 @@ namespace Puss.Api
                 app.UseMetricsTextEndpoint();
                 app.UseEnvInfoEndpoint();
             }
+            #endregion
+
+            #region Log4Net
+            loggerFactory.AddLog4Net();
             #endregion
 
             app.UseEndpoints(endpoints =>
