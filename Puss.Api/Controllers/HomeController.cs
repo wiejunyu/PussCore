@@ -47,11 +47,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public ReturnResult<string> NotLogin()
         {
-            throw new Exception("错误测试");
-            return InvokeFunc(() =>
-            {
-                return "OK";
-            });
+            throw new AppException("错误测试");
         }
 
         /// <summary>

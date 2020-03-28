@@ -33,42 +33,12 @@ namespace Puss.Api.Controllers
             Stopwatch stop = new Stopwatch();
             stop.Start();
             var response = new ReturnResult<T>();
-            try
-            {
-                //使用期限
-                // UsingTimeOut();
-                requestBody = GetPostData();
-                T result = func();
-                response.Status = (int)ReturnResultStatus.Succeed;
-                response.Data = result;
-
-            }
-            catch (AppException exception)
-            {
-                response.HandleException(exception);
-                response.Status = (int)ReturnResultStatus.BLLError;
-            }
-            catch (Exception exception)
-            {
-                //记录数据库日志
-                #region 日志记录
-                string errorCode = DateTime.Now.ToString("yyMMddHHmmss");
-                ExceptionLog exceptionLog = new ExceptionLog();
-                JsonSerializerSettings setting = new JsonSerializerSettings()
-                {
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                };
-                exceptionLog.Response = JsonConvert.SerializeObject(exception, setting);
-                exceptionLog.Error_code = errorCode;
-                exceptionLog.Exception_Type = (int)ExceptionTypeEnum.System;
-                exceptionLog.Url = Url;
-                exceptionLog.CreateTime = DateTime.Now;
-                exceptionLog.Request = requestBody;
-                response.Message = "网络异常或超时，请稍后再试！";
-                response.Status = (int)ReturnResultStatus.BLLError;
-                new ExceptionLogManager().Insert(exceptionLog);
-                #endregion
-            }
+            //使用期限
+            // UsingTimeOut();
+            requestBody = GetPostData();
+            T result = func();
+            response.Status = (int)ReturnResultStatus.Succeed;
+            response.Data = result;
 
             stop.Stop();
             long runtime = stop.ElapsedMilliseconds;
