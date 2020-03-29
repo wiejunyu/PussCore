@@ -35,12 +35,9 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("ShowValidateCode")]
-        public ReturnResult<string> ShowValidateCode(string CodeKey)
+        public string ShowValidateCode(string CodeKey)
         {
-            return InvokeFunc(() =>
-            {
-                return LoginManager.ShowValidateCode(CodeKey);
-            });
+            return ReturnAjax(LoginManager.ShowValidateCode(CodeKey));
         }
 
         /// <summary>
@@ -51,12 +48,9 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("EmaliGetCode")]
-        public ReturnResult<string> EmaliGetCode(string CodeKey,string Emali)
+        public string EmaliGetCode(string CodeKey,string Emali)
         {
-            return InvokeFunc(() =>
-            {
-                return LoginManager.EmaliGetCode(CodeKey, Emali);
-            });
+            return LoginManager.EmaliGetCode(CodeKey, Emali);
         }
         #endregion
 
@@ -67,12 +61,9 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("UserRegister")]
-        public ReturnResult<bool> UserRegister([FromBody]RegisterRequest request)
+        public bool UserRegister([FromBody]RegisterRequest request)
         {
-            return InvokeFunc(() =>
-            {
-                return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString());
-            });
+            return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString());
         }
 
         /// <summary>
@@ -82,12 +73,9 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("Login")]
-        public ReturnResult<string> Login([FromBody]LoginRequest request)
+        public string Login([FromBody]LoginRequest request)
         {
-            return InvokeFunc(() =>
-            {
-                return LoginManager.Login(request);
-            });
+            return LoginManager.Login(request);
         }
     }
 }

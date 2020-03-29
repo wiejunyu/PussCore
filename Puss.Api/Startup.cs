@@ -24,8 +24,16 @@ using Puss.Redis;
 
 namespace Puss.Api
 {
+    /// <summary>
+    /// Startup
+    /// </summary>
     public class Startup
     {
+        /// <summary>
+        /// Startup
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="env"></param>
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
@@ -33,8 +41,15 @@ namespace Puss.Api
             GlobalsConfig.SetBaseConfig(Configuration,env.ContentRootPath, env.WebRootPath);
         }
 
+        /// <summary>
+        /// Configuration
+        /// </summary>
         public IConfiguration Configuration { get; }
 
+        /// <summary>
+        /// ConfigureServices
+        /// </summary>
+        /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
             #region Swagger
@@ -95,7 +110,8 @@ namespace Puss.Api
             {
                 //全局注册log4net的异常捕获
                 options.Filters.Add<HttpGlobalExceptionFilter>();
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
             #endregion
 
             #region Redis
@@ -152,6 +168,12 @@ namespace Puss.Api
             #endregion
         }
 
+        /// <summary>
+        /// Configure
+        /// </summary>
+        /// <param name="app"></param>
+        /// <param name="env"></param>
+        /// <param name="loggerFactory"></param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
@@ -200,6 +222,10 @@ namespace Puss.Api
 
             #region Log4Net
             loggerFactory.AddLog4Net();
+            #endregion
+
+            #region 记录接口执行时间中间件
+            app.UseCalculateExecutionTime();
             #endregion
 
             app.UseEndpoints(endpoints =>

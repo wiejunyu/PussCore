@@ -1,13 +1,13 @@
 ﻿using Puss.Data.Enum;
 using System;
+using System.Web.Mvc;
 
 namespace Puss.Data.Models
 {
     /// <summary>
     /// 返回模型
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class ReturnResult<T>
+    public class ReturnResult
     {
         /// <summary>
         /// 返回状态码，与 HttpStatusCode 一致
@@ -17,10 +17,6 @@ namespace Puss.Data.Models
         /// 返回消息
         /// </summary>
         public string Message { get; set; }
-        /// <summary>
-        /// 返回数据
-        /// </summary>
-        public T Data { get; set; }
 
         /// <summary>
         /// 返回模型
@@ -28,16 +24,6 @@ namespace Puss.Data.Models
         public ReturnResult()
         {
             Status = (int)ReturnResultStatus.ServerError;
-        }
-
-        /// <summary>
-        /// 返回模型
-        /// </summary>
-        /// <param name="Data">数据</param>
-        public ReturnResult(T Data)
-        {
-            Status = (int)ReturnResultStatus.ServerError;
-            this.Data = Data;
         }
 
         /// <summary>
@@ -58,6 +44,28 @@ namespace Puss.Data.Models
         {
             this.Status = ex.ErrorStatus;
             this.Message = ex.Message;
+        }
+    }
+
+    /// <summary>
+    /// 返回模型
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class ReturnResult<T> : ReturnResult
+    {
+        /// <summary>
+        /// 返回数据
+        /// </summary>
+        public T Data { get; set; }
+
+        /// <summary>
+        /// 返回模型
+        /// </summary>
+        /// <param name="Data">数据</param>
+        public ReturnResult(T Data)
+        {
+            Status = (int)ReturnResultStatus.ServerError;
+            this.Data = Data;
         }
     }
 }

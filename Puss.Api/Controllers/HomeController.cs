@@ -31,12 +31,9 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("Login")]
-        public ReturnResult<string> Login()
+        public bool Login()
         {
-            return InvokeFunc(() =>
-            {
-                return "OK";
-            });
+            return true;
         }
 
         /// <summary>
@@ -45,7 +42,7 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("NotLogin")]
         [AllowAnonymous]
-        public ReturnResult<string> NotLogin()
+        public string NotLogin()
         {
             throw new AppException("错误测试");
         }
@@ -56,13 +53,10 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("PushMessage")]
         [AllowAnonymous]
-        public ReturnResult<bool> PushMessage()
+        public bool PushMessage()
         {
-            return InvokeFunc(() =>
-            {
-                RabbitMQPushHelper.PushMessage(RabbitMQKey.SendRegisterMessageIsEmail,"1013422066@qq.com");
-                return true;
-            });
+            RabbitMQPushHelper.PushMessage(RabbitMQKey.SendRegisterMessageIsEmail,"1013422066@qq.com");
+            return true;
         }
 
         /// <summary>
@@ -71,13 +65,10 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("PullMessage")]
         [AllowAnonymous]
-        public ReturnResult<bool> PullMessage()
+        public bool PullMessage()
         {
-            return InvokeFunc(() =>
-            {
-                RabbitMQPushHelper.PullMessage(RabbitMQKey.SendRegisterMessageIsEmail, EmailHelper.MailSending);
-                return true;
-            });
+            RabbitMQPushHelper.PullMessage(RabbitMQKey.SendRegisterMessageIsEmail, EmailHelper.MailSending);
+            return true;
         }
 
         

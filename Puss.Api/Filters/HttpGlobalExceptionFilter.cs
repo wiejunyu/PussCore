@@ -12,20 +12,31 @@ using System.Threading.Tasks;
 
 namespace Puss.Api.Filters
 {
+    /// <summary>
+    /// 验证
+    /// </summary>
     public class HttpGlobalExceptionFilter : ExceptionFilterAttribute
     {
         private readonly ILogger<HttpGlobalExceptionFilter> _logger;
+        /// <summary>
+        /// 注入
+        /// </summary>
+        /// <param name="logger"></param>
         public HttpGlobalExceptionFilter(ILogger<HttpGlobalExceptionFilter> logger)
         {
             _logger = logger;
         }
 
+        /// <summary>
+        /// 报错进入
+        /// </summary>
+        /// <param name="context"></param>
         public override void OnException(ExceptionContext context)
         {
             var actionName = context.HttpContext.Request.RouteValues["controller"] + "/" + context.HttpContext.Request.RouteValues["action"];
             if (context.Exception is AppException)
             {
-                context.Result = new JsonResult(new
+                context.Result = new JsonResult(new ReturnResult()
                 {
                     Status = (int)ReturnResultStatus.BLLError,
                     Message = context.Exception.Message
@@ -37,7 +48,7 @@ namespace Puss.Api.Filters
                 //拦截处理
                 if (!context.ExceptionHandled)
                 {
-                    context.Result = new JsonResult(new
+                    context.Result = new JsonResult(new ReturnResult()
                     {
                         Status = (int)ReturnResultStatus.BLLError,
                         Message = "网络错误"

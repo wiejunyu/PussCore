@@ -20,6 +20,9 @@ using System.Threading.Tasks;
 
 namespace Puss.Api.Manager
 {
+    /// <summary>
+    /// 登录
+    /// </summary>
     public class LoginManager
     {
         /// <summary>
@@ -79,6 +82,12 @@ namespace Puss.Api.Manager
             return $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
         }
 
+        /// <summary>
+        /// EmaliGetCode
+        /// </summary>
+        /// <param name="CodeKey"></param>
+        /// <param name="Emali"></param>
+        /// <returns></returns>
         public static string EmaliGetCode(string CodeKey, string Emali)
         {
             LoginManager.DelCode();
@@ -138,7 +147,8 @@ namespace Puss.Api.Manager
         /// <summary>
         /// 用户注册
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="request">request</param>
+        /// <param name="ip">ip</param>
         /// <returns></returns>
         public static bool UserRegister(RegisterRequest request, string ip)
         {
