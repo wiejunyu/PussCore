@@ -91,5 +91,12 @@ namespace Puss.Data.Config
         /// </summary>
         public static string InfluxDB_Env = "InfluxDB:Env";
         #endregion
+
+        #region Swagger
+        /// <summary>
+        /// IsXml
+        /// </summary>
+        public static string Swagger_IsXml = "Swagger:IsXml";
+        #endregion
     }
 }

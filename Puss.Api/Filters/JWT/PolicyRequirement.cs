@@ -35,7 +35,9 @@ namespace Puss.Api.Filters
                 new UserPermission {  Url="/Api/User/Login", IsLogin = false,IsAdmin = true},
                 new UserPermission {  Url="/Api/User/NoLoginError", IsLogin = false,IsAdmin = false},
                 #endregion
-
+                #region QrCode
+                new UserPermission {  Url="/Api/QrCode/GetQrCode", IsLogin = false,IsAdmin = false},
+                #endregion
             };
         }
     }

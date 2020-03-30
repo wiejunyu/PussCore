@@ -86,8 +86,11 @@ namespace Puss.Api
                     }
                 });
                 var basePath = PlatformServices.Default.Application.ApplicationBasePath;
-                c.IncludeXmlComments(Path.Combine(basePath, "Puss.Api.xml"));
-                c.IncludeXmlComments(Path.Combine(basePath, "Puss.Data.xml"));
+                if (GlobalsConfig.Configuration[ConfigurationKeys.Swagger_IsXml].ToLower() == "true")
+                {
+                    c.IncludeXmlComments(Path.Combine(basePath, "Puss.Api.xml"));
+                    c.IncludeXmlComments(Path.Combine(basePath, "Puss.Data.xml"));
+                }
             });
             #endregion
 
