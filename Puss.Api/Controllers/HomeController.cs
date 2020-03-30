@@ -23,10 +23,18 @@ namespace Puss.Api.Controllers
     /// <summary>
     /// 首页
     /// </summary>
-    [Route("api/[controller]")]
-    [ApiController]
     public class HomeController : ApiBaseController
     {
+        /// <summary>
+        /// 登录测试
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("AdminLogin")]
+        public ReturnResult AdminLogin()
+        {
+            return new ReturnResult(ReturnResultStatus.Succeed);
+        }
+
         /// <summary>
         /// 登录测试
         /// </summary>
@@ -42,11 +50,9 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("NotLogin")]
-        [AllowAnonymous]
         public ReturnResult NotLogin()
         {
-            throw new AppException("错误测试");
-            return new ReturnResult(ReturnResultStatus.Succeed);
+            return new ReturnResult(ReturnResultStatus.Succeed,"OK");
         }
 
         /// <summary>
@@ -72,7 +78,5 @@ namespace Puss.Api.Controllers
             RabbitMQPushHelper.PullMessage(RabbitMQKey.SendRegisterMessageIsEmail, EmailHelper.MailSending);
             return new ReturnResult(ReturnResultStatus.Succeed);
         }
-
-        
     }
 }

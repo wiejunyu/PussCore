@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using App.Metrics;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -38,7 +39,7 @@ namespace Puss.Api
         {
             Configuration = configuration;
             //配置文件
-            GlobalsConfig.SetBaseConfig(Configuration,env.ContentRootPath, env.WebRootPath);
+            GlobalsConfig.SetBaseConfig(Configuration, env.ContentRootPath, env.WebRootPath);
         }
 
         /// <summary>
@@ -91,6 +92,10 @@ namespace Puss.Api
             #endregion
 
             #region JWT身份验证
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Permission", policy => policy.Requirements.Add(new PolicyRequirement()));
+            });
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -106,12 +111,7 @@ namespace Puss.Api
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(GlobalsConfig.Configuration[ConfigurationKeys.Token_SecurityKey]))//拿到SecurityKey
                     };
                 });
-            services.AddMvc(options => 
-            {
-                //全局注册log4net的异常捕获
-                options.Filters.Add<HttpGlobalExceptionFilter>();
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-
+            services.AddSingleton<IAuthorizationHandler, PolicyHandler>();
             #endregion
 
             #region Redis
@@ -166,6 +166,12 @@ namespace Puss.Api
                 services.AddMetricsEndpoints();
             }
             #endregion
+
+            services.AddMvc(options =>
+            {
+                //全局注册log4net的异常捕获
+                options.Filters.Add<HttpGlobalExceptionFilter>();
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
 
         /// <summary>
@@ -174,7 +180,7 @@ namespace Puss.Api
         /// <param name="app"></param>
         /// <param name="env"></param>
         /// <param name="loggerFactory"></param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -200,7 +206,7 @@ namespace Puss.Api
             #endregion
 
             #region 注入Metrics
-            string IsOpen = GlobalsConfig.Configuration[ConfigurationKeys.InfluxDB_IsOpen].ToLower(); 
+            string IsOpen = GlobalsConfig.Configuration[ConfigurationKeys.InfluxDB_IsOpen].ToLower();
             if (IsOpen == "true")
             {
                 app.UseMetricsAllMiddleware();

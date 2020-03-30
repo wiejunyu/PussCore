@@ -6,8 +6,16 @@ using System.Threading.Tasks;
 
 namespace Puss.Api.Filters
 {
+    /// <summary>
+    /// CalculateExecutionTimeMiddlewareExtensions
+    /// </summary>
     public static class CalculateExecutionTimeMiddlewareExtensions
     {
+        /// <summary>
+        /// UseCalculateExecutionTime
+        /// </summary>
+        /// <param name="app"></param>
+        /// <returns></returns>
         public static IApplicationBuilder UseCalculateExecutionTime(this IApplicationBuilder app)
         {
             if (app == null)

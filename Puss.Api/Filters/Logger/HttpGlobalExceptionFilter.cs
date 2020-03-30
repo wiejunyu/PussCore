@@ -18,6 +18,7 @@ namespace Puss.Api.Filters
     public class HttpGlobalExceptionFilter : ExceptionFilterAttribute
     {
         private readonly ILogger<HttpGlobalExceptionFilter> _logger;
+
         /// <summary>
         /// 注入
         /// </summary>
@@ -33,7 +34,6 @@ namespace Puss.Api.Filters
         /// <param name="context"></param>
         public override void OnException(ExceptionContext context)
         {
-            var actionName = context.HttpContext.Request.RouteValues["controller"] + "/" + context.HttpContext.Request.RouteValues["action"];
             if (context.Exception is AppException)
             {
                 context.Result = new JsonResult(new ReturnResult()
@@ -56,6 +56,7 @@ namespace Puss.Api.Filters
                     context.ExceptionHandled = true;
                 }
             }
+
             //记录数据库日志
             #region 日志记录
             string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");

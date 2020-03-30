@@ -33,15 +33,13 @@ namespace Puss.Api.Manager
         public static string Login(LoginRequest request)
         {
 
-#if DEBUG
-
-#else
             //读取验证码
+            if (!RedisHelper.Exists(CommentConfig.ImageCacheCode + request.CodeKey)) throw new AppException("图片验证码不正确或已过期"); ;
             var code = RedisHelper.Get<string>(CommentConfig.ImageCacheCode + request.CodeKey);
-            if (string.IsNullOrWhiteSpace(code)) throw new AppException("图片验证码不正确");
+            if (string.IsNullOrWhiteSpace(code)) throw new AppException("图片验证码不正确或已过期");
             if (string.IsNullOrWhiteSpace(request.Code)) throw new AppException("图片验证码不能为空");
-            if (request.Code != code) throw new AppException("图片验证码不正确");
-#endif
+            if (request.Code != code) throw new AppException("图片验证码不正确或已过期");
+
             request.PassWord = MD5.Md5(request.PassWord);
             User account = new UserManager().GetSingle(a => (a.UserName == request.UserName.Trim() || a.Phone == request.UserName.Trim() || a.Email == request.UserName.Trim()) && a.PassWord == request.PassWord);
             if (account == null) throw new AppException("账号密码错误");
@@ -72,6 +70,8 @@ namespace Puss.Api.Manager
         /// <returns></returns>
         public static string ShowValidateCode(string CodeKey)
         {
+            if (string.IsNullOrWhiteSpace(CodeKey)) throw new AppException("验证码缓存标记错误");
+
             ValidateCode ValidateCode = new ValidateCode();
             //生成验证码，传几就是几位验证码
             string code = ValidateCode.CreateValidateCode(4);
@@ -102,10 +102,7 @@ namespace Puss.Api.Manager
             string code = new ValidateCode().CreateValidateCode(6);//生成验证码，传几就是几位验证码
                                                                    //发送邮件
             Cms_Sysconfig sys = new Cms_SysconfigManager().GetSingle(x => x.Id == 1);
-#if DEBUG
-#else
             if (!EmailHelper.MailSending(Emali, "宇宙物流验证码", $"您在宇宙物流的验证码是:{code},10分钟内有效", sys.Mail_From, sys.Mail_Code, sys.Mail_Host)) throw new AppException("发送失败");
-#endif
             #region 保存验证码统计
             if (cModel == null)
             {
@@ -154,15 +151,13 @@ namespace Puss.Api.Manager
         public static bool UserRegister(RegisterRequest request, string ip)
         {
             #region 验证
-#if DEBUG
-#else
             Code code = RedisHelper.Get<Code>(CommentConfig.MailCacheCode + request.CodeKey);
             if (code == null) throw new AppException("验证码错误或已过期");
             if (string.IsNullOrWhiteSpace(code.emali)) throw new AppException("验证码错误或已过期");
             if (code.emali.ToLower() != request.Email.ToLower()) throw new AppException("验证码错误或已过期");
             if (string.IsNullOrWhiteSpace(code.code)) throw new AppException("验证码错误或已过期");
             if (request.Code != code.code) throw new AppException("验证码错误或已过期");
-#endif
+
             if (new UserManager().IsAny(x => x.UserName == request.UserName)) throw new AppException("该用户名已经注册过");
             if (string.IsNullOrWhiteSpace(request.PassWord)) throw new AppException("请输入密码");
             if (string.IsNullOrWhiteSpace(request.ConfirmPassWord)) throw new AppException("请输入确认密码");

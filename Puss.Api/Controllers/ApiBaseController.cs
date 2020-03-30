@@ -23,7 +23,9 @@ namespace Puss.Api.Controllers
     /// <summary>
     /// Api控制器
     /// </summary>
-    [Authorize]
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize("Permission")]
     public class ApiBaseController : ControllerBase
     {
     }

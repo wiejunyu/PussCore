@@ -14,11 +14,9 @@ namespace Puss.Api.Controllers
     /// <summary>
     /// 用户
     /// </summary>
-    [Route("api/[controller]")]
-    [ApiController]
     public class UserController : ApiBaseController
     {
-        private IHttpContextAccessor _accessor;
+        private readonly IHttpContextAccessor _accessor;
         /// <summary>
         /// 用户
         /// </summary>
@@ -34,7 +32,6 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <param name="CodeKey">验证码缓存标记</param>
         /// <returns></returns>
-        [AllowAnonymous]
         [HttpPost("ShowValidateCode")]
         public ReturnResult ShowValidateCode(string CodeKey)
         {
@@ -47,7 +44,6 @@ namespace Puss.Api.Controllers
         /// <param name="CodeKey">验证码缓存标记</param>
         /// <param name="Emali">邮箱</param>
         /// <returns></returns>
-        [AllowAnonymous]
         [HttpPost("EmaliGetCode")]
         public ReturnResult EmaliGetCode(string CodeKey,string Emali)
         {
@@ -60,7 +56,6 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [AllowAnonymous]
         [HttpPost("UserRegister")]
         public ReturnResult UserRegister([FromBody]RegisterRequest request)
         {
@@ -74,11 +69,20 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <param name="request">登陆模型</param>
         /// <returns></returns>
-        [AllowAnonymous]
         [HttpPost("Login")]
         public ReturnResult Login([FromBody]LoginRequest request)
         {
             return new ReturnResult(ReturnResultStatus.Succeed, LoginManager.Login(request));
+        }
+
+        /// <summary>
+        /// 未登录返回接口
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("NoLoginError")]
+        public ReturnResult NoLoginError()
+        {
+            return new ReturnResult(ReturnResultStatus.UnLogin, "用户未登录");
         }
     }
 }

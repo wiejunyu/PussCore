@@ -8,11 +8,19 @@ using System.Threading.Tasks;
 
 namespace Puss.Api.Filters
 {
+    /// <summary>
+    /// CalculateExecutionTimeMiddleware
+    /// </summary>
     public class CalculateExecutionTimeMiddleware
     {
         private readonly RequestDelegate _next;//下一个中间件
         private readonly ILogger _logger;
         Stopwatch stopwatch;
+        /// <summary>
+        /// CalculateExecutionTimeMiddleware
+        /// </summary>
+        /// <param name="next"></param>
+        /// <param name="loggerFactory"></param>
         public CalculateExecutionTimeMiddleware(RequestDelegate next, ILoggerFactory loggerFactory)
         {
             if (next == null)
@@ -27,6 +35,11 @@ namespace Puss.Api.Filters
             _logger = loggerFactory.CreateLogger<CalculateExecutionTimeMiddleware>();
         }
 
+        /// <summary>
+        /// Invoke
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public async Task Invoke(HttpContext context)
         {
             stopwatch = new Stopwatch();
