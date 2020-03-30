@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Puss.Api.Manager;
+using Puss.Data.Enum;
 using Puss.Data.Models;
 
 namespace Puss.Api.Controllers
@@ -35,9 +36,9 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("ShowValidateCode")]
-        public string ShowValidateCode(string CodeKey)
+        public ReturnResult ShowValidateCode(string CodeKey)
         {
-            return ReturnAjax(LoginManager.ShowValidateCode(CodeKey));
+            return new ReturnResult(ReturnResultStatus.Succeed,LoginManager.ShowValidateCode(CodeKey));
         }
 
         /// <summary>
@@ -48,9 +49,9 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("EmaliGetCode")]
-        public string EmaliGetCode(string CodeKey,string Emali)
+        public ReturnResult EmaliGetCode(string CodeKey,string Emali)
         {
-            return LoginManager.EmaliGetCode(CodeKey, Emali);
+            return new ReturnResult(ReturnResultStatus.Succeed ,LoginManager.EmaliGetCode(CodeKey, Emali));
         }
         #endregion
 
@@ -61,9 +62,11 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("UserRegister")]
-        public bool UserRegister([FromBody]RegisterRequest request)
+        public ReturnResult UserRegister([FromBody]RegisterRequest request)
         {
-            return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString());
+            return ReturnResult.ResultCalculation(() => {
+                return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString());
+            });
         }
 
         /// <summary>
@@ -73,9 +76,9 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("Login")]
-        public string Login([FromBody]LoginRequest request)
+        public ReturnResult Login([FromBody]LoginRequest request)
         {
-            return LoginManager.Login(request);
+            return new ReturnResult(ReturnResultStatus.Succeed, LoginManager.Login(request));
         }
     }
 }

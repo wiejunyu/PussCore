@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Puss.Data;
 using Puss.Data.Config;
+using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Email;
 using Puss.RabbitMq;
@@ -31,9 +32,9 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("Login")]
-        public bool Login()
+        public ReturnResult Login()
         {
-            return true;
+            return new ReturnResult(ReturnResultStatus.Succeed);
         }
 
         /// <summary>
@@ -42,9 +43,10 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("NotLogin")]
         [AllowAnonymous]
-        public string NotLogin()
+        public ReturnResult NotLogin()
         {
             throw new AppException("错误测试");
+            return new ReturnResult(ReturnResultStatus.Succeed);
         }
 
         /// <summary>
@@ -53,10 +55,10 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("PushMessage")]
         [AllowAnonymous]
-        public bool PushMessage()
+        public ReturnResult PushMessage()
         {
-            RabbitMQPushHelper.PushMessage(RabbitMQKey.SendRegisterMessageIsEmail,"1013422066@qq.com");
-            return true;
+            RabbitMQPushHelper.PushMessage(RabbitMQKey.SendRegisterMessageIsEmail, "1013422066@qq.com");
+            return new ReturnResult(ReturnResultStatus.Succeed);
         }
 
         /// <summary>
@@ -65,10 +67,10 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("PullMessage")]
         [AllowAnonymous]
-        public bool PullMessage()
+        public ReturnResult PullMessage()
         {
             RabbitMQPushHelper.PullMessage(RabbitMQKey.SendRegisterMessageIsEmail, EmailHelper.MailSending);
-            return true;
+            return new ReturnResult(ReturnResultStatus.Succeed);
         }
 
         

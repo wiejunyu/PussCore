@@ -19,7 +19,7 @@ namespace Puss.Data.Models
         public string Message { get; set; }
 
         /// <summary>
-        /// 返回模型
+        /// 普通
         /// </summary>
         public ReturnResult()
         {
@@ -27,23 +27,42 @@ namespace Puss.Data.Models
         }
 
         /// <summary>
-        /// 错误返回
+        /// 状态
         /// </summary>
-        /// <param name="ex">异常</param>
-        public void HandleException(Exception ex)
+        /// <param name="Status">状态</param>
+        public ReturnResult(ReturnResultStatus Status)
         {
-            this.Status = (int)ReturnResultStatus.BLLError;
-            this.Message = ex.Message;
+            this.Status = (int)Status;
         }
 
         /// <summary>
-        /// 错误返回
+        /// 消息
         /// </summary>
-        /// <param name="ex">异常</param>
-        public void HandleException(AppException ex)
+        /// <param name="Message">消息</param>
+        public ReturnResult(string Message)
         {
-            this.Status = ex.ErrorStatus;
-            this.Message = ex.Message;
+            this.Message = Message;
+        }
+
+        /// <summary>
+        /// 状态 + 消息
+        /// </summary>
+        /// <param name="Status">状态</param>
+        /// <param name="Message">消息</param>
+        public ReturnResult(ReturnResultStatus Status, string Message)
+        {
+            this.Status = (int)Status;
+            this.Message = Message;
+        }
+
+        /// <summary>
+        /// 传入委托实现返回不同结果
+        /// </summary>
+        /// <param name="func"></param>
+        public static ReturnResult ResultCalculation(Func<bool> func)
+        {
+            bool result = func();
+            return (result ? new ReturnResult(ReturnResultStatus.Succeed) : new ReturnResult());
         }
     }
 
@@ -59,12 +78,30 @@ namespace Puss.Data.Models
         public T Data { get; set; }
 
         /// <summary>
-        /// 返回模型
+        /// 普通
         /// </summary>
-        /// <param name="Data">数据</param>
-        public ReturnResult(T Data)
+        public ReturnResult()
         {
             Status = (int)ReturnResultStatus.ServerError;
+        }
+
+        /// <summary>
+        /// 构造函数
+        /// </summary>
+        /// <param name="Status">状态</param>
+        public ReturnResult(ReturnResultStatus Status)
+            : base(Status)
+        {
+        }
+
+        /// <summary>
+        /// 状态 + 数据
+        /// </summary>
+        /// <param name="Status">状态</param>
+        /// <param name="Data">数据</param>
+        public ReturnResult(ReturnResultStatus Status, T Data)
+            : base(Status)
+        {
             this.Data = Data;
         }
     }

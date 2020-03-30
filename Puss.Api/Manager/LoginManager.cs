@@ -42,6 +42,7 @@ namespace Puss.Api.Manager
             if (string.IsNullOrWhiteSpace(request.Code)) throw new AppException("图片验证码不能为空");
             if (request.Code != code) throw new AppException("图片验证码不正确");
 #endif
+            request.PassWord = MD5.Md5(request.PassWord);
             User account = new UserManager().GetSingle(a => (a.UserName == request.UserName.Trim() || a.Phone == request.UserName.Trim() || a.Email == request.UserName.Trim()) && a.PassWord == request.PassWord);
             if (account == null) throw new AppException("账号密码错误");
             #region JWT身份验证

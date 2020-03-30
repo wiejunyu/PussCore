@@ -26,13 +26,5 @@ namespace Puss.Api.Controllers
     [Authorize]
     public class ApiBaseController : ControllerBase
     {
-        /// <summary>
-        /// 成功返回
-        /// </summary>
-        /// <param name="Data">数据</param>
-        public static object ReturnAjax(object Data)
-        {
-            return null;
-        }
     }
 }
