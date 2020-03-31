@@ -237,6 +237,9 @@ namespace Puss.Api
             app.UseCalculateExecutionTime();
             #endregion
 
+            #region GB2312
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            #endregion
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

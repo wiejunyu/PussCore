@@ -98,5 +98,12 @@ namespace Puss.Data.Config
         /// </summary>
         public static string Swagger_IsXml = "Swagger:IsXml";
         #endregion
+
+        #region Permission
+        /// <summary>
+        /// IsOpen
+        /// </summary>
+        public static string Permission_IsOpen = "Permission:IsOpen";
+        #endregion
     }
 }

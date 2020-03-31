@@ -28,6 +28,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.10" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.1.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +40,7 @@
     <ProjectReference Include="..\Puss.QrCode\Puss.QrCode.csproj" />
     <ProjectReference Include="..\Puss.RabbitMQ\Puss.RabbitMQ.csproj" />
     <ProjectReference Include="..\Puss.Redis\Puss.Redis.csproj" />
+    <ProjectReference Include="..\Puss.Reptile\Puss.Reptile.csproj" />
   </ItemGroup>
 
 

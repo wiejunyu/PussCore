@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
+using Puss.Data.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,12 @@ namespace Puss.Api.Filters
         /// <returns></returns>
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PolicyRequirement requirement)
         {
+            //判断是否开启权限验证
+            if (GlobalsConfig.Configuration[ConfigurationKeys.Permission_IsOpen].ToLower() == "false")
+            {
+                context.Succeed(requirement);
+                return Task.CompletedTask;
+            }
             //赋值用户权限
             var userPermissions = requirement.UserPermissions;
             //请求Url
