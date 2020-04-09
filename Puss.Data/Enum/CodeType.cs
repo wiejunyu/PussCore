@@ -14,7 +14,7 @@ namespace Puss.Data.Enum
         /// <summary>
         /// 邮箱验证
         /// </summary>
-        Emali,
+        Email,
         /// <summary>
         ///手机验证
         /// </summary>

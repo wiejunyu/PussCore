@@ -30,7 +30,7 @@ namespace Puss.Api.Filters
                 #endregion
                 #region User
                 new UserPermission {  Url="/Api/User/ShowValidateCode",IsLogin = false,IsAdmin = false},
-                new UserPermission {  Url="/Api/User/EmaliGetCode", IsLogin = false,IsAdmin = false},
+                new UserPermission {  Url="/Api/User/EmailGetCode", IsLogin = false,IsAdmin = false},
                 new UserPermission {  Url="/Api/User/UserRegister", IsLogin = false,IsAdmin = false},
                 new UserPermission {  Url="/Api/User/Login", IsLogin = false,IsAdmin = true},
                 new UserPermission {  Url="/Api/User/NoLoginError", IsLogin = false,IsAdmin = false},

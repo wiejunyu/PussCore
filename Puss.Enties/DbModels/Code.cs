@@ -35,7 +35,7 @@ namespace Sugar.Enties
            /// Default:
            /// Nullable:True
            /// </summary>           
-           public string emali {get;set;}
+           public string email {get;set;}
 
            /// <summary>
            /// Desc:验证码手机

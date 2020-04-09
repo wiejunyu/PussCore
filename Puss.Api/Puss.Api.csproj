@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>F:\工作\项目\Net Core\PussCore\Puss.Api\Puss.Api.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netcoreapp3.1\Puss.Api.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +19,7 @@
     <PackageReference Include="App.Metrics.Extensions.Reporting.InfluxDB" Version="1.2.0" />
     <PackageReference Include="App.Metrics.Formatters.Json" Version="4.0.0-preview1.0.3" />
     <PackageReference Include="App.Metrics.Reporting.InfluxDB" Version="4.0.0-preview1.0.3" />
+    <PackageReference Include="AspectInjector" Version="2.3.1" />
     <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0-preview.1.20120.4" />

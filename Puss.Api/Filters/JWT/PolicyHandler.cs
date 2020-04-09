@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using Puss.Data.Config;
+using Puss.Data.Enum;
+using Puss.Data.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,7 +68,5 @@ namespace Puss.Api.Filters
             context.Succeed(requirement);
             return Task.CompletedTask;
         }
-
-        
     }
 }

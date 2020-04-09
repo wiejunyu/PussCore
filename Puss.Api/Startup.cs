@@ -194,6 +194,10 @@ namespace Puss.Api
 
             app.UseRouting();
 
+            #region Log4Net
+            loggerFactory.AddLog4Net();
+            #endregion
+
             #region JWT身份验证，必须在UseAuthorization之前，否者会返回401
             app.UseAuthentication();
             #endregion
@@ -227,10 +231,6 @@ namespace Puss.Api
                 app.UseMetricsTextEndpoint();
                 app.UseEnvInfoEndpoint();
             }
-            #endregion
-
-            #region Log4Net
-            loggerFactory.AddLog4Net();
             #endregion
 
             #region 记录接口执行时间中间件
