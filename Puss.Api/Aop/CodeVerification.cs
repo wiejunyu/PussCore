@@ -41,38 +41,6 @@ namespace Puss.Api.Aop
             p = lPropertyInfo.FirstOrDefault(x => x.Name == "Phone");
             string Phone = p != null ? p.GetValue(arguments[0], null).ToString() : "";
 
-            //foreach (PropertyInfo pi in t.GetProperties())
-            //{
-            //    //获得属性的名字,后面就可以根据名字判断来进行些自己想要的操作 
-            //    string sTypeName = pi.Name;
-            //    //获得值
-            //    object value = pi.GetValue(arguments[0], null);//用pi.GetValue获得值
-            //    switch (sTypeName) 
-            //    {
-            //        case "Code":
-            //            {
-            //                Code = value.ToString();
-            //            }
-            //            break;
-
-            //        case "CodeKey":
-            //            {
-            //                CodeKey = value.ToString();
-            //            }
-            //            break;
-            //        case "Email":
-            //            {
-            //                Email = value.ToString();
-            //            }
-            //            break;
-            //        case "Email":
-            //            {
-            //                Email = value.ToString();
-            //            }
-            //            break;
-            //        default: break;
-            //    }
-            //}
             if (string.IsNullOrWhiteSpace(CodeKey)) throw new AppException("验证码Key不能为空");
             if (RedisHelper.Exists(CommentConfig.ImageCacheCode + CodeKey))
             {
