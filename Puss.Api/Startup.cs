@@ -95,10 +95,10 @@ namespace Puss.Api
             #endregion
 
             #region JWT身份验证
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("Permission", policy => policy.Requirements.Add(new PolicyRequirement()));
-            });
+            //services.AddAuthorization(options =>
+            //{
+            //    options.AddPolicy("Permission", policy => policy.Requirements.Add(new PolicyRequirement()));
+            //});
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -114,7 +114,7 @@ namespace Puss.Api
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(GlobalsConfig.Configuration[ConfigurationKeys.Token_SecurityKey]))//拿到SecurityKey
                     };
                 });
-            services.AddSingleton<IAuthorizationHandler, PolicyHandler>();
+            //services.AddSingleton<IAuthorizationHandler, PolicyHandler>();
             #endregion
 
             #region Redis
@@ -174,6 +174,8 @@ namespace Puss.Api
             {
                 //全局注册log4net的异常捕获
                 options.Filters.Add<HttpGlobalExceptionFilter>();
+                //身份验证
+                options.Filters.Add<RequestAuthorizeAttribute>();
             }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
 

@@ -40,9 +40,10 @@ namespace Puss.Api.Filters
             var questUrl = "/" + http.RoutePattern.RawText;
             //获取当前URL权限
             var Permissions = userPermissions.SingleOrDefault(w => w.Url.ToLowerInvariant() == questUrl.ToLowerInvariant());
-            if (Permissions == null) {
-                context.Fail(); 
-                return Task.CompletedTask; 
+            if (Permissions == null)
+            {
+                context.Fail();
+                return Task.CompletedTask;
             }
             //判断当前URL是否需要登录
             if (Permissions.IsLogin)
@@ -59,8 +60,8 @@ namespace Puss.Api.Filters
             {
                 //是否经过验证
                 var userName = context.User.Claims.SingleOrDefault(s => s.Type == ClaimTypes.Name).Value;
-                if (Permissions.UserName != userName) 
-                { 
+                if (Permissions.UserName != userName)
+                {
                     context.Fail();
                     return Task.CompletedTask;
                 }

@@ -31,12 +31,13 @@ namespace Puss.Api.Controllers
 
         /// <summary>
         /// 生成验证码图片并返回图片
+        /// </summary>
         /// <param name="CodeKey">验证码缓存标记</param>
         /// <returns></returns>
         [HttpPost("ShowValidateCode")]
-        public ReturnResult<FileResult> ShowValidateCode(string CodeKey)
+        public FileResult ShowValidateCode(string CodeKey)
         {
-            return new ReturnResult<FileResult>(ReturnResultStatus.Succeed, File(LoginManager.ShowValidateCode(CodeKey), @"image/jpeg"));
+            return File(LoginManager.ShowValidateCode(CodeKey), @"image/jpeg");
         }
 
         /// <summary>
