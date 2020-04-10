@@ -23,12 +23,14 @@ namespace Puss.Api.Filters
         /// <returns></returns>
         public static string UserGetToken(User user)
         {
+            //Token信息
             var claims = new[]
                 {
                 new Claim(JwtRegisteredClaimNames.Nbf,$"{new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()}") ,
                 new Claim (JwtRegisteredClaimNames.Exp,$"{new DateTimeOffset(DateTime.Now.AddMinutes(30)).ToUnixTimeSeconds()}"),
-                new Claim(ClaimTypes.Name, user.UserName)
+                new Claim(ClaimTypes.Name, user.ID.ToString())
                 };
+            //获取Token对象
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(GlobalsConfig.Configuration[ConfigurationKeys.Token_SecurityKey]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var jToken = new JwtSecurityToken(
@@ -37,10 +39,8 @@ namespace Puss.Api.Filters
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: creds);
+            //Token对象转成Token字符串
             string sToken = new JwtSecurityTokenHandler().WriteToken(jToken);
-            string sTokenMd5 = MD5.Md5(sToken);
-            //保存token和用户
-            RedisHelper.Set(CommentConfig.UserToken + sTokenMd5, user.ID,30);
             return sToken;
         }
 
@@ -51,12 +51,19 @@ namespace Puss.Api.Filters
         /// <returns></returns>
         public static User TokenGetUser(string sToken)
         {
-            string sTokenMd5 = MD5.Md5(sToken);
-            //判断token是否颁发过
-            if (!RedisHelper.Exists(CommentConfig.UserToken + sTokenMd5)) return null;
-            //使用Token从获取用户ID
-            int sUid = RedisHelper.Get<int>(CommentConfig.UserToken + sTokenMd5);
-            return new UserManager().GetSingle(x => x.ID == sUid);
+            try
+            {
+                // 将字符串Token解码成Token对象;
+                JwtSecurityToken _token = new JwtSecurityToken(sToken);
+                //用户ID
+                int sUid = int.Parse(_token.Payload[ClaimTypes.Name].ToString());
+                //使用Token从获取用户ID
+                return new UserManager().GetSingle(x => x.ID == sUid);
+            }
+            catch 
+            {
+                return null;
+            }
         }
     }
 }
