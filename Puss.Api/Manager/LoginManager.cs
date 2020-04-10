@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using Microsoft.IdentityModel.Tokens;
+using Puss.Api.Filters;
 using Puss.Application.Common;
-using Puss.Data;
-using Puss.Data.Config;
 using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Email;
@@ -12,11 +10,6 @@ using Puss.Redis;
 using Sugar.Enties;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Puss.Api.Manager
 {
@@ -35,24 +28,7 @@ namespace Puss.Api.Manager
             request.PassWord = MD5.Md5(request.PassWord);
             User account = new UserManager().GetSingle(a => (a.UserName == request.UserName.Trim() || a.Phone == request.UserName.Trim() || a.Email == request.UserName.Trim()) && a.PassWord == request.PassWord);
             if (account == null) throw new AppException("账号密码错误");
-            #region JWT身份验证
-            var claims = new[]
-                {
-                new Claim(JwtRegisteredClaimNames.Nbf,$"{new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()}") ,
-                new Claim (JwtRegisteredClaimNames.Exp,$"{new DateTimeOffset(DateTime.Now.AddMinutes(30)).ToUnixTimeSeconds()}"),
-                new Claim(ClaimTypes.Name, account.UserName)
-                };
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(GlobalsConfig.Configuration[ConfigurationKeys.Token_SecurityKey]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(
-                issuer: GlobalsConfig.Configuration[ConfigurationKeys.Token_Issuer],
-                audience: GlobalsConfig.Configuration[ConfigurationKeys.Token_Audience],
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(30),
-                signingCredentials: creds);
-            #endregion
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return Token.UserGetToken(account);
         }
 
         /// <summary>
@@ -68,7 +44,7 @@ namespace Puss.Api.Manager
             //生成验证码，传几就是几位验证码
             string code = ValidateCode.CreateValidateCode(4);
             //保存验证码
-            RedisHelper.Set(CommentConfig.ImageCacheCode + CodeKey, code);
+            RedisHelper.Set(CommentConfig.ImageCacheCode + CodeKey, code, 10);
             //把验证码转成字节
             byte[] buffer = ValidateCode.CreateValidateGraphic(code);
             return buffer;
@@ -87,7 +63,7 @@ namespace Puss.Api.Manager
             //生成验证码，传几就是几位验证码
             string code = ValidateCode.CreateValidateCode(4);
             //保存验证码
-            RedisHelper.Set(CommentConfig.ImageCacheCode + CodeKey, code);
+            RedisHelper.Set(CommentConfig.ImageCacheCode + CodeKey, code, 10);
             //把验证码转成字节
             byte[] buffer = ValidateCode.CreateValidateGraphic(code);
             //把验证码转成Base64
@@ -134,7 +110,7 @@ namespace Puss.Api.Manager
             #endregion
             cModel.code = code;
             //保存验证码进缓存
-            RedisHelper.Set(CommentConfig.MailCacheCode + CodeKey, cModel, 600000000);
+            RedisHelper.Set(CommentConfig.MailCacheCode + CodeKey, cModel, 10);
             return "验证码发送成功";
         }
 

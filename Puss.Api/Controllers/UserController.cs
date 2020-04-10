@@ -35,6 +35,7 @@ namespace Puss.Api.Controllers
         /// <param name="CodeKey">验证码缓存标记</param>
         /// <returns></returns>
         [HttpPost("ShowValidateCode")]
+        [AllowAnonymous]
         public FileResult ShowValidateCode(string CodeKey)
         {
             return File(LoginManager.ShowValidateCode(CodeKey), @"image/jpeg");
@@ -46,6 +47,7 @@ namespace Puss.Api.Controllers
         /// <param name="CodeKey">验证码缓存标记</param>
         /// <returns></returns>
         [HttpPost("ShowValidateCodeBase64")]
+        [AllowAnonymous]
         public ReturnResult ShowValidateCodeBase64(string CodeKey)
         {
             return new ReturnResult(ReturnResultStatus.Succeed,LoginManager.ShowValidateCodeBase64(CodeKey));
@@ -58,6 +60,7 @@ namespace Puss.Api.Controllers
         /// <param name="Email">邮箱</param>
         /// <returns></returns>
         [HttpPost("EmailGetCode")]
+        [AllowAnonymous]
         public ReturnResult EmailGetCode(string CodeKey,string Email)
         {
             return new ReturnResult(ReturnResultStatus.Succeed ,LoginManager.EmailGetCode(CodeKey, Email));
@@ -71,6 +74,7 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("UserRegister")]
         [CodeVerification]
+        [AllowAnonymous]
         public ReturnResult UserRegister([FromBody]RegisterRequest request)
         {
             return ReturnResult.ResultCalculation(() => {
@@ -85,19 +89,10 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("Login")]
         [CodeVerification]
+        [AllowAnonymous]
         public ReturnResult Login([FromBody]LoginRequest request)
         {
             return new ReturnResult(ReturnResultStatus.Succeed, LoginManager.Login(request));
-        }
-
-        /// <summary>
-        /// 未登录返回接口
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("NoLoginError")]
-        public ReturnResult NoLoginError()
-        {
-            return new ReturnResult(ReturnResultStatus.UnLogin, "用户未登录");
         }
     }
 }

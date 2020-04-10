@@ -94,6 +94,21 @@ namespace Puss.Redis
         /// <summary>
         /// 根据key获取缓存对象
         /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static T Get<T>(string key,Func<T> func)
+        {
+            key = MergeKey(key);
+            if (Exists(key))
+                return JsonConvert.DeserializeObject<T>(GetDatabase().StringGet(key));
+            else
+                return func();
+        }
+
+        /// <summary>
+        /// 根据key获取缓存对象
+        /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
         public static object Get(string key)

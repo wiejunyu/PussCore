@@ -11,6 +11,7 @@ namespace Puss.Data.Models
     /// </summary>
     public class CommentConfig
     {
+        #region 验证码
         /// <summary>
         /// 图片验证码RedisKey
         /// </summary>
@@ -20,5 +21,12 @@ namespace Puss.Data.Models
         /// 邮箱验证码RedisKey
         /// </summary>
         public static string MailCacheCode { get { return "MailCacheCode"; } }
+        #endregion
+        #region 用户Token
+        /// <summary>
+        /// 用户Token RedisKey
+        /// </summary>
+        public static string UserToken { get { return "UserToken"; } }
+        #endregion
     }
 }
