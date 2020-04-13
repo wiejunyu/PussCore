@@ -31,6 +31,15 @@ namespace Puss.Api.Filters
                 if (GlobalsConfig.Configuration[ConfigurationKeys.Permission_IsOpen].ToLower() == "false") return;
                 //从http请求的头里面获取身份验证信息，验证Jwt
                 string sAuthorization = context.HttpContext.Request.Headers["Authorization"].ToString();
+                if (string.IsNullOrWhiteSpace(sAuthorization)) 
+                {
+                    context.Result = new ObjectResult(new ReturnResult()
+                    {
+                        Status = (int)ReturnResultStatus.BLLError,
+                        Message = "获取不到token"
+                    });
+                    return;
+                }
                 string sToken = sAuthorization.Substring("Bearer ".Length).Trim();
                 if (string.IsNullOrWhiteSpace(sToken))
                 {
