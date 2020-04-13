@@ -56,5 +56,17 @@ namespace Puss.Api.Controllers
             RabbitMQPushHelper.PullMessage(RabbitMQKey.SendRegisterMessageIsEmail, EmailHelper.MailSending);
             return new ReturnResult(ReturnResultStatus.Succeed);
         }
+
+        /// <summary>
+        /// 测试读写分离
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("GetEmail")]
+        [AllowAnonymous]
+        public ReturnResult GetEmail()
+        {
+            var User = new UserManager().GetSingle(x => x.ID == 29);
+            return new ReturnResult(ReturnResultStatus.Succeed, User.Email);
+        }
     }
 }

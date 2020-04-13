@@ -17,7 +17,7 @@ public class DbContext
             DbType = DbType.@Model.DbType,
             InitKeyType = InitKeyType.Attribute,//从特性读取主键和自增列信息
             IsAutoCloseConnection = true,//开启自动释放模式和EF原理一样我就不多解释了
-
+            SlaveConnectionConfigs = GetSonConnection(),//读写分离
         });
 
         //调式代码 用来打印SQL 
@@ -57,7 +57,7 @@ public class DbContext<T> where T : class, new()
             DbType = DbType.@Model.DbType,
             InitKeyType = InitKeyType.Attribute,//从特性读取主键和自增列信息
             IsAutoCloseConnection = true,//开启自动释放模式和EF原理一样我就不多解释了
-
+            SlaveConnectionConfigs = GetSonConnection(),//读写分离
         });
 
         //调式代码 用来打印SQL 
@@ -95,21 +95,29 @@ public class DbContext<T> where T : class, new()
     }
 
     /// <summary>
-    /// 获取所有
+    /// 获取单个
     /// </summary>
     /// <returns></returns>
     public virtual T GetSingle(Expression<Func<T, bool>> whereExpression)
     {
-        T temp = new T();
+        return CurrentDb.GetSingle(whereExpression);
+    }
+
+    /// <summary>
+    /// 获取单个，为空自动自动初始化
+    /// </summary>
+    /// <returns></returns>
+    public virtual T GetSingleDefault(Expression<Func<T, bool>> whereExpression)
+    {
+        T temp = null;
         try
         {
             temp = CurrentDb.GetSingle(whereExpression);
         }
         catch 
         {
-            temp = new T();
         }
-        return temp;
+        return temp == null ? new T() : temp;
     }
 
     /// <summary>
