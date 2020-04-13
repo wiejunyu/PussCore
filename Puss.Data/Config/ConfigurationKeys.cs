@@ -11,10 +11,16 @@ namespace Puss.Data.Config
     /// </summary>
     public class ConfigurationKeys
     {
+        #region Sql
         /// <summary>
-        /// 数据库连接字符串
+        /// 主数据库连接字符串
         /// </summary>
         public static string Sql_Connection = "SqlConnection:ConnectionString";
+        /// <summary>
+        /// 从数据库连接字符串
+        /// </summary>
+        public static string Sql_ConnectionSon = "SqlConnection:ConnectionStringSon";
+        #endregion
 
         #region Token
         /// <summary>

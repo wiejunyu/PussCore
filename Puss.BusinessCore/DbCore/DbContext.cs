@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Newtonsoft.Json;
+using Puss.Data.Config;
 
 public class DbContext
 {
@@ -11,18 +13,19 @@ public class DbContext
     {
         Db = new SqlSugarClient(new ConnectionConfig()
         {
-            ConnectionString = "server=118.89.182.215;uid=sa;pwd=woaiZIJI.234;database=WL",
+            ConnectionString = GlobalsConfig.Configuration[ConfigurationKeys.Sql_Connection],
             DbType = DbType.SqlServer,
             InitKeyType = InitKeyType.Attribute,//从特性读取主键和自增列信息
             IsAutoCloseConnection = true,//开启自动释放模式和EF原理一样我就不多解释了
 
         });
+
         //调式代码 用来打印SQL 
         Db.Aop.OnLogExecuting = (sql, pars) =>
         {
-            Console.WriteLine(sql + "\r\n" +
-                Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value)));
-            Console.WriteLine();
+            //Console.WriteLine(sql + "\r\n" +
+            //    Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value)));
+            //Console.WriteLine();
         };
     }
 
@@ -37,6 +40,11 @@ public class DbContext
     {
         return Db;
     }
+
+    protected List<SlaveConnectionConfig> GetSonConnection()
+    {
+        return JsonConvert.DeserializeObject<List<SlaveConnectionConfig>>(GlobalsConfig.Configuration[ConfigurationKeys.Sql_ConnectionSon]); ;
+    }
 }
 
 public class DbContext<T> where T : class, new()
@@ -45,21 +53,28 @@ public class DbContext<T> where T : class, new()
     {
         Db = new SqlSugarClient(new ConnectionConfig()
         {
-            ConnectionString = "server=118.89.182.215;uid=sa;pwd=woaiZIJI.234;database=WL",
+            ConnectionString = GlobalsConfig.Configuration[ConfigurationKeys.Sql_Connection],
             DbType = DbType.SqlServer,
             InitKeyType = InitKeyType.Attribute,//从特性读取主键和自增列信息
             IsAutoCloseConnection = true,//开启自动释放模式和EF原理一样我就不多解释了
 
         });
+
         //调式代码 用来打印SQL 
         Db.Aop.OnLogExecuting = (sql, pars) =>
         {
-            Console.WriteLine(sql + "\r\n" +
-                Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value)));
-            Console.WriteLine();
+            //Console.WriteLine(sql + "\r\n" +
+            //    Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value)));
+            //Console.WriteLine();
         };
 
     }
+
+    protected List<SlaveConnectionConfig> GetSonConnection()
+    {
+        return JsonConvert.DeserializeObject<List<SlaveConnectionConfig>>(GlobalsConfig.Configuration[ConfigurationKeys.Sql_ConnectionSon]); ;
+    }
+
     //注意：不能写成静态的
     public SqlSugarClient Db;//用来处理事务多表查询和复杂的操作
 	public SimpleClient<T> CurrentDb { get { return new SimpleClient<T>(Db); } }//用来操作当前表的数据

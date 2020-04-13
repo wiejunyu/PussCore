@@ -56,7 +56,7 @@ namespace Puss.Api.Controllers
         /// <summary>
         /// 生成验邮箱验证码
         /// </summary>
-        /// <param name="CodeKey">验证码缓存标记</param> 
+        /// <param name="CodeKey">验证码缓存标记</param>
         /// <param name="Email">邮箱</param>
         /// <returns></returns>
         [HttpPost("EmailGetCode")]

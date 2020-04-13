@@ -44,5 +44,7 @@
     <ProjectReference Include="..\Puss.Reptile\Puss.Reptile.csproj" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
 
 </Project>

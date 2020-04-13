@@ -79,6 +79,7 @@ namespace Puss.Api.Manager
         /// <returns></returns>
         public static string EmailGetCode(string CodeKey, string Email)
         {
+            new DbContext().Db.Ado.IsDisableMasterSlaveSeparation = true;
             LoginManager.DelCode();
 
             DateTime dt = DateTime.Now.Date;
@@ -88,7 +89,7 @@ namespace Puss.Api.Manager
             if (cModel != null ? cModel.count >= 6 : false) throw new AppException("发送超出次数");
             //获得验证码
             string code = new ValidateCode().CreateValidateCode(6);//生成验证码，传几就是几位验证码
-                                                                   //发送邮件
+            //发送邮件
             Cms_Sysconfig sys = new Cms_SysconfigManager().GetSingle(x => x.Id == 1);
             if (!EmailHelper.MailSending(Email, "宇宙物流验证码", $"您在宇宙物流的验证码是:{code},10分钟内有效", sys.Mail_From, sys.Mail_Code, sys.Mail_Host)) throw new AppException("发送失败");
             #region 保存验证码统计
@@ -111,6 +112,7 @@ namespace Puss.Api.Manager
             cModel.code = code;
             //保存验证码进缓存
             RedisHelper.Set(CommentConfig.MailCacheCode + CodeKey, cModel, 10);
+            new DbContext().Db.Ado.IsDisableMasterSlaveSeparation = false;
             return "验证码发送成功";
         }
 
