@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <script type="text/javascript" src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <script src="./js/jquery.serializejson.min.js"></script>
+</head>
+
+<body>
+<form id="from">
+<input type="text" name="UserName" value="Puss">
+<input type="text" name="PassWord" value="123456">
+<button type="button" id="btnSubmit">提交</button>
+<button type="button" id="btnGet">获取</button>
+</form>
+<script>
+    var token = "";
+    $("#btnSubmit").click(function(){
+        var post_data=$("#from").serializeJSON();//表单序列化
+        $.ajax({
+            type: "POST",
+            url: "http://localhost:60227/api/User/Login",
+            contentType:'application/json;charset=utf-8', 
+            data:JSON.stringify(post_data),
+            headers: {
+                Accept: "text/plain"
+            },
+            success: function (data) {
+                token = data.message;
+            }
+        });
+    });
+
+    $("#btnGet").click(function(){
+        $.ajax({
+            type: "POST",
+            url: "http://localhost:60227/api/ExpressDelivery/GetPrice",
+            data:{
+                symbol: "eth",
+            },
+            contentType: "application/x-www-form-urlencoded",
+            headers:{
+                Authorization:'Bearer ' + token
+            },
+            processData: false,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("Authorization", 'Bearer ' + token);
+            },
+            success: function (data) {
+                console.log(data.message)
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
