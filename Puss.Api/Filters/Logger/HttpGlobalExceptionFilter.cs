@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Puss.Data.Enum;
 using Puss.Data.Models;
+using Puss.RabbitMq;
+using Puss.RabbitMQ;
 using Sugar.Enties;
 using System;
 using System.Collections.Generic;
@@ -55,20 +57,17 @@ namespace Puss.Api.Filters
                     });
                     context.ExceptionHandled = true;
                 }
-            }
 
-            //记录数据库日志
-            #region 日志记录
-            string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            _logger.LogWarning($"--------{dt} Error Start--------");
-            var ex = context.Exception;
-            string content = "类型：错误代码\r\n";
-            content += "时间：" + dt + "\r\n";
-            content += "来源：" + ex.TargetSite.ReflectedType.ToString() + "." + ex.TargetSite.Name + "\r\n";
-            content += "内容：" + ex.Message + "\r\n";
-            _logger.LogWarning(content);
-            _logger.LogWarning($"--------{dt} Error End--------");
-            #endregion
+                #region 日志记录
+                string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                var ex = context.Exception;
+                string content = "类型：错误代码\r\n";
+                content += "时间：" + dt + "\r\n";
+                content += "来源：" + ex.TargetSite.ReflectedType.ToString() + "." + ex.TargetSite.Name + "\r\n";
+                content += "内容：" + ex.Message + "\r\n";
+                RabbitMQPushHelper.PushMessage(RabbitMQKey.LogError, content);
+                #endregion
+            }
         }
     }
 }

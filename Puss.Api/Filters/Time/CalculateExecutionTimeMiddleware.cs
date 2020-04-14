@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Puss.Data.Models;
+using Puss.RabbitMq;
+using Puss.RabbitMQ;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Puss.Api.Filters
 {
@@ -36,7 +38,7 @@ namespace Puss.Api.Filters
         }
 
         /// <summary>
-        /// Invoke
+        /// 计算接口耗时并推入MQ收集
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
@@ -45,9 +47,13 @@ namespace Puss.Api.Filters
             stopwatch = new Stopwatch();
             stopwatch.Start();//在下一个中间价处理前，启动计时器
             await _next.Invoke(context);
-
             stopwatch.Stop();//所有的中间件处理完后，停止秒表。
-            _logger.LogInformation($@"接口{context.Request.Path}耗时{stopwatch.ElapsedMilliseconds}ms");
+            //记录耗时
+            TimeLog tlog = new TimeLog();
+            tlog.ApiPath = context.Request.Path;
+            tlog.Time = stopwatch.ElapsedMilliseconds;
+            //推入MQ
+            RabbitMQPushHelper.PushMessage(RabbitMQKey.LogTime, JsonConvert.SerializeObject(tlog));
         }
     }
 }

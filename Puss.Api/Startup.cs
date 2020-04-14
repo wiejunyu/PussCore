@@ -20,6 +20,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Puss.Api.Filters;
+using Puss.Api.Job;
 using Puss.Data.Config;
 using Puss.Redis;
 
@@ -170,6 +171,10 @@ namespace Puss.Api
             }
             #endregion
 
+            #region 定时计划
+            services.AddHostedService<PriceJobTrigger>();
+            #endregion
+
             services.AddMvc(options =>
             {
                 //全局注册log4net的异常捕获
@@ -177,6 +182,18 @@ namespace Puss.Api
                 //身份验证
                 options.Filters.Add<RequestAuthorizeAttribute>();
             }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
+            #region 跨域
+            services.AddCors(options => options.AddPolicy("CorsPolicy",
+            builder =>
+            {
+                builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                //.SetIsOriginAllowed(_ => true)
+                //.AllowAnyOrigin()
+                //.AllowAnyHeader()
+                //.AllowCredentials();
+            }));
+            #endregion
         }
 
         /// <summary>
@@ -242,6 +259,12 @@ namespace Puss.Api
             #region GB2312
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             #endregion
+
+            #region 跨域
+            // 允许所有跨域，cors是在ConfigureServices方法中配置的跨域策略名称
+            app.UseCors("CorsPolicy");
+            #endregion
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

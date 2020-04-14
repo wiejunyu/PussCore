@@ -17,6 +17,8 @@ using Puss.QrCode;
 using Puss.Reptile;
 using Newtonsoft.Json;
 using Puss.Reptile.Models;
+using Puss.Redis;
+using Puss.Data.Models.Api;
 
 namespace Puss.Api.Controllers
 {
@@ -31,6 +33,7 @@ namespace Puss.Api.Controllers
         /// <param name="Url">Url</param>
         /// <returns></returns>
         [HttpPost("GetHtml")]
+        [AllowAnonymous]
         public ReturnResult GetHtml(string Url)
         {
             string html = ReptileHelper.GetHtml(Url);
@@ -46,10 +49,7 @@ namespace Puss.Api.Controllers
         [HttpPost("GetPrice")]
         public ReturnResult GetPrice(string symbol)
         {
-            string html = ReptileHelper.GetHtml("http://hangqing.btc112.com/getdata.php");
-            List<btc112> list = JsonConvert.DeserializeObject<List<btc112>>(html);
-            return new ReturnResult(ReturnResultStatus.Succeed, list.SingleOrDefault(x => x.symbol.ToLowerInvariant() == symbol).price);
+            return new ReturnResult(ReturnResultStatus.Succeed, RedisHelper.Get<Price>(CommentConfig.Price + symbol, () => new Price()).price);
         }
-
     }
 }
