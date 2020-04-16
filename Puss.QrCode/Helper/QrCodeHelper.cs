@@ -13,7 +13,7 @@ namespace Puss.QrCode
     /// <summary>
     /// 二维码帮助类
     /// </summary>
-    public class QrCodeHelper
+    public class QrCodeHelper : IQrCodeHelper
     {
         /// <summary>
         /// 获取二维码
@@ -21,7 +21,7 @@ namespace Puss.QrCode
         /// <param name="url"></param>
         /// <param name="pixel"></param>
         /// <returns></returns>
-        public static byte[] GetQRcode(string url, int pixel)
+        public byte[] GetQRcode(string url, int pixel)
         {
             QRCodeGenerator generator = new QRCodeGenerator();
             QRCodeData codeData = generator.CreateQrCode(url, QRCodeGenerator.ECCLevel.M, true);

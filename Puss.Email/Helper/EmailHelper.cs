@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Puss.Email
 {
-    public class EmailHelper
+    public class EmailHelper: IEmailHelper
     {
         /// <summary>
         /// 发送邮件
@@ -21,7 +21,7 @@ namespace Puss.Email
         /// <param name="Mail_Code">授权码</param>
         /// <param name="Mail_Host">发件主机，默认QQ：smtp.qq.com</param>
         /// <returns></returns>
-        public static bool MailSending(string Addressee,string Title,string Body,string Mail_From,string Mail_Code,string Mail_Host = "smtp.qq.com")
+        public bool MailSending(string Addressee,string Title,string Body,string Mail_From,string Mail_Code,string Mail_Host = "smtp.qq.com")
         {
             try
             {

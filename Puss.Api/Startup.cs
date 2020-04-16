@@ -285,9 +285,13 @@ namespace Puss.Api
         public void ConfigureContainer(ContainerBuilder builder)
         {
             // 在这里添加服务注册
-            Assembly entityAss = Assembly.Load("Puss.Reptile"); //对Entity这个类库进行里的类进行集体注册
-            Type[] etypes = entityAss.GetTypes();
-            builder.RegisterTypes(etypes).AsImplementedInterfaces().PropertiesAutowired();
+            builder.RegisterTypes(Assembly.Load("Puss.Reptile").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
+            builder.RegisterTypes(Assembly.Load("Puss.Application").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
+            builder.RegisterTypes(Assembly.Load("Puss.Email").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
+            builder.RegisterTypes(Assembly.Load("Puss.QrCode").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
+            builder.RegisterTypes(Assembly.Load("Puss.RabbitMQ").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
+            builder.RegisterTypes(Assembly.Load("Puss.Redis").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
+            builder.RegisterTypes(Assembly.Load("Puss.Reptile").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
 
             var controllerBaseType = typeof(ControllerBase);
             builder.RegisterAssemblyTypes(typeof(Program).Assembly)

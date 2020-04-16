@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Puss.Api.Aop;
 using Puss.Api.Manager;
 using Puss.Data.Enum;
 using Puss.Data.Models;
+using Puss.Email;
+using Puss.RabbitMq;
 
 namespace Puss.Api.Controllers
 {
@@ -18,13 +16,24 @@ namespace Puss.Api.Controllers
     public class UserController : ApiBaseController
     {
         private readonly IHttpContextAccessor _accessor;
+        private readonly IEmailHelper EmailHelper;
+        private readonly IRabbitMQPushHelper RabbitMQPushHelper;
+
         /// <summary>
         /// 用户
         /// </summary>
         /// <param name="accessor"></param>
-        public UserController(IHttpContextAccessor accessor)
+        /// <param name="EmailHelper"></param>
+        /// <param name="RabbitMQPushHelper"></param>
+        public UserController(
+            IHttpContextAccessor accessor, 
+            IEmailHelper EmailHelper,
+            IRabbitMQPushHelper RabbitMQPushHelper
+            )
         {
             _accessor = accessor;
+            this.EmailHelper = EmailHelper;
+            this.RabbitMQPushHelper = RabbitMQPushHelper;
         }
 
         #region 验证码
@@ -63,7 +72,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public ReturnResult EmailGetCode(string CodeKey,string Email)
         {
-            return new ReturnResult(ReturnResultStatus.Succeed ,LoginManager.EmailGetCode(CodeKey, Email));
+            return new ReturnResult(ReturnResultStatus.Succeed ,LoginManager.EmailGetCode(CodeKey, Email, EmailHelper));
         }
         #endregion
 
@@ -74,11 +83,12 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("UserRegister")]
         [CodeVerification]
+        [UserVerification]
         [AllowAnonymous]
         public ReturnResult UserRegister([FromBody]RegisterRequest request)
         {
             return ReturnResult.ResultCalculation(() => {
-                return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString());
+                return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString(), RabbitMQPushHelper);
             });
         }
 
@@ -89,6 +99,7 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("Login")]
         [CodeVerification]
+        [UserVerification]
         [AllowAnonymous]
         public ReturnResult Login([FromBody]LoginRequest request)
         {

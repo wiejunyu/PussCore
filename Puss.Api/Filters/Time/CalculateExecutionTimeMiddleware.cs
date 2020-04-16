@@ -17,13 +17,15 @@ namespace Puss.Api.Filters
     {
         private readonly RequestDelegate _next;//下一个中间件
         private readonly ILogger _logger;
+        private readonly IRabbitMQPushHelper RabbitMQPushHelper;
         Stopwatch stopwatch;
+
         /// <summary>
         /// CalculateExecutionTimeMiddleware
         /// </summary>
         /// <param name="next"></param>
         /// <param name="loggerFactory"></param>
-        public CalculateExecutionTimeMiddleware(RequestDelegate next, ILoggerFactory loggerFactory)
+        public CalculateExecutionTimeMiddleware(RequestDelegate next, ILoggerFactory loggerFactory, IRabbitMQPushHelper RabbitMQPushHelper)
         {
             if (next == null)
             {
@@ -35,6 +37,7 @@ namespace Puss.Api.Filters
             }
             this._next = next;
             _logger = loggerFactory.CreateLogger<CalculateExecutionTimeMiddleware>();
+            this.RabbitMQPushHelper = RabbitMQPushHelper;
         }
 
         /// <summary>

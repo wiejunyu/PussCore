@@ -20,14 +20,16 @@ namespace Puss.Api.Filters
     public class HttpGlobalExceptionFilter : ExceptionFilterAttribute
     {
         private readonly ILogger<HttpGlobalExceptionFilter> _logger;
+        private readonly IRabbitMQPushHelper RabbitMQPushHelper;
 
         /// <summary>
         /// 注入
         /// </summary>
         /// <param name="logger"></param>
-        public HttpGlobalExceptionFilter(ILogger<HttpGlobalExceptionFilter> logger)
+        public HttpGlobalExceptionFilter(ILogger<HttpGlobalExceptionFilter> logger, IRabbitMQPushHelper RabbitMQPushHelper)
         {
             _logger = logger;
+            this.RabbitMQPushHelper = RabbitMQPushHelper;
         }
 
         /// <summary>

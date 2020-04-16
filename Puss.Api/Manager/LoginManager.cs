@@ -76,8 +76,9 @@ namespace Puss.Api.Manager
         /// </summary>
         /// <param name="CodeKey"></param>
         /// <param name="Email"></param>
+        /// <param name="EmailHelper"></param>
         /// <returns></returns>
-        public static string EmailGetCode(string CodeKey, string Email)
+        public static string EmailGetCode(string CodeKey, string Email, IEmailHelper EmailHelper)
         {
             new DbContext().Db.Ado.IsDisableMasterSlaveSeparation = true;
             LoginManager.DelCode();
@@ -138,10 +139,11 @@ namespace Puss.Api.Manager
         /// <param name="request">request</param>
         /// <param name="ip">ip</param>
         /// <returns></returns>
-        public static bool UserRegister(RegisterRequest request, string ip)
+        public static bool UserRegister(RegisterRequest request, string ip, IRabbitMQPushHelper RabbitMQPushHelper)
         {
             #region 验证
             if (new UserManager().IsAny(x => x.UserName == request.UserName)) throw new AppException("该用户名已经注册过");
+            if (string.IsNullOrWhiteSpace(request.Email)) throw new AppException("请输入邮箱");
             if (new UserManager().IsAny(x => x.Email == request.Email)) throw new AppException("该邮箱已经注册过");
             if (string.IsNullOrWhiteSpace(request.PassWord)) throw new AppException("请输入密码");
             if (string.IsNullOrWhiteSpace(request.ConfirmPassWord)) throw new AppException("请输入确认密码");

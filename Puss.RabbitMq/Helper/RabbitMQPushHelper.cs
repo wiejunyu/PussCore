@@ -1,17 +1,14 @@
 ﻿using Puss.RabbitMQ;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using Sugar.Enties;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Puss.RabbitMq
 {
-    public class RabbitMQPushHelper
+    public class RabbitMQPushHelper: IRabbitMQPushHelper
     {
         private static IConnection connection;
-        public static IConnection GetConection()
+        public IConnection GetConection()
         {
 
             if (connection == null)
@@ -28,7 +25,13 @@ namespace Puss.RabbitMq
             }
             return connection;
         }
-        public static void PushMessage(string sQueueName, string sContent)
+
+        /// <summary>
+        /// MQ发送消息
+        /// </summary>
+        /// <param name="sQueueName">队列名称</param>
+        /// <param name="sContent">内容</param>
+        public void PushMessage(string sQueueName, string sContent)
         {
             //3. 创建信道
             using (var channel = GetConection().CreateModel())
@@ -42,9 +45,16 @@ namespace Puss.RabbitMq
             }
         }
 
-        public delegate bool deleMailSending(string Addressee, string Title, string Body, string Mail_From, string Mail_Code, string Mail_Host = "smtp.qq.com");
-
-        public static void PullMessage(string sQueueName, deleMailSending MailSending)
+        /// <summary>
+        /// 收到消息的委托
+        /// </summary>
+        public delegate bool MessageHandler(string Email);
+        /// <summary>
+        /// 收到消息并执行委托
+        /// </summary>
+        /// <param name="sQueueName">消息队列</param>
+        /// <param name="MessageHandler">委托</param>
+        public void PullMessage(string sQueueName, MessageHandler MessageHandler)
         {
             //3. 创建信道
             using (var channel = GetConection().CreateModel())
@@ -61,9 +71,8 @@ namespace Puss.RabbitMq
                 //6. 绑定消息接收后的事件委托
                 consumer.Received += (model, ea) =>
                 {
-                    Cms_Sysconfig sys = new Cms_SysconfigManager().GetSingle(x => x.Id == 1);
-                    string Email = Encoding.UTF8.GetString(ea.Body);
-                    if (MailSending(Email, "欢迎你注册宇宙物流", "欢迎你注册宇宙物流", sys.Mail_From, sys.Mail_Code, sys.Mail_Host))
+                    string Message = Encoding.UTF8.GetString(ea.Body);
+                    if (MessageHandler(Message))
                     {
                         //8. 启动消费者
                         //autoAck:true；自动进行消息确认，当消费端接收到消息后，就自动发送ack信号，不管消息是否正确处理完毕

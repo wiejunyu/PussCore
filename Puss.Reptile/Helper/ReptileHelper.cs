@@ -11,6 +11,11 @@ namespace Puss.Reptile
 {
     public class ReptileHelper : IReptileHelper
     {
+        /// <summary>
+        /// Post请求并获取HTML
+        /// </summary>
+        /// <param name="Url"></param>
+        /// <returns></returns>
         public string GetHtml(string Url)
         {
             //WebProxy proxyObject = new WebProxy(IP, PORT);//这里我是用的代理。
