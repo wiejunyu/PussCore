@@ -27,6 +27,16 @@ namespace Puss.Api.Controllers
     /// </summary>
     public class ExpressDeliveryController : ApiBaseController
     {
+        private readonly IReptileHelper ReptileHelper;
+
+        /// <summary>
+        /// 快递查询接口
+        /// </summary>
+        public ExpressDeliveryController(IReptileHelper ReptileHelper) 
+        {
+            this.ReptileHelper = ReptileHelper;
+        }
+
         /// <summary>
         /// 获取HTML
         /// </summary>
@@ -36,7 +46,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public ReturnResult GetHtml(string Url)
         {
-            string html = new ReptileHelper().GetHtml(Url);
+            string html = ReptileHelper.GetHtml(Url);
             List<btc112> list = JsonConvert.DeserializeObject <List<btc112>>(html);
             return new ReturnResult(ReturnResultStatus.Succeed, list.SingleOrDefault(x => x.symbol.ToLowerInvariant() == "btc").price);
         }

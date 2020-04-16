@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using App.Metrics;
+using Autofac;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -194,6 +196,11 @@ namespace Puss.Api
                 //.AllowCredentials();
             }));
             #endregion
+
+            #region Autofac
+            // 或者将Controller加入到Services中，这样写上面的代码就可以省略了
+            services.AddControllersWithViews().AddControllersAsServices();
+            #endregion
         }
 
         /// <summary>
@@ -269,6 +276,23 @@ namespace Puss.Api
             {
                 endpoints.MapControllers();
             });
+        }
+
+        /// <summary>
+        /// ConfigureContainer
+        /// </summary>
+        /// <param name="builder"></param>
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            // 在这里添加服务注册
+            Assembly entityAss = Assembly.Load("Puss.Reptile"); //对Entity这个类库进行里的类进行集体注册
+            Type[] etypes = entityAss.GetTypes();
+            builder.RegisterTypes(etypes).AsImplementedInterfaces().PropertiesAutowired();
+
+            var controllerBaseType = typeof(ControllerBase);
+            builder.RegisterAssemblyTypes(typeof(Program).Assembly)
+                .Where(t => controllerBaseType.IsAssignableFrom(t) && t != controllerBaseType)
+                .PropertiesAutowired();
         }
     }
 }

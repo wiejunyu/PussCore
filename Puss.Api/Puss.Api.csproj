@@ -20,6 +20,8 @@
     <PackageReference Include="App.Metrics.Formatters.Json" Version="4.0.0-preview1.0.3" />
     <PackageReference Include="App.Metrics.Reporting.InfluxDB" Version="4.0.0-preview1.0.3" />
     <PackageReference Include="AspectInjector" Version="2.3.1" />
+    <PackageReference Include="Autofac" Version="5.1.2" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0-preview.1.20120.4" />
