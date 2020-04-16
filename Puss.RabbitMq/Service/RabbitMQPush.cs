@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Puss.RabbitMQ
 {
-    public class RabbitMQPushHelper: IRabbitMQPushHelper
+    public class RabbitMQPush: IRabbitMQPush
     {
         private static IConnection connection;
         public IConnection GetConection()

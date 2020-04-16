@@ -17,7 +17,7 @@ namespace Puss.Api.Job
         private readonly TimeSpan _dueTime;
         private readonly TimeSpan _periodTime;
         private readonly IJobExecutor _jobExcutor;
-        private readonly IRabbitMQPushHelper RabbitMQPushHelper;
+        private readonly IRabbitMQPush RabbitMQPush;
 
         /// <summary>
         /// 构造函数
@@ -25,16 +25,16 @@ namespace Puss.Api.Job
         /// <param name="dueTime">到期执行时间</param>
         /// <param name="periodTime">间隔时间</param>
         /// <param name="jobExcutor">任务执行者</param>
-        /// <param name="RabbitMQPushHelper">MQ接口</param>
+        /// <param name="RabbitMQPush">MQ接口</param>
         protected BaseJobTrigger(TimeSpan dueTime,
              TimeSpan periodTime,
              IJobExecutor jobExcutor,
-             IRabbitMQPushHelper RabbitMQPushHelper)
+             IRabbitMQPush RabbitMQPush)
         {
             _dueTime = dueTime;
             _periodTime = periodTime;
             _jobExcutor = jobExcutor;
-            this.RabbitMQPushHelper = RabbitMQPushHelper;
+            this.RabbitMQPush = RabbitMQPush;
         }
 
         #region  计时器相关方法
@@ -73,7 +73,7 @@ namespace Puss.Api.Job
             content += $"时间：{dt}\r\n";
             content += $"来源：{e.TargetSite.ReflectedType}.{e.TargetSite.Name}\r\n";
             content += $"内容：{e.Message}\r\n";
-            RabbitMQPushHelper.PushMessage(RabbitMQKey.LogJob, content);
+            RabbitMQPush.PushMessage(RabbitMQKey.LogJob, content);
             #endregion
         }
         #endregion

@@ -14,18 +14,18 @@ namespace Puss.Api.Filters
     public class CalculateExecutionTimeMiddleware
     {
         private readonly RequestDelegate _next;//下一个中间件
-        private readonly IRabbitMQPushHelper RabbitMQPushHelper;
+        private readonly IRabbitMQPush RabbitMQPush;
         Stopwatch stopwatch;
 
         /// <summary>
         ///  CalculateExecutionTimeMiddleware
         /// </summary>
         /// <param name="next"></param>
-        /// <param name="RabbitMQPushHelper">MQ接口</param>
-        public CalculateExecutionTimeMiddleware(RequestDelegate next, IRabbitMQPushHelper RabbitMQPushHelper)
+        /// <param name="RabbitMQPush">MQ接口</param>
+        public CalculateExecutionTimeMiddleware(RequestDelegate next, IRabbitMQPush RabbitMQPush)
         {
             this._next = next;
-            this.RabbitMQPushHelper = RabbitMQPushHelper;
+            this.RabbitMQPush = RabbitMQPush;
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Puss.Api.Filters
                 Time = stopwatch.ElapsedMilliseconds
             };
             //推入MQ
-            RabbitMQPushHelper.PushMessage(RabbitMQKey.LogTime, JsonConvert.SerializeObject(tlog));
+            RabbitMQPush.PushMessage(RabbitMQKey.LogTime, JsonConvert.SerializeObject(tlog));
         }
     }
 }

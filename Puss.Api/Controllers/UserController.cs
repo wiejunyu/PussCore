@@ -17,23 +17,23 @@ namespace Puss.Api.Controllers
     {
         private readonly IHttpContextAccessor _accessor;
         private readonly IEmailHelper EmailHelper;
-        private readonly IRabbitMQPushHelper RabbitMQPushHelper;
+        private readonly IRabbitMQPush RabbitMQPush;
 
         /// <summary>
         /// 用户
         /// </summary>
         /// <param name="accessor"></param>
         /// <param name="EmailHelper"></param>
-        /// <param name="RabbitMQPushHelper"></param>
+        /// <param name="RabbitMQPush"></param>
         public UserController(
             IHttpContextAccessor accessor, 
             IEmailHelper EmailHelper,
-            IRabbitMQPushHelper RabbitMQPushHelper
+            IRabbitMQPush RabbitMQPush
             )
         {
             _accessor = accessor;
             this.EmailHelper = EmailHelper;
-            this.RabbitMQPushHelper = RabbitMQPushHelper;
+            this.RabbitMQPush = RabbitMQPush;
         }
 
         #region 验证码
@@ -88,7 +88,7 @@ namespace Puss.Api.Controllers
         public ReturnResult UserRegister([FromBody]RegisterRequest request)
         {
             return ReturnResult.ResultCalculation(() => {
-                return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString(), RabbitMQPushHelper);
+                return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString(), RabbitMQPush);
             });
         }
 

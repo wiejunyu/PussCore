@@ -48,8 +48,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helper\IQrCodeHelper.cs" />
-    <Compile Include="Helper\QrCodeHelper.cs" />
+    <Compile Include="Service\IQrCode.cs" />
+    <Compile Include="Service\QrCode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

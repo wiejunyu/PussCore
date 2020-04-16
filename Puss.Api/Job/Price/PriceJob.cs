@@ -12,12 +12,12 @@ namespace Puss.Api.Job
         /// <summary>
         /// 获取价格定时计划
         /// </summary>
-        /// <param name="RabbitMQPushHelper">MQ接口</param>
-        public PriceJobTrigger(IRabbitMQPushHelper RabbitMQPushHelper) :
+        /// <param name="RabbitMQPush">MQ接口</param>
+        public PriceJobTrigger(IRabbitMQPush RabbitMQPush) :
             base(TimeSpan.Zero,
                 TimeSpan.FromMinutes(1),
                 new PriceJobExcutor(),
-                RabbitMQPushHelper)
+                RabbitMQPush)
         {
         }
     }

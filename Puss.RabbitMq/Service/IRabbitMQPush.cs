@@ -1,8 +1,8 @@
-﻿using static Puss.RabbitMQ.RabbitMQPushHelper;
+﻿using static Puss.RabbitMQ.RabbitMQPush;
 
 namespace Puss.RabbitMQ
 {
-    public interface IRabbitMQPushHelper
+    public interface IRabbitMQPush
     {
         /// <summary>
         /// MQ发送消息

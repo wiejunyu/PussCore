@@ -3,7 +3,7 @@
     /// <summary>
     /// 二维码帮助类
     /// </summary>
-    public interface IQrCodeHelper
+    public interface IQrCode
     {
         /// <summary>
         /// 获取二维码

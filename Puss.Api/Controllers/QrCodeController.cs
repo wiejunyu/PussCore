@@ -11,11 +11,15 @@ namespace Puss.Api.Controllers
     /// </summary>
     public class QrCodeController : ApiBaseController
     {
-        private readonly IQrCodeHelper QrCodeHelper;
+        private readonly IQrCode QrCode;
 
-        QrCodeController(IQrCodeHelper QrCodeHelper) 
+        /// <summary>
+        /// 二维码
+        /// </summary>
+        /// <param name="QrCode"></param>
+        public QrCodeController(IQrCode QrCode) 
         {
-            this.QrCodeHelper = QrCodeHelper;
+            this.QrCode = QrCode;
         }
         /// <summary>
         /// 传入Url获取二维码
@@ -24,7 +28,7 @@ namespace Puss.Api.Controllers
         [HttpPost("GetQrCode")]
         public ReturnResult GetQrCode(string url)
         {
-            byte[] buffer = QrCodeHelper.GetQRcode(url, 8);
+            byte[] buffer = QrCode.GetQRcode(url, 8);
             return new ReturnResult(ReturnResultStatus.Succeed, $"data:image/png;base64,{Convert.ToBase64String(buffer)}");
         }
 

@@ -12,15 +12,15 @@ namespace Puss.Api.Filters
     /// </summary>
     public class HttpGlobalExceptionFilter : ExceptionFilterAttribute
     {
-        private readonly IRabbitMQPushHelper RabbitMQPushHelper;
+        private readonly IRabbitMQPush RabbitMQPush;
 
         /// <summary>
         /// 注入
         /// </summary>
-        /// <param name="RabbitMQPushHelper">MQ接口</param>
-        public HttpGlobalExceptionFilter(IRabbitMQPushHelper RabbitMQPushHelper)
+        /// <param name="RabbitMQPush">MQ接口</param>
+        public HttpGlobalExceptionFilter(IRabbitMQPush RabbitMQPush)
         {
-            this.RabbitMQPushHelper = RabbitMQPushHelper;
+            this.RabbitMQPush = RabbitMQPush;
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Puss.Api.Filters
                 content += "时间：" + dt + "\r\n";
                 content += "来源：" + ex.TargetSite.ReflectedType.ToString() + "." + ex.TargetSite.Name + "\r\n";
                 content += "内容：" + ex.Message + "\r\n";
-                RabbitMQPushHelper.PushMessage(RabbitMQKey.LogError, content);
+                RabbitMQPush.PushMessage(RabbitMQKey.LogError, content);
                 #endregion
             }
         }

@@ -14,17 +14,17 @@ namespace Puss.Api.Controllers
     public class TestController : ApiBaseController
     {
         private readonly IEmailHelper EmailHelper;
-        private readonly IRabbitMQPushHelper RabbitMQPushHelper;
+        private readonly IRabbitMQPush RabbitMQPush;
 
         /// <summary>
         /// 测试
         /// </summary>
         /// <param name="EmailHelper"></param>
-        /// <param name="RabbitMQPushHelper"></param>
-        public TestController(IEmailHelper EmailHelper,IRabbitMQPushHelper RabbitMQPushHelper) 
+        /// <param name="RabbitMQPush"></param>
+        public TestController(IEmailHelper EmailHelper,IRabbitMQPush RabbitMQPush) 
         {
             this.EmailHelper = EmailHelper;
-            this.RabbitMQPushHelper = RabbitMQPushHelper;
+            this.RabbitMQPush = RabbitMQPush;
         }
         /// <summary>
         /// 登录测试
@@ -55,7 +55,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public ReturnResult PushMessage()
         {
-            RabbitMQPushHelper.PushMessage(RabbitMQKey.SendRegisterMessageIsEmail, "1013422066@qq.com");
+            RabbitMQPush.PushMessage(RabbitMQKey.SendRegisterMessageIsEmail, "1013422066@qq.com");
             return new ReturnResult(ReturnResultStatus.Succeed);
         }
 
@@ -67,7 +67,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public ReturnResult PullMessage()
         {
-            RabbitMQPushHelper.PullMessage(RabbitMQKey.SendRegisterMessageIsEmail, (Message) => {
+            RabbitMQPush.PullMessage(RabbitMQKey.SendRegisterMessageIsEmail, (Message) => {
                 Cms_Sysconfig sys = new Cms_SysconfigManager().GetSingle(x => x.Id == 1);
                 return EmailHelper.MailSending(Message, "欢迎你注册宇宙物流", "欢迎你注册宇宙物流", sys.Mail_From, sys.Mail_Code, sys.Mail_Host);
             });

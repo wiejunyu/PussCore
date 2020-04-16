@@ -137,9 +137,9 @@ namespace Puss.Api.Manager
         /// </summary>
         /// <param name="request">注册模型</param>
         /// <param name="ip">IP</param>
-        /// <param name="RabbitMQPushHelper">MQ接口</param>
+        /// <param name="RabbitMQPush">MQ接口</param>
         /// <returns></returns>
-        public static bool UserRegister(RegisterRequest request, string ip, IRabbitMQPushHelper RabbitMQPushHelper)
+        public static bool UserRegister(RegisterRequest request, string ip, IRabbitMQPush RabbitMQPush)
         {
             #region 验证
             if (new UserManager().IsAny(x => x.UserName == request.UserName)) throw new AppException("该用户名已经注册过");
@@ -165,7 +165,7 @@ namespace Puss.Api.Manager
                 new UserManager().Insert(user);
                 new UserDetailsManager().Insert(new UserDetails() { UID = user.ID });
             });
-            RabbitMQPushHelper.PushMessage(RabbitMQKey.SendRegisterMessageIsEmail, request.Email);
+            RabbitMQPush.PushMessage(RabbitMQKey.SendRegisterMessageIsEmail, request.Email);
             return true;
         }
     }
