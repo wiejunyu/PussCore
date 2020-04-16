@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Puss.RabbitMQ;
 using System;
 
 namespace Puss.Api.Job
@@ -11,11 +12,12 @@ namespace Puss.Api.Job
         /// <summary>
         /// 获取价格定时计划
         /// </summary>
-        public PriceJobTrigger(ILogger<BaseJobTrigger> logger, ILogger<PriceJobExcutor> logger1) :
+        /// <param name="RabbitMQPushHelper">MQ接口</param>
+        public PriceJobTrigger(IRabbitMQPushHelper RabbitMQPushHelper) :
             base(TimeSpan.Zero,
                 TimeSpan.FromMinutes(1),
                 new PriceJobExcutor(),
-                logger)
+                RabbitMQPushHelper)
         {
         }
     }

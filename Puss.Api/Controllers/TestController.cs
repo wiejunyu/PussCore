@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Email;
-using Puss.RabbitMq;
 using Puss.RabbitMQ;
 using Sugar.Enties;
 
@@ -17,6 +16,11 @@ namespace Puss.Api.Controllers
         private readonly IEmailHelper EmailHelper;
         private readonly IRabbitMQPushHelper RabbitMQPushHelper;
 
+        /// <summary>
+        /// 测试
+        /// </summary>
+        /// <param name="EmailHelper"></param>
+        /// <param name="RabbitMQPushHelper"></param>
         public TestController(IEmailHelper EmailHelper,IRabbitMQPushHelper RabbitMQPushHelper) 
         {
             this.EmailHelper = EmailHelper;

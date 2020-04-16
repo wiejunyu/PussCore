@@ -43,7 +43,7 @@ namespace Puss.Application.Common
             {
                 // 将得到的字符串使用十六进制类型格式。格式后的字符是小写的字母，如果使用大写（X）则格式后的字符是大写字符 
 
-                pwd = pwd + s[i].ToString("X2");
+                pwd += s[i].ToString("X2");
 
             }
             return pwd;
@@ -84,11 +84,12 @@ namespace Puss.Application.Common
         }
         public static string DES3Encrypt(string data, string key)
         {
-            TripleDESCryptoServiceProvider DES = new TripleDESCryptoServiceProvider();
-
-            DES.Key = ASCIIEncoding.ASCII.GetBytes(key);
-            DES.Mode = CipherMode.CBC;
-            DES.Padding = PaddingMode.PKCS7;
+            TripleDESCryptoServiceProvider DES = new TripleDESCryptoServiceProvider() 
+            {
+                Key = ASCIIEncoding.ASCII.GetBytes(key),
+                Mode = CipherMode.CBC,
+                Padding = PaddingMode.PKCS7
+            };
 
             ICryptoTransform DESEncrypt = DES.CreateEncryptor();
 
@@ -98,11 +99,12 @@ namespace Puss.Application.Common
 
         public static string DES3Decrypt(string data, string key)
         {
-            TripleDESCryptoServiceProvider DES = new TripleDESCryptoServiceProvider();
-
-            DES.Key = ASCIIEncoding.ASCII.GetBytes(key);
-            DES.Mode = CipherMode.CBC;
-            DES.Padding = System.Security.Cryptography.PaddingMode.PKCS7;
+            TripleDESCryptoServiceProvider DES = new TripleDESCryptoServiceProvider() 
+            {
+                Key = ASCIIEncoding.ASCII.GetBytes(key),
+                Mode = CipherMode.CBC,
+                Padding = System.Security.Cryptography.PaddingMode.PKCS7
+            };
 
             ICryptoTransform DESDecrypt = DES.CreateDecryptor();
 

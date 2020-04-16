@@ -71,5 +71,13 @@ namespace Puss.RabbitMQ
         {
             get { return "LogTime"; }
         }
+
+        /// <summary>
+        /// 定时计划日志收集
+        /// </summary>
+        public static string LogJob
+        {
+            get { return "LogJob"; }
+        }
     }
 }

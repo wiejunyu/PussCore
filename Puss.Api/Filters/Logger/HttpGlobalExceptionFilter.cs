@@ -1,16 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Puss.Data.Enum;
 using Puss.Data.Models;
-using Puss.RabbitMq;
 using Puss.RabbitMQ;
-using Sugar.Enties;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Puss.Api.Filters
 {
@@ -19,16 +12,14 @@ namespace Puss.Api.Filters
     /// </summary>
     public class HttpGlobalExceptionFilter : ExceptionFilterAttribute
     {
-        private readonly ILogger<HttpGlobalExceptionFilter> _logger;
         private readonly IRabbitMQPushHelper RabbitMQPushHelper;
 
         /// <summary>
         /// 注入
         /// </summary>
-        /// <param name="logger"></param>
-        public HttpGlobalExceptionFilter(ILogger<HttpGlobalExceptionFilter> logger, IRabbitMQPushHelper RabbitMQPushHelper)
+        /// <param name="RabbitMQPushHelper">MQ接口</param>
+        public HttpGlobalExceptionFilter(IRabbitMQPushHelper RabbitMQPushHelper)
         {
-            _logger = logger;
             this.RabbitMQPushHelper = RabbitMQPushHelper;
         }
 

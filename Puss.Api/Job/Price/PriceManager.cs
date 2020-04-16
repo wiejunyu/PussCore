@@ -20,14 +20,15 @@ namespace Puss.Api.Job
         /// </summary>
         public static void GetPrice()
         {
-            return;
             string html = new ReptileHelper().GetHtml("http://hangqing.btc112.com/getdata.php");
             List<btc112> list = JsonConvert.DeserializeObject<List<btc112>>(html);
             list.ForEach(x =>
             {
-                Price price = new Price();
-                price.symbol = x.symbol;
-                price.price = x.price;
+                Price price = new Price() 
+                {
+                    symbol = x.symbol,
+                    price = x.price
+                };
                 RedisHelper.Set(CommentConfig.Price + x.symbol.ToLowerInvariant(), price, 2);
             });
         }

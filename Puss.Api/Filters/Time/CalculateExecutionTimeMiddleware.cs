@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Puss.Data.Models;
-using Puss.RabbitMq;
 using Puss.RabbitMQ;
 using System;
 using System.Diagnostics;
@@ -16,27 +14,17 @@ namespace Puss.Api.Filters
     public class CalculateExecutionTimeMiddleware
     {
         private readonly RequestDelegate _next;//下一个中间件
-        private readonly ILogger _logger;
         private readonly IRabbitMQPushHelper RabbitMQPushHelper;
         Stopwatch stopwatch;
 
         /// <summary>
-        /// CalculateExecutionTimeMiddleware
+        ///  CalculateExecutionTimeMiddleware
         /// </summary>
         /// <param name="next"></param>
-        /// <param name="loggerFactory"></param>
-        public CalculateExecutionTimeMiddleware(RequestDelegate next, ILoggerFactory loggerFactory, IRabbitMQPushHelper RabbitMQPushHelper)
+        /// <param name="RabbitMQPushHelper">MQ接口</param>
+        public CalculateExecutionTimeMiddleware(RequestDelegate next, IRabbitMQPushHelper RabbitMQPushHelper)
         {
-            if (next == null)
-            {
-                throw new ArgumentNullException(nameof(next));
-            }
-            if (loggerFactory == null)
-            {
-                throw new ArgumentNullException(nameof(loggerFactory));
-            }
             this._next = next;
-            _logger = loggerFactory.CreateLogger<CalculateExecutionTimeMiddleware>();
             this.RabbitMQPushHelper = RabbitMQPushHelper;
         }
 
@@ -52,9 +40,11 @@ namespace Puss.Api.Filters
             await _next.Invoke(context);
             stopwatch.Stop();//所有的中间件处理完后，停止秒表。
             //记录耗时
-            TimeLog tlog = new TimeLog();
-            tlog.ApiPath = context.Request.Path;
-            tlog.Time = stopwatch.ElapsedMilliseconds;
+            TimeLog tlog = new TimeLog() 
+            {
+                ApiPath = context.Request.Path,
+                Time = stopwatch.ElapsedMilliseconds
+            };
             //推入MQ
             RabbitMQPushHelper.PushMessage(RabbitMQKey.LogTime, JsonConvert.SerializeObject(tlog));
         }

@@ -6,7 +6,7 @@ using Puss.Api.Manager;
 using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Email;
-using Puss.RabbitMq;
+using Puss.RabbitMQ;
 
 namespace Puss.Api.Controllers
 {

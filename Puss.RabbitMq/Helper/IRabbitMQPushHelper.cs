@@ -1,6 +1,6 @@
-﻿using static Puss.RabbitMq.RabbitMQPushHelper;
+﻿using static Puss.RabbitMQ.RabbitMQPushHelper;
 
-namespace Puss.RabbitMq
+namespace Puss.RabbitMQ
 {
     public interface IRabbitMQPushHelper
     {

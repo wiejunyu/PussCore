@@ -3,7 +3,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 
-namespace Puss.RabbitMq
+namespace Puss.RabbitMQ
 {
     public class RabbitMQPushHelper: IRabbitMQPushHelper
     {

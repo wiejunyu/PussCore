@@ -4,7 +4,6 @@ using Puss.Application.Common;
 using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Email;
-using Puss.RabbitMq;
 using Puss.RabbitMQ;
 using Puss.Redis;
 using Sugar.Enties;
@@ -136,8 +135,9 @@ namespace Puss.Api.Manager
         /// <summary>
         /// 用户注册
         /// </summary>
-        /// <param name="request">request</param>
-        /// <param name="ip">ip</param>
+        /// <param name="request">注册模型</param>
+        /// <param name="ip">IP</param>
+        /// <param name="RabbitMQPushHelper">MQ接口</param>
         /// <returns></returns>
         public static bool UserRegister(RegisterRequest request, string ip, IRabbitMQPushHelper RabbitMQPushHelper)
         {
