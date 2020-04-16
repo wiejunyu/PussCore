@@ -13,21 +13,17 @@ namespace Puss.Api.Aop
     /// 是否输入用户名验证切面
     /// </summary>
     [Aspect(Scope.Global)]
-    [Injection(typeof(CodeVerification))]
+    [Injection(typeof(UserVerification))]
     public class UserVerification : Attribute
     {
         /// <summary>
         /// 是否输入用户名验证切面
         /// </summary>
-        /// <param name="name">调用的函数名称</param>
         /// <param name="arguments">参数数组</param>
         [Advice(Kind.Before)]
         public void UserVerificationEnter(
-        [Argument(Source.Name)] string name,
         [Argument(Source.Arguments)] object[] arguments)
         {
-#if DEBUG
-#else
             Type t = arguments[0].GetType();
             List<PropertyInfo> lPropertyInfo = t.GetProperties().ToList();
             //取得UserName
@@ -39,7 +35,6 @@ namespace Puss.Api.Aop
             
             if (string.IsNullOrWhiteSpace(UserName)) throw new AppException("用户名不能为空");
             if (string.IsNullOrWhiteSpace(PassWord)) throw new AppException("密码不能为空");
-#endif
         }
     }
 }
