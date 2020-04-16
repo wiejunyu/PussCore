@@ -36,7 +36,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public ReturnResult GetHtml(string Url)
         {
-            string html = ReptileHelper.GetHtml(Url);
+            string html = new ReptileHelper().GetHtml(Url);
             List<btc112> list = JsonConvert.DeserializeObject <List<btc112>>(html);
             return new ReturnResult(ReturnResultStatus.Succeed, list.SingleOrDefault(x => x.symbol.ToLowerInvariant() == "btc").price);
         }

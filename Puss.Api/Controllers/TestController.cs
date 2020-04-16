@@ -20,8 +20,6 @@ namespace Puss.Api.Controllers
     /// </summary>
     public class TestController : ApiBaseController
     {
-        private readonly IHttpContextAccessor _accessor;
-
         /// <summary>
         /// 登录测试
         /// </summary>

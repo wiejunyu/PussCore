@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Puss.Reptile
 {
-    public class ReptileHelper
+    public class ReptileHelper : IReptileHelper
     {
-        public static string GetHtml(string Url)
+        public string GetHtml(string Url)
         {
             //WebProxy proxyObject = new WebProxy(IP, PORT);//这里我是用的代理。
             //向指定地址发送请求

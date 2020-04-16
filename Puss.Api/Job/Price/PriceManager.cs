@@ -20,7 +20,7 @@ namespace Puss.Api.Job
         /// </summary>
         public static void GetPrice()
         {
-            string html = ReptileHelper.GetHtml("http://hangqing.btc112.com/getdata.php");
+            string html = new ReptileHelper().GetHtml("http://hangqing.btc112.com/getdata.php");
             List<btc112> list = JsonConvert.DeserializeObject<List<btc112>>(html);
             list.ForEach(x =>
             {

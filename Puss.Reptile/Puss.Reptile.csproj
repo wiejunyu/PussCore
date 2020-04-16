@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helper\IReptileHelper.cs" />
     <Compile Include="Helper\ReptileHelper.cs" />
     <Compile Include="Models\btc112.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
