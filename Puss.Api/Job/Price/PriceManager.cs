@@ -18,9 +18,9 @@ namespace Puss.Api.Job
         /// <summary>
         /// 获取价格
         /// </summary>
-        public static void GetPrice(IRedisService RedisService)
+        public static void GetPrice(IReptileService ReptileService, IRedisService RedisService)
         {
-            string html = new ReptileHelper().GetHtml("http://hangqing.btc112.com/getdata.php");
+            string html = ReptileService.GetHtml("http://hangqing.btc112.com/getdata.php");
             List<btc112> list = JsonConvert.DeserializeObject<List<btc112>>(html);
             list.ForEach(x =>
             {

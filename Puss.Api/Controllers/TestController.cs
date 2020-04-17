@@ -5,6 +5,7 @@ using Puss.Data.Models;
 using Puss.Email;
 using Puss.RabbitMQ;
 using Sugar.Enties;
+using System.Threading.Tasks;
 
 namespace Puss.Api.Controllers
 {
@@ -53,9 +54,9 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("PushMessage")]
         [AllowAnonymous]
-        public ReturnResult PushMessage()
+        public async Task<ReturnResult> PushMessage()
         {
-            RabbitMQPushService.PushMessage(QueueKey.SendRegisterMessageIsEmail, "1013422066@qq.com");
+            await RabbitMQPushService.PushMessage(QueueKey.SendRegisterMessageIsEmail, "1013422066@qq.com");
             return new ReturnResult(ReturnResultStatus.Succeed);
         }
 
@@ -65,13 +66,17 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("PullMessage")]
         [AllowAnonymous]
-        public ReturnResult PullMessage()
+        public async Task<ReturnResult> PullMessage()
         {
-            RabbitMQPushService.PullMessage(QueueKey.SendRegisterMessageIsEmail, (Message) => {
-                Cms_Sysconfig sys = new Cms_SysconfigManager().GetSingle(x => x.Id == 1);
-                return EmailService.MailSending(Message, "欢迎你注册宇宙物流", "欢迎你注册宇宙物流", sys.Mail_From, sys.Mail_Code, sys.Mail_Host);
+            return await Task.Run(() =>
+            {
+                RabbitMQPushService.PullMessage(QueueKey.SendRegisterMessageIsEmail, (Message) =>
+                {
+                    Cms_Sysconfig sys = new Cms_SysconfigManager().GetById(1);
+                    return EmailService.MailSending(Message, "欢迎你注册宇宙物流", "欢迎你注册宇宙物流", sys.Mail_From, sys.Mail_Code, sys.Mail_Host);
+                });
+                return new ReturnResult(ReturnResultStatus.Succeed);
             });
-            return new ReturnResult(ReturnResultStatus.Succeed);
         }
 
         /// <summary>
@@ -80,9 +85,9 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("GetEmail")]
         [AllowAnonymous]
-        public ReturnResult GetEmail()
+        public async Task<ReturnResult> GetEmail()
         {
-            var User = new UserManager().GetSingle(x => x.ID == 29);
+            var User = await new UserManager().GetByIdAsync(29);
             return new ReturnResult(ReturnResultStatus.Succeed, User.Email);
         }
     }

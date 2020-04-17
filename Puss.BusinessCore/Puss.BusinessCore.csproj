@@ -14,4 +14,7 @@
       <Project>{925e192a-95e5-405b-8d93-a74a6b238ea2}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="BaseCore\" />
+  </ItemGroup>
 </Project>

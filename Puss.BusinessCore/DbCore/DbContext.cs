@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Newtonsoft.Json;
 using Puss.Data.Config;
+using System.Threading.Tasks;
 
 public class DbContext
 {
@@ -119,6 +120,15 @@ public class DbContext<T> where T : class, new()
     }
 
     /// <summary>
+    /// 异步获取单个
+    /// </summary>
+    /// <returns></returns>
+    public virtual async Task<T> GetSingleAsync(Expression<Func<T, bool>> whereExpression)
+    {
+        return await Db.Queryable<T>().Where(whereExpression).SingleAsync();
+    }
+
+    /// <summary>
     /// 获取单个，为空自动自动初始化
     /// </summary>
     /// <returns></returns>
@@ -129,10 +139,27 @@ public class DbContext<T> where T : class, new()
         {
             temp = CurrentDb.GetSingle(whereExpression);
         }
-        catch 
+        catch
         {
         }
-        return temp == null ? new T() : temp;
+        return temp ?? new T();
+    }
+
+    /// <summary>
+    /// 异步获取单个，为空自动自动初始化
+    /// </summary>
+    /// <returns></returns>
+    public virtual async Task<T> GetSingleDefaultAsync(Expression<Func<T, bool>> whereExpression)
+    {
+        T temp = null;
+        try
+        {
+            temp = await Db.Queryable<T>().Where(whereExpression).SingleAsync();
+        }
+        catch
+        {
+        }
+        return temp ?? new T();
     }
 
     /// <summary>
@@ -153,6 +180,14 @@ public class DbContext<T> where T : class, new()
         return CurrentDb.GetList(whereExpression);
     }
 
+    /// <summary>
+    /// 异步根据表达式查询
+    /// </summary>
+    /// <returns></returns>
+    public virtual async Task<List<T>> GetListAsync(Expression<Func<T, bool>> whereExpression)
+    {
+        return await Db.Queryable<T>().Where(whereExpression).ToListAsync();
+    }
 
     /// <summary>
     /// 根据表达式查询分页
@@ -161,6 +196,19 @@ public class DbContext<T> where T : class, new()
     public virtual List<T> GetPageList(Expression<Func<T, bool>> whereExpression, PageModel pageModel)
     {
         return CurrentDb.GetPageList(whereExpression, pageModel);
+    }
+
+    /// <summary>
+    /// 异步根据表达式查询分页
+    /// </summary>
+    /// <returns></returns>
+    public virtual async Task<List<T>> GetPageListAsync(Expression<Func<T, bool>> whereExpression, PageModel pageModel)
+    {
+        int totalNumber = 0;
+        RefAsync<int> re = new RefAsync<int>(totalNumber);
+        List<T> result = await Db.Queryable<T>().Where(whereExpression).ToPageListAsync(pageModel.PageIndex, pageModel.PageSize, re);
+        pageModel.PageCount = re.Value;
+        return result;
     }
 
     /// <summary>
@@ -173,7 +221,25 @@ public class DbContext<T> where T : class, new()
     /// <returns></returns>
     public virtual List<T> GetPageList(Expression<Func<T, bool>> whereExpression, PageModel pageModel, Expression<Func<T, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc)
     {
-        return CurrentDb.GetPageList(whereExpression, pageModel,orderByExpression,orderByType);
+        return CurrentDb.GetPageList(whereExpression, pageModel, orderByExpression, orderByType);
+    }
+
+    /// <summary>
+    /// 异步根据表达式查询分页并排序
+    /// </summary>
+    /// <param name="whereExpression">it</param>
+    /// <param name="pageModel"></param>
+    /// <param name="orderByExpression">it=>it.id或者it=>new{it.id,it.name}</param>
+    /// <param name="orderByType">OrderByType.Desc</param>
+    /// <returns></returns>
+    public virtual async Task<List<T>> GetPageListAsync(Expression<Func<T, bool>> whereExpression, PageModel pageModel, Expression<Func<T, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc)
+    {
+        int totalNumber = 0;
+        RefAsync<int> re = new RefAsync<int>(totalNumber);
+        List<T> result = await Db.Queryable<T>().OrderByIF(orderByExpression != null, orderByExpression, orderByType).Where(whereExpression)
+            .ToPageListAsync(pageModel.PageIndex, pageModel.PageSize, re);
+        pageModel.PageCount = re.Value;
+        return result;
     }
 
 
@@ -184,6 +250,15 @@ public class DbContext<T> where T : class, new()
     public virtual T GetById(dynamic id)
     {
         return CurrentDb.GetById(id);
+    }
+
+    /// <summary>
+    /// 异步根据主键查询
+    /// </summary>
+    /// <returns></returns>
+    public virtual async Task<T> GetByIdAsync(dynamic id)
+    {
+        return await Db.Queryable<T>().InSingleAsync(id);
     }
 
     /// <summary>
@@ -214,7 +289,7 @@ public class DbContext<T> where T : class, new()
     /// <returns></returns>
     public virtual bool Delete(dynamic[] ids)
     {
-        return CurrentDb.AsDeleteable().In(ids).ExecuteCommand()>0;
+        return CurrentDb.AsDeleteable().In(ids).ExecuteCommand() > 0;
     }
 
     /// <summary>

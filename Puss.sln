@@ -31,7 +31,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.QrCode", "Puss.QrCode\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.Reptile", "Puss.Reptile\Puss.Reptile.csproj", "{CEB9D19E-5F04-4400-98E0-CF351DF3C350}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.Log", "Puss.Log\Puss.Log.csproj", "{DA744C07-0E72-4C9D-AED7-4EB59549F98C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.Log", "Puss.Log\Puss.Log.csproj", "{DA744C07-0E72-4C9D-AED7-4EB59549F98C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -26,8 +26,8 @@ namespace Puss.Api.Aop
         [Argument(Source.Name)] string name,
         [Argument(Source.Arguments)] object[] arguments)
         {
-#if DEBUG
-#else
+//#if DEBUG
+//#else
             Type t = arguments[0].GetType();
             List<PropertyInfo> lPropertyInfo = t.GetProperties().ToList();
             //取得Code
@@ -61,7 +61,7 @@ namespace Puss.Api.Aop
                 if (code.code.ToLower() != Code.ToLower()) throw new AppException("验证码错误或已过期");
             }
             else throw new AppException("验证码错误或已过期");
-#endif
+//#endif
         }
     }
 }

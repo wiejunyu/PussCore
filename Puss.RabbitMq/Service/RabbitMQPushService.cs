@@ -2,6 +2,7 @@
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Puss.RabbitMQ
 {
@@ -31,18 +32,21 @@ namespace Puss.RabbitMQ
         /// </summary>
         /// <param name="sQueueName">队列名称</param>
         /// <param name="sContent">内容</param>
-        public void PushMessage(string sQueueName, string sMessage)
+        public async Task PushMessage(string sQueueName, string sMessage)
         {
-            //3. 创建信道
-            using (var channel = GetConection().CreateModel())
+            await Task.Run(() =>
             {
-                //4. 申明队列(指定durable:true,告知rabbitmq对消息进行持久化)
-                channel.QueueDeclare(queue: sQueueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
-                //5. 构建byte消息数据包
-                var body = Encoding.UTF8.GetBytes(sMessage);
-                //6. 发送数据包
-                channel.BasicPublish(exchange: "", routingKey: sQueueName, basicProperties: null, body: body);
-            }
+                //3. 创建信道
+                using (var channel = GetConection().CreateModel())
+                {
+                    //4. 申明队列(指定durable:true,告知rabbitmq对消息进行持久化)
+                    channel.QueueDeclare(queue: sQueueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
+                    //5. 构建byte消息数据包
+                    var body = Encoding.UTF8.GetBytes(sMessage);
+                    //6. 发送数据包
+                    channel.BasicPublish(exchange: "", routingKey: sQueueName, basicProperties: null, body: body);
+                }
+            });
         }
 
         /// <summary>

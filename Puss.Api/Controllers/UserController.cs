@@ -8,6 +8,7 @@ using Puss.Data.Models;
 using Puss.Email;
 using Puss.RabbitMQ;
 using Puss.Redis;
+using System.Threading.Tasks;
 
 namespace Puss.Api.Controllers
 {
@@ -62,9 +63,9 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("ShowValidateCodeBase64")]
         [AllowAnonymous]
-        public ReturnResult ShowValidateCodeBase64(string CodeKey)
+        public async Task<ReturnResult> ShowValidateCodeBase64(string CodeKey)
         {
-            return new ReturnResult(ReturnResultStatus.Succeed,LoginManager.ShowValidateCodeBase64(CodeKey, RedisService));
+            return new ReturnResult(ReturnResultStatus.Succeed,await LoginManager.ShowValidateCodeBase64(CodeKey, RedisService));
         }
 
         /// <summary>
@@ -75,9 +76,9 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("EmailGetCode")]
         [AllowAnonymous]
-        public ReturnResult EmailGetCode(string CodeKey,string Email)
+        public async Task<ReturnResult> EmailGetCode(string CodeKey,string Email)
         {
-            return new ReturnResult(ReturnResultStatus.Succeed ,LoginManager.EmailGetCode(CodeKey, Email, EmailService,RedisService));
+            return new ReturnResult(ReturnResultStatus.Succeed ,await LoginManager.EmailGetCode(CodeKey, Email, EmailService,RedisService));
         }
         #endregion
 
@@ -87,13 +88,17 @@ namespace Puss.Api.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("UserRegister")]
-        [CodeVerification]
         [UserVerification]
+        [CodeVerification]
         [AllowAnonymous]
-        public ReturnResult UserRegister([FromBody]RegisterRequest request)
+        public async Task<ReturnResult> UserRegister([FromBody]RegisterRequest request)
         {
-            return ReturnResult.ResultCalculation(() => {
-                return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString(), RabbitMQPushService);
+            return await Task.Run(() =>
+            {
+                return ReturnResult.ResultCalculation(() =>
+                {
+                    return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString(), RabbitMQPushService).Result;
+                });
             });
         }
 
@@ -106,9 +111,9 @@ namespace Puss.Api.Controllers
         [CodeVerification]
         [UserVerification]
         [AllowAnonymous]
-        public ReturnResult Login([FromBody]LoginRequest request)
+        public async Task<ReturnResult> Login([FromBody]LoginRequest request)
         {
-            return new ReturnResult(ReturnResultStatus.Succeed, LoginManager.Login(request));
+            return new ReturnResult(ReturnResultStatus.Succeed, await LoginManager.Login(request));
         }
     }
 }

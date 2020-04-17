@@ -9,6 +9,7 @@ using Puss.Redis;
 using Sugar.Enties;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Puss.Api.Manager
 {
@@ -22,10 +23,10 @@ namespace Puss.Api.Manager
         /// </summary>
         /// <param name="request">登陆模型</param>
         /// <returns></returns>
-        public static string Login(LoginRequest request)
+        public static async Task<string> Login(LoginRequest request)
         {
             request.PassWord = MD5.Md5(request.PassWord);
-            User account = new UserManager().GetSingle(a => (a.UserName == request.UserName.Trim() || a.Phone == request.UserName.Trim() || a.Email == request.UserName.Trim()) && a.PassWord == request.PassWord);
+            User account = await new UserManager().GetSingleAsync(a => (a.UserName == request.UserName.Trim() || a.Phone == request.UserName.Trim() || a.Email == request.UserName.Trim()) && a.PassWord == request.PassWord);
             if (account == null) throw new AppException("账号密码错误");
             return Token.UserGetToken(account);
         }
@@ -56,19 +57,22 @@ namespace Puss.Api.Manager
         /// <param name="CodeKey">验证码缓存标记</param>
         /// <param name="RedisService">Redis接口</param>
         /// <returns></returns>
-        public static string ShowValidateCodeBase64(string CodeKey, IRedisService RedisService)
+        public static async Task<string> ShowValidateCodeBase64(string CodeKey, IRedisService RedisService)
         {
-            if (string.IsNullOrWhiteSpace(CodeKey)) throw new AppException("验证码缓存标记错误");
+            return await Task.Run(() =>
+            {
+                if (string.IsNullOrWhiteSpace(CodeKey)) throw new AppException("验证码缓存标记错误");
 
-            ValidateCode ValidateCode = new ValidateCode();
-            //生成验证码，传几就是几位验证码
-            string code = ValidateCode.CreateValidateCode(4);
-            //保存验证码
-            RedisService.Set(CommentConfig.ImageCacheCode + CodeKey, code, 10);
-            //把验证码转成字节
-            byte[] buffer = ValidateCode.CreateValidateGraphic(code);
-            //把验证码转成Base64
-            return $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
+                ValidateCode ValidateCode = new ValidateCode();
+                //生成验证码，传几就是几位验证码
+                string code = ValidateCode.CreateValidateCode(4);
+                //保存验证码
+                RedisService.Set(CommentConfig.ImageCacheCode + CodeKey, code, 10);
+                //把验证码转成字节
+                byte[] buffer = ValidateCode.CreateValidateGraphic(code);
+                //把验证码转成Base64
+                return $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
+            });
         }
 
 
@@ -80,20 +84,22 @@ namespace Puss.Api.Manager
         /// <param name="EmailService">邮箱类接口</param>
         /// <param name="RedisService">Redis类接口</param>
         /// <returns></returns>
-        public static string EmailGetCode(string CodeKey, string Email, IEmailService EmailService, IRedisService RedisService)
+        public static async Task<string> EmailGetCode(string CodeKey, string Email, IEmailService EmailService, IRedisService RedisService)
         {
             new DbContext().Db.Ado.IsDisableMasterSlaveSeparation = true;
-            LoginManager.DelCode();
 
             DateTime dt = DateTime.Now.Date;
 
-            Code cModel = new CodeManager().GetSingle(x => x.email == Email && x.time > dt && x.type == (int)CodeType.Email);
+            //批量删除今天之前的验证码
+            var t5 = new DbContext().Db.Deleteable<Code>().Where(x => x.time < dt).ExecuteCommand();
+
+            Code cModel = await new CodeManager().GetSingleAsync(x => x.email == Email && x.time > dt && x.type == (int)CodeType.Email);
             //判断验证码是否超出次数
             if (cModel != null ? cModel.count >= 6 : false) throw new AppException("发送超出次数");
             //获得验证码
             string code = new ValidateCode().CreateValidateCode(6);//生成验证码，传几就是几位验证码
             //发送邮件
-            Cms_Sysconfig sys = new Cms_SysconfigManager().GetSingle(x => x.Id == 1);
+            Cms_Sysconfig sys = await new Cms_SysconfigManager().GetSingleAsync(x => x.Id == 1);
             if (!EmailService.MailSending(Email, "宇宙物流验证码", $"您在宇宙物流的验证码是:{code},10分钟内有效", sys.Mail_From, sys.Mail_Code, sys.Mail_Host)) throw new AppException("发送失败");
             #region 保存验证码统计
             if (cModel == null)
@@ -120,29 +126,13 @@ namespace Puss.Api.Manager
         }
 
         /// <summary>
-        /// 删除冗余验证码
-        /// </summary>
-        public static void DelCode()
-        {
-            DateTime dt = DateTime.Now.Date;
-            if (new CodeManager().IsAny(x => x.time < dt))
-            {
-                List<Code> list = new CodeManager().GetList(x => x.time < dt);
-                new DbContext().Db.Ado.UseTran(() =>
-                {
-                    list.ForEach(x => new CodeManager().Delete(x));
-                });
-            }
-        }
-
-        /// <summary>
         /// 用户注册
         /// </summary>
         /// <param name="request">注册模型</param>
         /// <param name="ip">IP</param>
         /// <param name="RabbitMQPush">MQ接口</param>
         /// <returns></returns>
-        public static bool UserRegister(RegisterRequest request, string ip, IRabbitMQPushService RabbitMQPush)
+        public static async Task<bool> UserRegister(RegisterRequest request, string ip, IRabbitMQPushService RabbitMQPush)
         {
             #region 验证
             if (new UserManager().IsAny(x => x.UserName == request.UserName)) throw new AppException("该用户名已经注册过");
@@ -168,7 +158,7 @@ namespace Puss.Api.Manager
                 new UserManager().Insert(user);
                 new UserDetailsManager().Insert(new UserDetails() { UID = user.ID });
             });
-            RabbitMQPush.PushMessage(QueueKey.SendRegisterMessageIsEmail, request.Email);
+            await RabbitMQPush.PushMessage(QueueKey.SendRegisterMessageIsEmail, request.Email);
             return true;
         }
     }

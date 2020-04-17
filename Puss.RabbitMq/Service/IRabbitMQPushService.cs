@@ -1,4 +1,5 @@
-﻿using static Puss.RabbitMQ.RabbitMQPushService;
+﻿using System.Threading.Tasks;
+using static Puss.RabbitMQ.RabbitMQPushService;
 
 namespace Puss.RabbitMQ
 {
@@ -9,7 +10,7 @@ namespace Puss.RabbitMQ
         /// </summary>
         /// <param name="sQueueName">队列名称</param>
         /// <param name="sContent">内容</param>
-        void PushMessage(string sQueueName, string sContent);
+        Task PushMessage(string sQueueName, string sContent);
 
         /// <summary>
         /// 收到消息并执行委托
