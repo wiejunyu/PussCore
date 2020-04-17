@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.QrCode", "Puss.QrCode\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.Reptile", "Puss.Reptile\Puss.Reptile.csproj", "{CEB9D19E-5F04-4400-98E0-CF351DF3C350}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.Log", "Puss.Log\Puss.Log.csproj", "{DA744C07-0E72-4C9D-AED7-4EB59549F98C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{CEB9D19E-5F04-4400-98E0-CF351DF3C350}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CEB9D19E-5F04-4400-98E0-CF351DF3C350}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CEB9D19E-5F04-4400-98E0-CF351DF3C350}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA744C07-0E72-4C9D-AED7-4EB59549F98C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA744C07-0E72-4C9D-AED7-4EB59549F98C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA744C07-0E72-4C9D-AED7-4EB59549F98C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA744C07-0E72-4C9D-AED7-4EB59549F98C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -97,6 +103,7 @@ Global
 		{2CD928A2-33AA-44E5-B70E-28B2AEED3173} = {C7ECBA8F-ABBA-44B1-8225-77264F53B697}
 		{E2AE2505-A1C2-4100-BE7A-09121A655362} = {B60CB1B8-F0C4-4ECC-9BF4-E69960A5689C}
 		{CEB9D19E-5F04-4400-98E0-CF351DF3C350} = {B60CB1B8-F0C4-4ECC-9BF4-E69960A5689C}
+		{DA744C07-0E72-4C9D-AED7-4EB59549F98C} = {B60CB1B8-F0C4-4ECC-9BF4-E69960A5689C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59F6E3B6-A66D-4C21-9329-CF920749F1C2}
