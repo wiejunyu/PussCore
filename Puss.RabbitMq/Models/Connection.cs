@@ -42,42 +42,4 @@ namespace Puss.RabbitMQ
             }
         }
     }
-
-    /// <summary>
-    /// 操作Key
-    /// </summary>
-    public class RabbitMQKey
-    {
-        /// <summary>
-        /// 发送注册成功邮件
-        /// </summary>
-        public static string SendRegisterMessageIsEmail
-        {
-            get { return "SendRegisterMessageIsEmail"; }
-        }
-
-        /// <summary>
-        /// 报错日志收集
-        /// </summary>
-        public static string LogError
-        {
-            get { return "LogError"; }
-        }
-
-        /// <summary>
-        /// 接口耗时日志收集
-        /// </summary>
-        public static string LogTime
-        {
-            get { return "LogTime"; }
-        }
-
-        /// <summary>
-        /// 定时计划日志收集
-        /// </summary>
-        public static string LogJob
-        {
-            get { return "LogJob"; }
-        }
-    }
 }

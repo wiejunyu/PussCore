@@ -18,13 +18,15 @@ namespace Puss.Api.Controllers
     public class ExpressDeliveryController : ApiBaseController
     {
         private readonly IReptileHelper ReptileHelper;
+        private readonly IRedisService RedisService;
 
         /// <summary>
         /// 快递查询接口
         /// </summary>
-        public ExpressDeliveryController(IReptileHelper ReptileHelper) 
+        public ExpressDeliveryController(IReptileHelper ReptileHelper, IRedisService RedisService) 
         {
             this.ReptileHelper = ReptileHelper;
+            this.RedisService = RedisService;
         }
 
         /// <summary>
@@ -49,7 +51,7 @@ namespace Puss.Api.Controllers
         [HttpPost("GetPrice")]
         public ReturnResult GetPrice(string symbol)
         {
-            return new ReturnResult(ReturnResultStatus.Succeed, RedisHelper.Get<Price>(CommentConfig.Price + symbol, () => new Price()).price);
+            return new ReturnResult(ReturnResultStatus.Succeed, RedisService.Get<Price>(CommentConfig.Price + symbol, () => new Price()).price);
         }
     }
 }

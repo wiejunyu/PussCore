@@ -7,6 +7,7 @@ using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Email;
 using Puss.RabbitMQ;
+using Puss.Redis;
 
 namespace Puss.Api.Controllers
 {
@@ -16,24 +17,28 @@ namespace Puss.Api.Controllers
     public class UserController : ApiBaseController
     {
         private readonly IHttpContextAccessor _accessor;
-        private readonly IEmailHelper EmailHelper;
-        private readonly IRabbitMQPush RabbitMQPush;
+        private readonly IEmailService EmailService;
+        private readonly IRabbitMQPushService RabbitMQPushService;
+        private readonly IRedisService RedisService;
 
         /// <summary>
         /// 用户
         /// </summary>
         /// <param name="accessor"></param>
-        /// <param name="EmailHelper"></param>
-        /// <param name="RabbitMQPush"></param>
+        /// <param name="EmailService"></param>
+        /// <param name="RabbitMQPushService"></param>
+        /// <param name="RedisService"></param>
         public UserController(
-            IHttpContextAccessor accessor, 
-            IEmailHelper EmailHelper,
-            IRabbitMQPush RabbitMQPush
+            IHttpContextAccessor accessor,
+            IEmailService EmailService,
+            IRabbitMQPushService RabbitMQPushService,
+            IRedisService RedisService
             )
         {
             _accessor = accessor;
-            this.EmailHelper = EmailHelper;
-            this.RabbitMQPush = RabbitMQPush;
+            this.EmailService = EmailService;
+            this.RabbitMQPushService = RabbitMQPushService;
+            this.RedisService = RedisService;
         }
 
         #region 验证码
@@ -47,7 +52,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public FileResult ShowValidateCode(string CodeKey)
         {
-            return File(LoginManager.ShowValidateCode(CodeKey), @"image/jpeg");
+            return File(LoginManager.ShowValidateCode(CodeKey, RedisService), @"image/jpeg");
         }
 
         /// <summary>
@@ -59,7 +64,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public ReturnResult ShowValidateCodeBase64(string CodeKey)
         {
-            return new ReturnResult(ReturnResultStatus.Succeed,LoginManager.ShowValidateCodeBase64(CodeKey));
+            return new ReturnResult(ReturnResultStatus.Succeed,LoginManager.ShowValidateCodeBase64(CodeKey, RedisService));
         }
 
         /// <summary>
@@ -72,7 +77,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public ReturnResult EmailGetCode(string CodeKey,string Email)
         {
-            return new ReturnResult(ReturnResultStatus.Succeed ,LoginManager.EmailGetCode(CodeKey, Email, EmailHelper));
+            return new ReturnResult(ReturnResultStatus.Succeed ,LoginManager.EmailGetCode(CodeKey, Email, EmailService,RedisService));
         }
         #endregion
 
@@ -88,7 +93,7 @@ namespace Puss.Api.Controllers
         public ReturnResult UserRegister([FromBody]RegisterRequest request)
         {
             return ReturnResult.ResultCalculation(() => {
-                return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString(), RabbitMQPush);
+                return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString(), RabbitMQPushService);
             });
         }
 

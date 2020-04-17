@@ -11,11 +11,11 @@ using Newtonsoft.Json;
 
 namespace Puss.Redis
 {
-    public static class RedisHelper
+    public class RedisService : IRedisService
     {
         private static string Constr = "";
 
-        private static object _locker = new Object();
+        private static readonly object _locker = new Object();
         private static ConnectionMultiplexer _instance = null;
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Puss.Redis
             }
         }
 
-        static RedisHelper()
+        static RedisService()
         {
         }
 
@@ -63,7 +63,7 @@ namespace Puss.Redis
         /// 
         /// </summary>
         /// <returns></returns>
-        public static IDatabase GetDatabase()
+        public IDatabase GetDatabase()
         {
             return Instance.GetDatabase();
         }
@@ -85,7 +85,7 @@ namespace Puss.Redis
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static T Get<T>(string key)
+        public T Get<T>(string key)
         {
             key = MergeKey(key);
             return JsonConvert.DeserializeObject<T>(GetDatabase().StringGet(key));
@@ -97,7 +97,7 @@ namespace Puss.Redis
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static T Get<T>(string key,Func<T> func)
+        public T Get<T>(string key,Func<T> func)
         {
             key = MergeKey(key);
             if (Exists(key))
@@ -111,7 +111,7 @@ namespace Puss.Redis
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static object Get(string key)
+        public object Get(string key)
         {
             key = MergeKey(key);
             return JsonConvert.DeserializeObject<object>(GetDatabase().StringGet(key));
@@ -123,7 +123,7 @@ namespace Puss.Redis
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="expireMinutes"></param>
-        public static void Set(string key, object value, int expireMinutes = 0)
+        public void Set(string key, object value, int expireMinutes = 0)
         {
             key = MergeKey(key);
             if (expireMinutes > 0)
@@ -144,7 +144,7 @@ namespace Puss.Redis
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="expireMinutes"></param>
-        public static void Set(string key, string value, int expireMinutes = 0)
+        public void Set(string key, string value, int expireMinutes = 0)
         {
             key = MergeKey(key);
             if (expireMinutes > 0)
@@ -164,7 +164,7 @@ namespace Puss.Redis
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static bool Exists(string key)
+        public bool Exists(string key)
         {
             key = MergeKey(key);
             return GetDatabase().KeyExists(key); //可直接调用
@@ -175,7 +175,7 @@ namespace Puss.Redis
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static bool Remove(string key)
+        public bool Remove(string key)
         {
             key = MergeKey(key);
             return GetDatabase().KeyDelete(key);
@@ -186,7 +186,7 @@ namespace Puss.Redis
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public static async Task SetAsync(string key, object value)
+        public async Task SetAsync(string key, object value)
         {
             key = MergeKey(key);
             await GetDatabase().StringSetAsync(key, JsonConvert.SerializeObject(value));
@@ -197,7 +197,7 @@ namespace Puss.Redis
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static async Task<object> GetAsync(string key)
+        public async Task<object> GetAsync(string key)
         {
             key = MergeKey(key);
             object value = await GetDatabase().StringGetAsync(key);
@@ -209,7 +209,7 @@ namespace Puss.Redis
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static long Increment(string key)
+        public long Increment(string key)
         {
             key = MergeKey(key);
             //三种命令模式
@@ -226,7 +226,7 @@ namespace Puss.Redis
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static long Decrement(string key, string value)
+        public long Decrement(string key, string value)
         {
             key = MergeKey(key);
             return GetDatabase().HashDecrement(key, value, flags: CommandFlags.FireAndForget);
@@ -326,7 +326,7 @@ namespace Puss.Redis
         /// <param name="channel"></param>
         /// <param name="message"></param>
         /// <returns></returns>
-        public static long Publish(string channel, string message)
+        public long Publish(string channel, string message)
         {
             ISubscriber sub = Instance.GetSubscriber();
             //return sub.Publish("messages", "hello");
@@ -338,7 +338,7 @@ namespace Puss.Redis
         /// </summary>
         /// <param name="channelFrom"></param>
         /// <returns></returns>
-        public static void Subscribe(string channelFrom)
+        public void Subscribe(string channelFrom)
         {
             ISubscriber sub = Instance.GetSubscriber();
             sub.Subscribe(channelFrom, (channel, message) =>
@@ -358,7 +358,7 @@ namespace Puss.Redis
         /// 如果报错在连接字符串后加 ,allowAdmin=true;
         /// </summary>
         /// <returns></returns>
-        public static IServer GetServer(string host, int port)
+        public IServer GetServer(string host, int port)
         {
             IServer server = Instance.GetServer(host, port);
             return server;
@@ -368,7 +368,7 @@ namespace Puss.Redis
         /// 获取全部终结点
         /// </summary>
         /// <returns></returns>
-        public static EndPoint[] GetEndPoints()
+        public EndPoint[] GetEndPoints()
         {
             EndPoint[] endpoints = Instance.GetEndPoints();
             return endpoints;

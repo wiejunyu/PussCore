@@ -13,18 +13,18 @@ namespace Puss.Api.Controllers
     /// </summary>
     public class TestController : ApiBaseController
     {
-        private readonly IEmailHelper EmailHelper;
-        private readonly IRabbitMQPush RabbitMQPush;
+        private readonly IEmailService EmailService;
+        private readonly IRabbitMQPushService RabbitMQPushService;
 
         /// <summary>
         /// 测试
         /// </summary>
-        /// <param name="EmailHelper"></param>
-        /// <param name="RabbitMQPush"></param>
-        public TestController(IEmailHelper EmailHelper,IRabbitMQPush RabbitMQPush) 
+        /// <param name="EmailService"></param>
+        /// <param name="RabbitMQPushService"></param>
+        public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService) 
         {
-            this.EmailHelper = EmailHelper;
-            this.RabbitMQPush = RabbitMQPush;
+            this.EmailService = EmailService;
+            this.RabbitMQPushService = RabbitMQPushService;
         }
         /// <summary>
         /// 登录测试
@@ -55,7 +55,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public ReturnResult PushMessage()
         {
-            RabbitMQPush.PushMessage(RabbitMQKey.SendRegisterMessageIsEmail, "1013422066@qq.com");
+            RabbitMQPushService.PushMessage(QueueKey.SendRegisterMessageIsEmail, "1013422066@qq.com");
             return new ReturnResult(ReturnResultStatus.Succeed);
         }
 
@@ -67,9 +67,9 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public ReturnResult PullMessage()
         {
-            RabbitMQPush.PullMessage(RabbitMQKey.SendRegisterMessageIsEmail, (Message) => {
+            RabbitMQPushService.PullMessage(QueueKey.SendRegisterMessageIsEmail, (Message) => {
                 Cms_Sysconfig sys = new Cms_SysconfigManager().GetSingle(x => x.Id == 1);
-                return EmailHelper.MailSending(Message, "欢迎你注册宇宙物流", "欢迎你注册宇宙物流", sys.Mail_From, sys.Mail_Code, sys.Mail_Host);
+                return EmailService.MailSending(Message, "欢迎你注册宇宙物流", "欢迎你注册宇宙物流", sys.Mail_From, sys.Mail_Code, sys.Mail_Host);
             });
             return new ReturnResult(ReturnResultStatus.Succeed);
         }

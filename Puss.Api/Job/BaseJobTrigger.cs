@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Puss.Data.Models;
+using Puss.Log;
 using Puss.RabbitMQ;
 using System;
 using System.Threading;
@@ -17,7 +19,8 @@ namespace Puss.Api.Job
         private readonly TimeSpan _dueTime;
         private readonly TimeSpan _periodTime;
         private readonly IJobExecutor _jobExcutor;
-        private readonly IRabbitMQPush RabbitMQPush;
+        private readonly IRabbitMQPushService RabbitMQPushService;
+        private readonly ILogService LogService;
 
         /// <summary>
         /// 构造函数
@@ -25,16 +28,19 @@ namespace Puss.Api.Job
         /// <param name="dueTime">到期执行时间</param>
         /// <param name="periodTime">间隔时间</param>
         /// <param name="jobExcutor">任务执行者</param>
-        /// <param name="RabbitMQPush">MQ接口</param>
+        /// <param name="RabbitMQPushService">MQ类接口</param>
+        /// <param name="LogService">日志类接口</param>
         protected BaseJobTrigger(TimeSpan dueTime,
              TimeSpan periodTime,
              IJobExecutor jobExcutor,
-             IRabbitMQPush RabbitMQPush)
+             IRabbitMQPushService RabbitMQPushService,
+             ILogService LogService)
         {
             _dueTime = dueTime;
             _periodTime = periodTime;
             _jobExcutor = jobExcutor;
-            this.RabbitMQPush = RabbitMQPush;
+            this.RabbitMQPushService = RabbitMQPushService;
+            this.LogService = LogService;
         }
 
         #region  计时器相关方法
@@ -63,18 +69,6 @@ namespace Puss.Api.Job
             {
                 Error($"执行任务({nameof(GetType)})",e);
             }
-        }
-
-        private void Error(string Name, Exception e)
-        {
-            #region 日志记录
-            string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            string content = $"类型：{Name}\r\n";
-            content += $"时间：{dt}\r\n";
-            content += $"来源：{e.TargetSite.ReflectedType}.{e.TargetSite.Name}\r\n";
-            content += $"内容：{e.Message}\r\n";
-            RabbitMQPush.PushMessage(RabbitMQKey.LogJob, content);
-            #endregion
         }
         #endregion
 
@@ -119,6 +113,14 @@ namespace Puss.Api.Job
         public void Dispose()
         {
             _timer?.Dispose();
+        }
+
+        private void Error(string Name, Exception ex)
+        {
+            #region 日志记录
+            //日志收集
+            LogService.LogCollectPush(QueueKey.LogJob, ex, Name, RabbitMQPushService);
+            #endregion
         }
     }
 }

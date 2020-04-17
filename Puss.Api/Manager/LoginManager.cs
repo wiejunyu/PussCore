@@ -34,8 +34,9 @@ namespace Puss.Api.Manager
         /// 生成验证码图片并返回图片字节
         /// </summary>
         /// <param name="CodeKey">验证码缓存标记</param>
+        /// <param name="RedisService">Redis接口</param>
         /// <returns></returns>
-        public static byte[] ShowValidateCode(string CodeKey)
+        public static byte[] ShowValidateCode(string CodeKey, IRedisService RedisService)
         {
             if (string.IsNullOrWhiteSpace(CodeKey)) throw new AppException("验证码缓存标记错误");
 
@@ -43,7 +44,7 @@ namespace Puss.Api.Manager
             //生成验证码，传几就是几位验证码
             string code = ValidateCode.CreateValidateCode(4);
             //保存验证码
-            RedisHelper.Set(CommentConfig.ImageCacheCode + CodeKey, code, 10);
+            RedisService.Set(CommentConfig.ImageCacheCode + CodeKey, code, 10);
             //把验证码转成字节
             byte[] buffer = ValidateCode.CreateValidateGraphic(code);
             return buffer;
@@ -53,8 +54,9 @@ namespace Puss.Api.Manager
         /// 生成验证码图片并返回图片Base64
         /// </summary>
         /// <param name="CodeKey">验证码缓存标记</param>
+        /// <param name="RedisService">Redis接口</param>
         /// <returns></returns>
-        public static string ShowValidateCodeBase64(string CodeKey)
+        public static string ShowValidateCodeBase64(string CodeKey, IRedisService RedisService)
         {
             if (string.IsNullOrWhiteSpace(CodeKey)) throw new AppException("验证码缓存标记错误");
 
@@ -62,7 +64,7 @@ namespace Puss.Api.Manager
             //生成验证码，传几就是几位验证码
             string code = ValidateCode.CreateValidateCode(4);
             //保存验证码
-            RedisHelper.Set(CommentConfig.ImageCacheCode + CodeKey, code, 10);
+            RedisService.Set(CommentConfig.ImageCacheCode + CodeKey, code, 10);
             //把验证码转成字节
             byte[] buffer = ValidateCode.CreateValidateGraphic(code);
             //把验证码转成Base64
@@ -73,11 +75,12 @@ namespace Puss.Api.Manager
         /// <summary>
         /// EmailGetCode
         /// </summary>
-        /// <param name="CodeKey"></param>
-        /// <param name="Email"></param>
-        /// <param name="EmailHelper"></param>
+        /// <param name="CodeKey">验证码</param>
+        /// <param name="Email">邮箱</param>
+        /// <param name="EmailService">邮箱类接口</param>
+        /// <param name="RedisService">Redis类接口</param>
         /// <returns></returns>
-        public static string EmailGetCode(string CodeKey, string Email, IEmailHelper EmailHelper)
+        public static string EmailGetCode(string CodeKey, string Email, IEmailService EmailService, IRedisService RedisService)
         {
             new DbContext().Db.Ado.IsDisableMasterSlaveSeparation = true;
             LoginManager.DelCode();
@@ -91,7 +94,7 @@ namespace Puss.Api.Manager
             string code = new ValidateCode().CreateValidateCode(6);//生成验证码，传几就是几位验证码
             //发送邮件
             Cms_Sysconfig sys = new Cms_SysconfigManager().GetSingle(x => x.Id == 1);
-            if (!EmailHelper.MailSending(Email, "宇宙物流验证码", $"您在宇宙物流的验证码是:{code},10分钟内有效", sys.Mail_From, sys.Mail_Code, sys.Mail_Host)) throw new AppException("发送失败");
+            if (!EmailService.MailSending(Email, "宇宙物流验证码", $"您在宇宙物流的验证码是:{code},10分钟内有效", sys.Mail_From, sys.Mail_Code, sys.Mail_Host)) throw new AppException("发送失败");
             #region 保存验证码统计
             if (cModel == null)
             {
@@ -111,7 +114,7 @@ namespace Puss.Api.Manager
             #endregion
             cModel.code = code;
             //保存验证码进缓存
-            RedisHelper.Set(CommentConfig.MailCacheCode + CodeKey, cModel, 10);
+            RedisService.Set(CommentConfig.MailCacheCode + CodeKey, cModel, 10);
             new DbContext().Db.Ado.IsDisableMasterSlaveSeparation = false;
             return "验证码发送成功";
         }
@@ -139,7 +142,7 @@ namespace Puss.Api.Manager
         /// <param name="ip">IP</param>
         /// <param name="RabbitMQPush">MQ接口</param>
         /// <returns></returns>
-        public static bool UserRegister(RegisterRequest request, string ip, IRabbitMQPush RabbitMQPush)
+        public static bool UserRegister(RegisterRequest request, string ip, IRabbitMQPushService RabbitMQPush)
         {
             #region 验证
             if (new UserManager().IsAny(x => x.UserName == request.UserName)) throw new AppException("该用户名已经注册过");
@@ -165,7 +168,7 @@ namespace Puss.Api.Manager
                 new UserManager().Insert(user);
                 new UserDetailsManager().Insert(new UserDetails() { UID = user.ID });
             });
-            RabbitMQPush.PushMessage(RabbitMQKey.SendRegisterMessageIsEmail, request.Email);
+            RabbitMQPush.PushMessage(QueueKey.SendRegisterMessageIsEmail, request.Email);
             return true;
         }
     }

@@ -99,6 +99,7 @@
     <Compile Include="Models\Api\LoginRequest.cs" />
     <Compile Include="Models\Api\RegisterRequest.cs" />
     <Compile Include="Models\Log\TimeLog.cs" />
+    <Compile Include="Models\Queue\QueueKey.cs" />
     <Compile Include="Models\Return\ReturnResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

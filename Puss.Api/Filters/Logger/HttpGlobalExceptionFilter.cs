@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Puss.Data.Enum;
 using Puss.Data.Models;
+using Puss.Log;
 using Puss.RabbitMQ;
-using System;
 
 namespace Puss.Api.Filters
 {
@@ -12,15 +12,18 @@ namespace Puss.Api.Filters
     /// </summary>
     public class HttpGlobalExceptionFilter : ExceptionFilterAttribute
     {
-        private readonly IRabbitMQPush RabbitMQPush;
+        private readonly ILogService LogService;
+        private readonly IRabbitMQPushService RabbitMQPushService;
 
         /// <summary>
         /// 注入
         /// </summary>
-        /// <param name="RabbitMQPush">MQ接口</param>
-        public HttpGlobalExceptionFilter(IRabbitMQPush RabbitMQPush)
+        /// <param name="LogService">日志接口</param>
+        /// <param name="RabbitMQPushService">MQ接口</param>
+        public HttpGlobalExceptionFilter(ILogService LogService, IRabbitMQPushService RabbitMQPushService)
         {
-            this.RabbitMQPush = RabbitMQPush;
+            this.LogService = LogService;
+            this.RabbitMQPushService = RabbitMQPushService;
         }
 
         /// <summary>
@@ -51,15 +54,8 @@ namespace Puss.Api.Filters
                     context.ExceptionHandled = true;
                 }
 
-                #region 日志记录
-                string dt = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                var ex = context.Exception;
-                string content = "类型：错误代码\r\n";
-                content += "时间：" + dt + "\r\n";
-                content += "来源：" + ex.TargetSite.ReflectedType.ToString() + "." + ex.TargetSite.Name + "\r\n";
-                content += "内容：" + ex.Message + "\r\n";
-                RabbitMQPush.PushMessage(RabbitMQKey.LogError, content);
-                #endregion
+                //日志收集
+                LogService.LogCollectPush(QueueKey.LogError, context.Exception, RabbitMQPushService);
             }
         }
     }

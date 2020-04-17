@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Puss.Email
 {
-    public interface IEmailHelper
+    public interface IEmailService
     {
         /// <summary>
         /// 发送邮件

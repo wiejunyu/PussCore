@@ -4,15 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using App.Metrics;
 using Autofac;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -123,7 +120,7 @@ namespace Puss.Api
             #region Redis
             //redis»º´æ
             string _connectionString = GlobalsConfig.Configuration[ConfigurationKeys.Redis_Connection];//Á¬½Ó×Ö·û´®
-            RedisHelper.SetCon(_connectionString);
+            RedisService.SetCon(_connectionString);
             #endregion
 
             #region IP
@@ -292,6 +289,7 @@ namespace Puss.Api
             builder.RegisterTypes(Assembly.Load("Puss.RabbitMQ").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
             builder.RegisterTypes(Assembly.Load("Puss.Redis").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
             builder.RegisterTypes(Assembly.Load("Puss.Reptile").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
+            builder.RegisterTypes(Assembly.Load("Puss.Log").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
 
             var controllerBaseType = typeof(ControllerBase);
             builder.RegisterAssemblyTypes(typeof(Program).Assembly)

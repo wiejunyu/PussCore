@@ -13,7 +13,7 @@ namespace Puss.QrCode
     /// <summary>
     /// 二维码帮助类
     /// </summary>
-    public class QrCode : IQrCode
+    public class QrCodeService : IQrCodeService
     {
         /// <summary>
         /// 获取二维码

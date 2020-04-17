@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using Puss.Log;
 using Puss.RabbitMQ;
+using Puss.Redis;
 using System;
 
 namespace Puss.Api.Job
@@ -12,12 +14,15 @@ namespace Puss.Api.Job
         /// <summary>
         /// 获取价格定时计划
         /// </summary>
-        /// <param name="RabbitMQPush">MQ接口</param>
-        public PriceJobTrigger(IRabbitMQPush RabbitMQPush) :
+        /// <param name="LogService">日志类接口</param>
+        /// <param name="RabbitMQPushService">MQ类接口</param>
+        /// <param name="RedisService">Redis类接口</param>
+        public PriceJobTrigger(ILogService LogService, IRabbitMQPushService RabbitMQPushService, IRedisService RedisService) :
             base(TimeSpan.Zero,
                 TimeSpan.FromMinutes(1),
-                new PriceJobExcutor(),
-                RabbitMQPush)
+                new PriceJobExcutor(RedisService),
+                RabbitMQPushService,
+                LogService)
         {
         }
     }
@@ -25,15 +30,25 @@ namespace Puss.Api.Job
     /// <summary>
     /// 获取价格定时计划
     /// </summary>
-    public class PriceJobExcutor
-                     : IJobExecutor
+    public class PriceJobExcutor : IJobExecutor                
     {
+        private readonly IRedisService RedisService;
+
+        /// <summary>
+        /// 获取价格定时计划
+        /// </summary>
+        /// <param name="RedisService">Redis类接口</param>
+        public PriceJobExcutor(IRedisService RedisService)
+        {
+            this.RedisService = RedisService;
+        }
+
         /// <summary>
         /// 开始任务
         /// </summary>
         public void StartJob()
         {
-            PriceManager.GetPrice();
+            PriceManager.GetPrice(RedisService);
         }
 
         /// <summary>

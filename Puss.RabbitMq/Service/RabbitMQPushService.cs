@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Puss.RabbitMQ
 {
-    public class RabbitMQPush: IRabbitMQPush
+    public class RabbitMQPushService: IRabbitMQPushService
     {
         private static IConnection connection;
         public IConnection GetConection()
@@ -31,7 +31,7 @@ namespace Puss.RabbitMQ
         /// </summary>
         /// <param name="sQueueName">队列名称</param>
         /// <param name="sContent">内容</param>
-        public void PushMessage(string sQueueName, string sContent)
+        public void PushMessage(string sQueueName, string sMessage)
         {
             //3. 创建信道
             using (var channel = GetConection().CreateModel())
@@ -39,7 +39,7 @@ namespace Puss.RabbitMQ
                 //4. 申明队列(指定durable:true,告知rabbitmq对消息进行持久化)
                 channel.QueueDeclare(queue: sQueueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
                 //5. 构建byte消息数据包
-                var body = Encoding.UTF8.GetBytes(sContent);
+                var body = Encoding.UTF8.GetBytes(sMessage);
                 //6. 发送数据包
                 channel.BasicPublish(exchange: "", routingKey: sQueueName, basicProperties: null, body: body);
             }
@@ -48,7 +48,8 @@ namespace Puss.RabbitMQ
         /// <summary>
         /// 收到消息的委托
         /// </summary>
-        public delegate bool MessageHandler(string Email);
+        public delegate bool MessageHandler(string sMessage);
+
         /// <summary>
         /// 收到消息并执行委托
         /// </summary>
@@ -71,8 +72,8 @@ namespace Puss.RabbitMQ
                 //6. 绑定消息接收后的事件委托
                 consumer.Received += (model, ea) =>
                 {
-                    string Message = Encoding.UTF8.GetString(ea.Body);
-                    if (MessageHandler(Message))
+                    string sMessage = Encoding.UTF8.GetString(ea.Body);
+                    if (MessageHandler(sMessage))
                     {
                         //8. 启动消费者
                         //autoAck:true；自动进行消息确认，当消费端接收到消息后，就自动发送ack信号，不管消息是否正确处理完毕
