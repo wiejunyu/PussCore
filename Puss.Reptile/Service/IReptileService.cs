@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Puss.Reptile
 {
-    public interface IReptileHelper
+    public interface IReptileService
     {
         /// <summary>
         /// Post请求并获取HTML
