@@ -9,6 +9,7 @@ using Puss.Reptile.Models;
 using Puss.Redis;
 using Puss.Data.Models.Api;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Puss.Api.Controllers
 {
@@ -38,11 +39,14 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("GetHtml")]
         [AllowAnonymous]
-        public ReturnResult GetHtml(string Url)
+        public async Task<ReturnResult> GetHtml(string Url)
         {
-            string html = ReptileService.GetHtml(Url);
-            List<btc112> list = JsonConvert.DeserializeObject <List<btc112>>(html);
-            return new ReturnResult(ReturnResultStatus.Succeed, list.SingleOrDefault(x => x.symbol.ToLowerInvariant() == "btc").price);
+            return await Task.Run(() => 
+            {
+                string html = ReptileService.GetHtml(Url);
+                List<btc112> list = JsonConvert.DeserializeObject<List<btc112>>(html);
+                return new ReturnResult(ReturnResultStatus.Succeed, list.SingleOrDefault(x => x.symbol.ToLowerInvariant() == "btc").price);
+            });
         }
 
         /// <summary>
@@ -51,9 +55,12 @@ namespace Puss.Api.Controllers
         /// <param name="symbol">板块标识</param>
         /// <returns></returns>
         [HttpPost("GetPrice")]
-        public ReturnResult GetPrice(string symbol)
+        public async Task<ReturnResult> GetPrice(string symbol)
         {
-            return new ReturnResult(ReturnResultStatus.Succeed, RedisService.Get<Price>(CommentConfig.Price + symbol, () => new Price()).price);
+            return await Task.Run(() =>
+            {
+                return new ReturnResult(ReturnResultStatus.Succeed, RedisService.Get<Price>(CommentConfig.Price + symbol, () => new Price()).price);
+            });
         }
     }
 }

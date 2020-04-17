@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Puss.Data.Enum;
 using Puss.Data.Models;
@@ -21,15 +22,19 @@ namespace Puss.Api.Controllers
         {
             this.QrCodeService = QrCodeService;
         }
+
         /// <summary>
         /// 传入Url获取二维码
         /// </summary>
         /// <returns></returns>
         [HttpPost("GetQrCode")]
-        public ReturnResult GetQrCode(string url)
+        public async Task<ReturnResult> GetQrCode(string url)
         {
-            byte[] buffer = QrCodeService.GetQRcode(url, 8);
-            return new ReturnResult(ReturnResultStatus.Succeed, $"data:image/png;base64,{Convert.ToBase64String(buffer)}");
+            return await Task.Run(() =>
+            {
+                byte[] buffer = QrCodeService.GetQRcode(url, 8);
+                return new ReturnResult(ReturnResultStatus.Succeed, $"data:image/png;base64,{Convert.ToBase64String(buffer)}");
+            });
         }
 
     }

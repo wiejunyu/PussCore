@@ -32,9 +32,12 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("Login")]
-        public ReturnResult Login()
+        public async Task<ReturnResult> Login()
         {
-            return new ReturnResult(ReturnResultStatus.Succeed);
+            return await Task.Run(() =>
+            {
+                return new ReturnResult(ReturnResultStatus.Succeed);
+            });
         }
 
         /// <summary>
@@ -43,9 +46,12 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost("NotLogin")]
         [AllowAnonymous]
-        public ReturnResult NotLogin()
+        public async Task<ReturnResult> NotLogin()
         {
-            return new ReturnResult(ReturnResultStatus.Succeed, "OK");
+            return await Task.Run(() =>
+            {
+                return new ReturnResult(ReturnResultStatus.Succeed, "OK");
+            });
         }
 
         /// <summary>
