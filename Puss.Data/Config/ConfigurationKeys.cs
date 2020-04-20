@@ -24,7 +24,7 @@ namespace Puss.Data.Config
 
         #region Token
         /// <summary>
-        /// TokenSecurityKey
+        /// token密匙
         /// </summary>
         public static string Token_SecurityKey = "Token:SecurityKey";
         /// <summary>
@@ -35,6 +35,10 @@ namespace Puss.Data.Config
         /// TokenAudience
         /// </summary>
         public static string Token_Audience = "Token:Audience";
+        /// <summary>
+        /// 是否单点登录
+        /// </summary>
+        public static string Token_IsSignIn = "Token:IsSignIn";
         #endregion
 
         #region MQ

@@ -21,13 +21,18 @@
     </form>
     <script>
         $(function () {
+            //载入验证码
             CodeKey();
         })
-
+        //点击图片刷新验证码
+        $("#imgCode").click(function () {
+            CodeKey();
+        });
+        //登陆提交
         $("#btnSubmit").click(function () {
             Login( );
         });
-
+        //点击获取价格
         $("#btnGet").click(function () {
             $.ajax({
                 type: "POST",
@@ -42,11 +47,10 @@
                     xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
                 },
                 success: function (data) {
-                    console.log(data.message)
+                    alert(data.message);
                 }
             });
         });
     </script>
-
 </body>
 </html>

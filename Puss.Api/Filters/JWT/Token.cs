@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using Puss.Application.Common;
 using Puss.Data.Config;
 using Puss.Data.Models;
@@ -20,8 +21,9 @@ namespace Puss.Api.Filters
         /// JWT身份验证用户获取Token
         /// </summary>
         /// <param name="user">用户</param>
+        /// <param name="RedisService">Redis类接口</param>
         /// <returns></returns>
-        public static string UserGetToken(User user)
+        public static string UserGetToken(User user, IRedisService RedisService)
         {
             //Token信息
             var claims = new[]
@@ -41,6 +43,7 @@ namespace Puss.Api.Filters
                 signingCredentials: creds);
             //Token对象转成Token字符串
             string sToken = new JwtSecurityTokenHandler().WriteToken(jToken);
+            RedisService.SetString(CommentConfig.UserToken + user.ID, sToken);
             return sToken;
         }
 
@@ -63,6 +66,33 @@ namespace Puss.Api.Filters
             catch 
             {
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// 废除token
+        /// </summary>
+        /// <param name="accessor">accessor</param>
+        /// <param name="RedisService">Redis类接口</param>
+        /// <returns></returns>
+        public static bool RemoveToken(IHttpContextAccessor accessor, IRedisService RedisService)
+        {
+            try
+            {
+                string sToken = null;
+                if (accessor != null && accessor.HttpContext.Request.Headers.ContainsKey("Authorization"))
+                {
+                    sToken = accessor.HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("Bearer", "");
+                }
+                if (string.IsNullOrWhiteSpace(sToken)) return false;
+                // 将字符串Token解码成Token对象;
+                User user = TokenGetUser(sToken);
+                UserGetToken(user,RedisService);
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

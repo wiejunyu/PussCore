@@ -113,7 +113,23 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public async Task<ReturnResult> Login([FromBody]LoginRequest request)
         {
-            return new ReturnResult(ReturnResultStatus.Succeed, await LoginManager.Login(request));
+            return new ReturnResult(ReturnResultStatus.Succeed, await LoginManager.Login(request, RedisService));
+        }
+
+        /// <summary>
+        /// 登出
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("LoginOut")]
+        public async Task<ReturnResult> LoginOut()
+        {
+            return await Task.Run(() =>
+            {
+                return ReturnResult.ResultCalculation(() =>
+                {
+                    return LoginManager.LoginOut(_accessor, RedisService).Result;
+                });
+            });
         }
     }
 }

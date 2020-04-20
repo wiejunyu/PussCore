@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Puss.Api.Filters;
 using Puss.Application.Common;
 using Puss.Data.Enum;
@@ -22,13 +23,25 @@ namespace Puss.Api.Manager
         /// 登录接口
         /// </summary>
         /// <param name="request">登陆模型</param>
+        /// <param name="RedisService">Redis类接口</param>
         /// <returns></returns>
-        public static async Task<string> Login(LoginRequest request)
+        public static async Task<string> Login(LoginRequest request, IRedisService RedisService)
         {
             request.PassWord = MD5.Md5(request.PassWord);
             User account = await new UserManager().GetSingleAsync(a => (a.UserName == request.UserName.Trim() || a.Phone == request.UserName.Trim() || a.Email == request.UserName.Trim()) && a.PassWord == request.PassWord);
             if (account == null) throw new AppException("账号密码错误");
-            return Token.UserGetToken(account);
+            return Token.UserGetToken(account, RedisService);
+        }
+
+        /// <summary>
+        /// 登出接口
+        /// </summary>
+        /// <param name="accessor">accessor</param>
+        /// <param name="RedisService">Redis类接口</param>
+        /// <returns></returns>
+        public static async Task<bool> LoginOut(IHttpContextAccessor accessor, IRedisService RedisService)
+        {
+            return await Task.Run(() => { return Token.RemoveToken(accessor, RedisService); });
         }
 
         /// <summary>
@@ -45,7 +58,7 @@ namespace Puss.Api.Manager
             //生成验证码，传几就是几位验证码
             string code = ValidateCode.CreateValidateCode(4);
             //保存验证码
-            RedisService.Set(CommentConfig.ImageCacheCode + CodeKey, code, 10);
+            RedisService.SetString(CommentConfig.ImageCacheCode + CodeKey, code, 10);
             //把验证码转成字节
             byte[] buffer = ValidateCode.CreateValidateGraphic(code);
             return buffer;
@@ -67,7 +80,7 @@ namespace Puss.Api.Manager
                 //生成验证码，传几就是几位验证码
                 string code = ValidateCode.CreateValidateCode(4);
                 //保存验证码
-                RedisService.Set(CommentConfig.ImageCacheCode + CodeKey, code, 10);
+                RedisService.SetString(CommentConfig.ImageCacheCode + CodeKey, code, 10);
                 //把验证码转成字节
                 byte[] buffer = ValidateCode.CreateValidateGraphic(code);
                 //把验证码转成Base64

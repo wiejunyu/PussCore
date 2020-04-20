@@ -47,14 +47,14 @@ namespace Puss.Api.Aop
             if (new RedisService().Exists(CommentConfig.ImageCacheCode + CodeKey))
             {
                 if (string.IsNullOrWhiteSpace(Code)) throw new AppException("验证码不能为空");
-                string code = new RedisService().Get<string>(CommentConfig.ImageCacheCode + CodeKey);
+                string code = new RedisService().GetString(CommentConfig.ImageCacheCode + CodeKey);
                 if (string.IsNullOrWhiteSpace(code)) throw new AppException("验证码错误或已过期");
                 if (code.ToLower() != Code.ToLower()) throw new AppException("验证码错误或已过期");
             }
             else if (new RedisService().Exists(CommentConfig.MailCacheCode + CodeKey))
             {
                 if (string.IsNullOrWhiteSpace(Email)) throw new AppException("邮箱不能为空");
-                Code code = new RedisService().Get<Code>(CommentConfig.MailCacheCode + CodeKey);
+                Code code = new RedisService().Get<Code>(CommentConfig.MailCacheCode + CodeKey,() => null);
                 if (code == null) throw new AppException("验证码错误或已过期");
                 if (string.IsNullOrWhiteSpace(code.email) || string.IsNullOrWhiteSpace(code.code)) throw new AppException("验证码错误或已过期");
                 if (code.email.ToLower() != Email.ToLower()) throw new AppException("验证码错误或已过期");

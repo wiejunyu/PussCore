@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Puss.Data.Config;
 using Puss.Data.Enum;
 using Puss.Data.Models;
+using Puss.Redis;
 using Sugar.Enties;
 using System;
 using System.Linq;
@@ -16,6 +17,16 @@ namespace Puss.Api.Filters
     /// </summary>
     public class RequestAuthorizeAttribute : Attribute, IAsyncAuthorizationFilter
     {
+        private readonly IRedisService RedisService;
+
+        /// <summary>
+        /// 自定义验证
+        /// </summary>
+        /// <param name="RedisService"></param>
+        public RequestAuthorizeAttribute(IRedisService RedisService) 
+        {
+            this.RedisService = RedisService;
+        }
         /// <summary>
         /// 身份验证
         /// </summary>
@@ -31,7 +42,7 @@ namespace Puss.Api.Filters
                 if (GlobalsConfig.Configuration[ConfigurationKeys.Permission_IsOpen].ToLower() == "false") return;
                 //从http请求的头里面获取身份验证信息，验证Jwt
                 string sAuthorization = context.HttpContext.Request.Headers["Authorization"].ToString();
-                if (string.IsNullOrWhiteSpace(sAuthorization)) 
+                if (string.IsNullOrWhiteSpace(sAuthorization))
                 {
                     context.Result = new ObjectResult(new ReturnResult()
                     {
@@ -59,6 +70,28 @@ namespace Puss.Api.Filters
                         Message = "获取不到token"
                     });
                     return;
+                }
+                if (GlobalsConfig.Configuration[ConfigurationKeys.Token_IsSignIn].ToLower() == "true") 
+                {
+                    string sRedisToken = RedisService.GetString(CommentConfig.UserToken + user.ID);
+                    if (string.IsNullOrWhiteSpace(sRedisToken)) 
+                    {
+                        context.Result = new ObjectResult(new ReturnResult()
+                        {
+                            Status = (int)ReturnResultStatus.BLLError,
+                            Message = "获取不到token"
+                        });
+                        return;
+                    }
+                    if (sRedisToken != sToken)
+                    {
+                        context.Result = new ObjectResult(new ReturnResult()
+                        {
+                            Status = (int)ReturnResultStatus.BLLError,
+                            Message = "获取不到token"
+                        });
+                        return;
+                    }
                 }
             });
         }

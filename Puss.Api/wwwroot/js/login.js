@@ -11,6 +11,7 @@
         },
         success: function (data) {
             $.cookie('token', data.message, { expires: 7 });
+            alert("登陆成功！");
         }
     });
 }

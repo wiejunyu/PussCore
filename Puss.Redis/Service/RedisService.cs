@@ -1,11 +1,6 @@
 ﻿using StackExchange.Redis;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -80,15 +75,17 @@ namespace Puss.Redis
         }
 
         /// <summary>
-        /// 根据key获取缓存对象
+        /// 根据key获取缓存字符串
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <returns></returns>
-        public T Get<T>(string key)
+        public string GetString(string key)
         {
             key = MergeKey(key);
-            return JsonConvert.DeserializeObject<T>(GetDatabase().StringGet(key));
+            if (Exists(key))
+                return GetDatabase().StringGet(key);
+            else
+                return "";
         }
 
         /// <summary>
@@ -104,17 +101,6 @@ namespace Puss.Redis
                 return JsonConvert.DeserializeObject<T>(GetDatabase().StringGet(key));
             else
                 return func();
-        }
-
-        /// <summary>
-        /// 根据key获取缓存对象
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public object Get(string key)
-        {
-            key = MergeKey(key);
-            return JsonConvert.DeserializeObject<object>(GetDatabase().StringGet(key));
         }
 
         /// <summary>
@@ -144,7 +130,7 @@ namespace Puss.Redis
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <param name="expireMinutes"></param>
-        public void Set(string key, string value, int expireMinutes = 0)
+        public void SetString(string key, string value, int expireMinutes = 0)
         {
             key = MergeKey(key);
             if (expireMinutes > 0)

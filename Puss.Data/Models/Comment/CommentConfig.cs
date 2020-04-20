@@ -23,12 +23,12 @@ namespace Puss.Data.Models
         public static string MailCacheCode { get { return "MailCacheCode_"; } }
         #endregion
 
-        //#region 用户Token
-        ///// <summary>
-        ///// 用户Token RedisKey
-        ///// </summary>
-        //public static string UserToken { get { return "UserToken_"; } }
-        //#endregion
+        #region 用户Token
+        /// <summary>
+        /// 用户Token RedisKey
+        /// </summary>
+        public static string UserToken { get { return "UserToken_"; } }
+        #endregion
 
         #region 价格
         /// <summary>
