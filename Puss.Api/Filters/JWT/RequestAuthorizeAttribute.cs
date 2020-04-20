@@ -46,7 +46,7 @@ namespace Puss.Api.Filters
                 {
                     context.Result = new ObjectResult(new ReturnResult()
                     {
-                        Status = (int)ReturnResultStatus.BLLError,
+                        Status = (int)ReturnResultStatus.UnLogin,
                         Message = "获取不到token"
                     });
                     return;
@@ -56,7 +56,7 @@ namespace Puss.Api.Filters
                 {
                     context.Result = new ObjectResult(new ReturnResult()
                     {
-                        Status = (int)ReturnResultStatus.BLLError,
+                        Status = (int)ReturnResultStatus.UnLogin,
                         Message = "获取不到token"
                     });
                     return;
@@ -66,28 +66,30 @@ namespace Puss.Api.Filters
                 {
                     context.Result = new ObjectResult(new ReturnResult()
                     {
-                        Status = (int)ReturnResultStatus.BLLError,
+                        Status = (int)ReturnResultStatus.UnLogin,
                         Message = "获取不到token"
                     });
                     return;
                 }
+
+                string sRedisToken = RedisService.Get<string>(CommentConfig.UserToken + user.ID, () => null);
+                if (string.IsNullOrWhiteSpace(sRedisToken))
+                {
+                    context.Result = new ObjectResult(new ReturnResult()
+                    {
+                        Status = (int)ReturnResultStatus.UnLogin,
+                        Message = "获取不到token"
+                    });
+                    return;
+                }
+
                 if (GlobalsConfig.Configuration[ConfigurationKeys.Token_IsSignIn].ToLower() == "true") 
                 {
-                    string sRedisToken = RedisService.Get<string>(CommentConfig.UserToken + user.ID,() => null);
-                    if (string.IsNullOrWhiteSpace(sRedisToken)) 
-                    {
-                        context.Result = new ObjectResult(new ReturnResult()
-                        {
-                            Status = (int)ReturnResultStatus.BLLError,
-                            Message = "获取不到token"
-                        });
-                        return;
-                    }
                     if (sRedisToken != sToken)
                     {
                         context.Result = new ObjectResult(new ReturnResult()
                         {
-                            Status = (int)ReturnResultStatus.BLLError,
+                            Status = (int)ReturnResultStatus.UnLogin,
                             Message = "获取不到token"
                         });
                         return;
