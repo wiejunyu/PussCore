@@ -36,13 +36,12 @@
         $("#btnGet").click(function () {
             $.ajax({
                 type: "POST",
-                url: "http://118.89.182.215:85/api/ExpressDelivery/GetPrice",
-                data: { symbol: "eth" } ,
-                contentType: "application/x-www-form-urlencoded",
+                url: "http://118.89.182.215:85/api/ExpressDelivery/GetPrice?symbol=eth",
+                contentType: 'application/json;charset=utf-8',
                 headers: {
-                    Authorization: 'Bearer ' + GetToken()
+                    Authorization: 'Bearer ' + GetToken(),
+                    Accept: "text/plain"
                 },
-                processData: false,
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
                 },

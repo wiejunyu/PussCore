@@ -39,6 +39,10 @@ namespace Puss.Data.Config
         /// 是否单点登录
         /// </summary>
         public static string Token_IsSignIn = "Token:IsSignIn";
+        /// <summary>
+        /// token保存时长(分钟)
+        /// </summary>
+        public static string Token_Time = "Token:Time";
         #endregion
 
         #region MQ

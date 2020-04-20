@@ -15,26 +15,26 @@ namespace Puss.Data.Models
         /// <summary>
         /// 图片验证码RedisKey
         /// </summary>
-        public static string ImageCacheCode { get { return "ImagesCacheCode_"; } }
+        public static string ImageCacheCode { get { return "ImagesCacheCode:"; } }
 
         /// <summary>
         /// 邮箱验证码RedisKey
         /// </summary>
-        public static string MailCacheCode { get { return "MailCacheCode_"; } }
+        public static string MailCacheCode { get { return "MailCacheCode:"; } }
         #endregion
 
         #region 用户Token
         /// <summary>
         /// 用户Token RedisKey
         /// </summary>
-        public static string UserToken { get { return "UserToken_"; } }
+        public static string UserToken { get { return "UserToken:"; } }
         #endregion
 
         #region 价格
         /// <summary>
         /// 价格 RedisKey
         /// </summary>
-        public static string Price { get { return "Price_"; } }
+        public static string Price { get { return "Price:"; } }
         #endregion
     }
 }

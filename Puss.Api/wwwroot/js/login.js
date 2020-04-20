@@ -10,8 +10,14 @@
             Accept: "text/plain"
         },
         success: function (data) {
-            $.cookie('token', data.message, { expires: 7 });
-            alert("登陆成功！");
+            if (data.status == 200) {
+                $.cookie('token', null);
+                $.cookie('token', data.message, { expires: 7 });
+                alert("登陆成功！");
+            }
+            else {
+                alert(data.message);
+            }
         }
     });
 }
@@ -24,7 +30,12 @@ function CodeKey()
         type: "POST",
         url: "http://118.89.182.215:85/api/User/ShowValidateCodeBase64?CodeKey=" + Guid,
         success: function (data) {
-            $("#imgCode").attr("src", data.message);
+            if (data.status == 200) {
+                $("#imgCode").attr("src", data.message);
+            }
+            else {
+                alert(data.message);
+            }
         }
     });
 }
