@@ -28,11 +28,11 @@ namespace Puss.Api.Aop
             List<PropertyInfo> lPropertyInfo = t.GetProperties().ToList();
             //取得UserName
             var p = lPropertyInfo.FirstOrDefault(x => x.Name == "UserName");
-            string UserName = p != null ? p.GetValue(arguments[0], null).ToString() : "";
+            string UserName = p == null ? "" : ((p.GetValue(arguments[0], null)) ?? "").ToString();
             //取得PassWord
             p = lPropertyInfo.FirstOrDefault(x => x.Name == "PassWord");
-            string PassWord = p != null ? p.GetValue(arguments[0], null).ToString() : "";
-            
+            string PassWord = p == null ? "" : ((p.GetValue(arguments[0], null)) ?? "").ToString();
+
             if (string.IsNullOrWhiteSpace(UserName)) throw new AppException("用户名不能为空");
             if (string.IsNullOrWhiteSpace(PassWord)) throw new AppException("密码不能为空");
         }

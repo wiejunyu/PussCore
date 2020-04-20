@@ -32,16 +32,16 @@ namespace Puss.Api.Aop
             List<PropertyInfo> lPropertyInfo = t.GetProperties().ToList();
             //取得Code
             var p = lPropertyInfo.FirstOrDefault(x => x.Name == "Code");
-            string Code = p != null ? p.GetValue(arguments[0], null).ToString() : "";
+            string Code = p == null ? "" : ((p.GetValue(arguments[0], null)) ?? "").ToString();
             //取得CodeKey
             p = lPropertyInfo.FirstOrDefault(x => x.Name == "CodeKey");
-            string CodeKey = p != null ? p.GetValue(arguments[0], null).ToString() : "";
+            string CodeKey = p == null ? "" : ((p.GetValue(arguments[0], null)) ?? "").ToString();
             //取得Email
             p = lPropertyInfo.FirstOrDefault(x => x.Name == "Email");
-            string Email = p != null ? p.GetValue(arguments[0], null).ToString() : "";
+            string Email = p == null ? "" : ((p.GetValue(arguments[0], null)) ?? "").ToString();
             //取得Phone
             p = lPropertyInfo.FirstOrDefault(x => x.Name == "Phone");
-            string Phone = p != null ? p.GetValue(arguments[0], null).ToString() : "";
+            string Phone = p == null ? "" : ((p.GetValue(arguments[0], null)) ?? "").ToString();
 
             if (string.IsNullOrWhiteSpace(CodeKey)) throw new AppException("验证码Key不能为空");
             if (new RedisService().Exists(CommentConfig.ImageCacheCode + CodeKey))

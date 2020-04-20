@@ -21,7 +21,7 @@ namespace Puss.Api.Filters
         /// <summary>
         ///  CalculateExecutionTimeMiddleware
         /// </summary>
-        /// <param name="next"></param>
+        /// <param name="next">next</param>
         /// <param name="LogService">日志类接口</param>
         /// <param name="RabbitMQPushService">MQ类接口</param>
         public CalculateExecutionTimeMiddleware(RequestDelegate next, ILogService LogService, IRabbitMQPushService RabbitMQPushService)
