@@ -47,7 +47,7 @@ namespace Puss.Api.Aop
             if (new RedisService().Exists(CommentConfig.ImageCacheCode + CodeKey))
             {
                 if (string.IsNullOrWhiteSpace(Code)) throw new AppException("验证码不能为空");
-                string code = new RedisService().GetString(CommentConfig.ImageCacheCode + CodeKey);
+                string code = new RedisService().Get<string>(CommentConfig.ImageCacheCode + CodeKey,()=> null);
                 if (string.IsNullOrWhiteSpace(code)) throw new AppException("验证码错误或已过期");
                 if (code.ToLower() != Code.ToLower()) throw new AppException("验证码错误或已过期");
             }

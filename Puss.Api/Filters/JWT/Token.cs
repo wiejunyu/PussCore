@@ -43,7 +43,7 @@ namespace Puss.Api.Filters
                 signingCredentials: creds);
             //Token对象转成Token字符串
             string sToken = new JwtSecurityTokenHandler().WriteToken(jToken);
-            RedisService.SetString(CommentConfig.UserToken + user.ID, sToken);
+            RedisService.Set(CommentConfig.UserToken + user.ID, sToken);
             return sToken;
         }
 

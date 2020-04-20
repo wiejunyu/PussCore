@@ -58,7 +58,7 @@ namespace Puss.Api.Manager
             //生成验证码，传几就是几位验证码
             string code = ValidateCode.CreateValidateCode(4);
             //保存验证码
-            RedisService.SetString(CommentConfig.ImageCacheCode + CodeKey, code, 10);
+            RedisService.Set(CommentConfig.ImageCacheCode + CodeKey, code, 10);
             //把验证码转成字节
             byte[] buffer = ValidateCode.CreateValidateGraphic(code);
             return buffer;
@@ -80,7 +80,7 @@ namespace Puss.Api.Manager
                 //生成验证码，传几就是几位验证码
                 string code = ValidateCode.CreateValidateCode(4);
                 //保存验证码
-                RedisService.SetString(CommentConfig.ImageCacheCode + CodeKey, code, 10);
+                RedisService.Set(CommentConfig.ImageCacheCode + CodeKey, code, 10);
                 //把验证码转成字节
                 byte[] buffer = ValidateCode.CreateValidateGraphic(code);
                 //把验证码转成Base64

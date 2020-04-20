@@ -73,7 +73,7 @@ namespace Puss.Api.Filters
                 }
                 if (GlobalsConfig.Configuration[ConfigurationKeys.Token_IsSignIn].ToLower() == "true") 
                 {
-                    string sRedisToken = RedisService.GetString(CommentConfig.UserToken + user.ID);
+                    string sRedisToken = RedisService.Get<string>(CommentConfig.UserToken + user.ID,() => null);
                     if (string.IsNullOrWhiteSpace(sRedisToken)) 
                     {
                         context.Result = new ObjectResult(new ReturnResult()

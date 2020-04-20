@@ -4,6 +4,7 @@ using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Email;
 using Puss.RabbitMQ;
+using Puss.Redis;
 using Sugar.Enties;
 using System.Threading.Tasks;
 
@@ -16,16 +17,18 @@ namespace Puss.Api.Controllers
     {
         private readonly IEmailService EmailService;
         private readonly IRabbitMQPushService RabbitMQPushService;
+        private readonly IRedisService RedisService;
 
         /// <summary>
         /// 测试
         /// </summary>
         /// <param name="EmailService"></param>
         /// <param name="RabbitMQPushService"></param>
-        public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService) 
+        public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService, IRedisService RedisService) 
         {
             this.EmailService = EmailService;
             this.RabbitMQPushService = RabbitMQPushService;
+            this.RedisService = RedisService;
         }
         /// <summary>
         /// 登录测试
@@ -50,6 +53,8 @@ namespace Puss.Api.Controllers
         {
             return await Task.Run(() =>
             {
+                RedisService.Set("test", "111");
+                string str = RedisService.Get<string>("test",()=> null);
                 return new ReturnResult(ReturnResultStatus.Succeed, "OK");
             });
         }

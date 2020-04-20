@@ -75,20 +75,6 @@ namespace Puss.Redis
         }
 
         /// <summary>
-        /// 根据key获取缓存字符串
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public string GetString(string key)
-        {
-            key = MergeKey(key);
-            if (Exists(key))
-                return GetDatabase().StringGet(key);
-            else
-                return "";
-        }
-
-        /// <summary>
         /// 根据key获取缓存对象
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -123,27 +109,6 @@ namespace Puss.Redis
             }
 
         }
-
-        /// <summary>
-        /// 设置缓存字符串
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="expireMinutes"></param>
-        public void SetString(string key, string value, int expireMinutes = 0)
-        {
-            key = MergeKey(key);
-            if (expireMinutes > 0)
-            {
-                GetDatabase().StringSet(key, value, TimeSpan.FromMinutes(expireMinutes));
-            }
-            else
-            {
-                GetDatabase().StringSet(key, value);
-            }
-
-        }
-
 
         /// <summary>
         /// 判断在缓存中是否存在该key的缓存数据

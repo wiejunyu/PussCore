@@ -16,13 +16,6 @@ namespace Puss.Redis
         IDatabase GetDatabase();
 
         /// <summary>
-        /// 根据key获取缓存字符串
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        string GetString(string key);
-
-        /// <summary>
         /// 根据key获取缓存对象
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -37,14 +30,6 @@ namespace Puss.Redis
         /// <param name="value"></param>
         /// <param name="expireMinutes"></param>
         void Set(string key, object value, int expireMinutes = 0);
-
-        /// <summary>
-        /// 设置缓存字符串
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="expireMinutes"></param>
-        void SetString(string key, string value, int expireMinutes = 0);
 
 
         /// <summary>
