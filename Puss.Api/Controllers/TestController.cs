@@ -23,19 +23,16 @@ namespace Puss.Api.Controllers
     {
         private readonly IEmailService EmailService;
         private readonly IRabbitMQPushService RabbitMQPushService;
-        private readonly IRedisService RedisService;
 
         /// <summary>
         /// 测试
         /// </summary>
         /// <param name="EmailService"></param>
         /// <param name="RabbitMQPushService"></param>
-        /// <param name="RedisService"></param>
-        public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService, IRedisService RedisService) 
+        public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService) 
         {
             this.EmailService = EmailService;
             this.RabbitMQPushService = RabbitMQPushService;
-            this.RedisService = RedisService;
         }
         /// <summary>
         /// 登录测试

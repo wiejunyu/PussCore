@@ -27,6 +27,7 @@ namespace Puss.Api.Filters
         {
             this.RedisService = RedisService;
         }
+
         /// <summary>
         /// 身份验证
         /// </summary>
