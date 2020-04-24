@@ -2,6 +2,10 @@
 using SqlSugar;
 using System;
 using System.Collections.Generic;
-public class ShoppingCartManager : DbContext<ShoppingCart>
+
+namespace Puss.BusinessCore
 {
+	public class ShoppingCartManager : DbContext<ShoppingCart>
+	{
+	}
 }

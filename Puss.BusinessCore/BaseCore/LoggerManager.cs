@@ -2,6 +2,10 @@
 using SqlSugar;
 using System;
 using System.Collections.Generic;
-public class LoggerManager : DbContext<Logger>
+
+namespace Puss.BusinessCore
 {
+	public class LoggerManager : DbContext<Logger>
+	{
+	}
 }

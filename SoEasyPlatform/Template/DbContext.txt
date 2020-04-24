@@ -8,329 +8,331 @@ using Newtonsoft.Json;
 using Puss.Data.Config;
 using System.Threading.Tasks;
 
-public class DbContext
+namespace Puss.BusinessCore
 {
-    public DbContext()
+    public class DbContext
     {
-        Db = new SqlSugarClient(new ConnectionConfig()
+        public DbContext()
         {
-            ConnectionString = GlobalsConfig.Configuration[ConfigurationKeys.Sql_Connection],
-            DbType = DbType.@Model.DbType,
-            InitKeyType = InitKeyType.Attribute,//从特性读取主键和自增列信息
-            IsAutoCloseConnection = true,//开启自动释放模式和EF原理一样我就不多解释了
-            SlaveConnectionConfigs = GetSonConnection(),//读写分离
-        });
+            Db = new SqlSugarClient(new ConnectionConfig()
+            {
+                ConnectionString = GlobalsConfig.Configuration[ConfigurationKeys.Sql_Connection],
+                DbType = DbType.@Model.DbType,
+                InitKeyType = InitKeyType.Attribute,//从特性读取主键和自增列信息
+                IsAutoCloseConnection = true,//开启自动释放模式和EF原理一样我就不多解释了
+                SlaveConnectionConfigs = GetSonConnection(),//读写分离
+            });
 
-        //调式代码 用来打印SQL 
-        Db.Aop.OnLogExecuting = (sql, pars) =>
+            //调式代码 用来打印SQL 
+            Db.Aop.OnLogExecuting = (sql, pars) =>
+            {
+                //Console.WriteLine(sql + "\r\n" +
+                //    Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value)));
+                //Console.WriteLine();
+            };
+        }
+
+        //注意：不能写成静态的
+        public SqlSugarClient Db;//用来处理事务多表查询和复杂的操作
+
+        /// <summary>
+        /// 获取数据库DB
+        /// </summary>
+        /// <returns></returns>
+        public virtual SqlSugarClient GetInstance()
         {
-            //Console.WriteLine(sql + "\r\n" +
-            //    Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value)));
-            //Console.WriteLine();
-        };
+            return Db;
+        }
+
+        protected List<SlaveConnectionConfig> GetSonConnection()
+        {
+            return JsonConvert.DeserializeObject<List<SlaveConnectionConfig>>(GlobalsConfig.Configuration[ConfigurationKeys.Sql_ConnectionSon]); ;
+        }
     }
 
-    //注意：不能写成静态的
-    public SqlSugarClient Db;//用来处理事务多表查询和复杂的操作
-
-    /// <summary>
-    /// 获取数据库DB
-    /// </summary>
-    /// <returns></returns>
-    public virtual SqlSugarClient GetInstance()
+    public class DbContext<T> where T : class, new()
     {
-        return Db;
-    }
+        public DbContext()
+        {
+            Db = new SqlSugarClient(new ConnectionConfig()
+            {
+                ConnectionString = GlobalsConfig.Configuration[ConfigurationKeys.Sql_Connection],
+                DbType = DbType.@Model.DbType,
+                InitKeyType = InitKeyType.Attribute,//从特性读取主键和自增列信息
+                IsAutoCloseConnection = true,//开启自动释放模式和EF原理一样我就不多解释了
+                SlaveConnectionConfigs = GetSonConnection(),//读写分离
+            });
 
-    protected List<SlaveConnectionConfig> GetSonConnection()
-    {
-        return JsonConvert.DeserializeObject<List<SlaveConnectionConfig>>(GlobalsConfig.Configuration[ConfigurationKeys.Sql_ConnectionSon]); ;
+            //调式代码 用来打印SQL 
+            Db.Aop.OnLogExecuting = (sql, pars) =>
+            {
+                //Console.WriteLine(sql + "\r\n" +
+                //    Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value)));
+                //Console.WriteLine();
+            };
+
+        }
+
+        protected List<SlaveConnectionConfig> GetSonConnection()
+        {
+            return JsonConvert.DeserializeObject<List<SlaveConnectionConfig>>(GlobalsConfig.Configuration[ConfigurationKeys.Sql_ConnectionSon]); ;
+        }
+
+        //注意：不能写成静态的
+        public SqlSugarClient Db;//用来处理事务多表查询和复杂的操作
+	    public SimpleClient<T> CurrentDb { get { return new SimpleClient<T>(Db); } }//用来操作当前表的数据
+
+        @foreach(var item in @Model.Tables)
+        {
+      @: public SimpleClient<@item> @(item)Db { get { return new SimpleClient<@item>(Db); } }//用来处理@(item)表的常用操作
+        }
+
+
+       /// <summary>
+        /// 获取所有
+        /// </summary>
+        /// <returns></returns>
+        public virtual List<T> GetList()
+        {
+            return CurrentDb.GetList();
+        }
+
+        /// <summary>
+        /// 获取单个
+        /// </summary>
+        /// <returns></returns>
+        public virtual T GetSingle(Expression<Func<T, bool>> whereExpression)
+        {
+            return CurrentDb.GetSingle(whereExpression);
+        }
+
+        /// <summary>
+        /// 异步获取单个
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<T> GetSingleAsync(Expression<Func<T, bool>> whereExpression)
+        {
+            return await Db.Queryable<T>().Where(whereExpression).SingleAsync();
+        }
+
+        /// <summary>
+        /// 获取单个，为空自动自动初始化
+        /// </summary>
+        /// <returns></returns>
+        public virtual T GetSingleDefault(Expression<Func<T, bool>> whereExpression)
+        {
+            T temp = null;
+            try
+            {
+                temp = CurrentDb.GetSingle(whereExpression);
+            }
+            catch
+            {
+            }
+            return temp ?? new T();
+        }
+
+        /// <summary>
+        /// 异步获取单个，为空自动自动初始化
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<T> GetSingleDefaultAsync(Expression<Func<T, bool>> whereExpression)
+        {
+            T temp = null;
+            try
+            {
+                temp = await Db.Queryable<T>().Where(whereExpression).SingleAsync();
+            }
+            catch
+            {
+            }
+            return temp ?? new T();
+        }
+
+        /// <summary>
+        /// 判断是否存在
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool IsAny(Expression<Func<T, bool>> whereExpression)
+        {
+            return CurrentDb.IsAny(whereExpression);
+        }
+
+        /// <summary>
+        /// 根据表达式查询
+        /// </summary>
+        /// <returns></returns>
+        public virtual List<T> GetList(Expression<Func<T, bool>> whereExpression)
+        {
+            return CurrentDb.GetList(whereExpression);
+        }
+
+        /// <summary>
+        /// 异步根据表达式查询
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<List<T>> GetListAsync(Expression<Func<T, bool>> whereExpression)
+        {
+            return await Db.Queryable<T>().Where(whereExpression).ToListAsync();
+        }
+
+        /// <summary>
+        /// 根据表达式查询分页
+        /// </summary>
+        /// <returns></returns>
+        public virtual List<T> GetPageList(Expression<Func<T, bool>> whereExpression, PageModel pageModel)
+        {
+            return CurrentDb.GetPageList(whereExpression, pageModel);
+        }
+
+        /// <summary>
+        /// 异步根据表达式查询分页
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<List<T>> GetPageListAsync(Expression<Func<T, bool>> whereExpression, PageModel pageModel)
+        {
+            int totalNumber = 0;
+            RefAsync<int> re = new RefAsync<int>(totalNumber);
+            List<T> result = await Db.Queryable<T>().Where(whereExpression).ToPageListAsync(pageModel.PageIndex, pageModel.PageSize, re);
+            pageModel.PageCount = re.Value;
+            return result;
+        }
+
+        /// <summary>
+        /// 根据表达式查询分页并排序
+        /// </summary>
+        /// <param name="whereExpression">it</param>
+        /// <param name="pageModel"></param>
+        /// <param name="orderByExpression">it=>it.id或者it=>new{it.id,it.name}</param>
+        /// <param name="orderByType">OrderByType.Desc</param>
+        /// <returns></returns>
+        public virtual List<T> GetPageList(Expression<Func<T, bool>> whereExpression, PageModel pageModel, Expression<Func<T, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc)
+        {
+            return CurrentDb.GetPageList(whereExpression, pageModel, orderByExpression, orderByType);
+        }
+
+        /// <summary>
+        /// 异步根据表达式查询分页并排序
+        /// </summary>
+        /// <param name="whereExpression">it</param>
+        /// <param name="pageModel"></param>
+        /// <param name="orderByExpression">it=>it.id或者it=>new{it.id,it.name}</param>
+        /// <param name="orderByType">OrderByType.Desc</param>
+        /// <returns></returns>
+        public virtual async Task<List<T>> GetPageListAsync(Expression<Func<T, bool>> whereExpression, PageModel pageModel, Expression<Func<T, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc)
+        {
+            int totalNumber = 0;
+            RefAsync<int> re = new RefAsync<int>(totalNumber);
+            List<T> result = await Db.Queryable<T>().OrderByIF(orderByExpression != null, orderByExpression, orderByType).Where(whereExpression)
+                .ToPageListAsync(pageModel.PageIndex, pageModel.PageSize, re);
+            pageModel.PageCount = re.Value;
+            return result;
+        }
+
+
+        /// <summary>
+        /// 根据主键查询
+        /// </summary>
+        /// <returns></returns>
+        public virtual T GetById(dynamic id)
+        {
+            return CurrentDb.GetById(id);
+        }
+
+        /// <summary>
+        /// 异步根据主键查询
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task<T> GetByIdAsync(dynamic id)
+        {
+            return await Db.Queryable<T>().InSingleAsync(id);
+        }
+
+        /// <summary>
+        /// 根据主键删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual bool Delete(dynamic id)
+        {
+            return CurrentDb.Delete(id);
+        }
+
+
+        /// <summary>
+        /// 根据实体删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual bool Delete(T data)
+        {
+            return CurrentDb.Delete(data);
+        }
+
+        /// <summary>
+        /// 根据主键删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual bool Delete(dynamic[] ids)
+        {
+            return CurrentDb.AsDeleteable().In(ids).ExecuteCommand() > 0;
+        }
+
+        /// <summary>
+        /// 根据表达式删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual bool Delete(Expression<Func<T, bool>> whereExpression)
+        {
+            return CurrentDb.Delete(whereExpression);
+        }
+
+
+        /// <summary>
+        /// 根据实体更新，实体需要有主键
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual bool Update(T obj)
+        {
+            return CurrentDb.Update(obj);
+        }
+
+        /// <summary>
+        ///批量更新
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual bool Update(List<T> objs)
+        {
+            return CurrentDb.UpdateRange(objs);
+        }
+
+        /// <summary>
+        /// 插入
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual bool Insert(T obj)
+        {
+            return CurrentDb.Insert(obj);
+        }
+
+
+        /// <summary>
+        /// 批量
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public virtual bool Insert(List<T> objs)
+        {
+            return CurrentDb.InsertRange(objs);
+        }
+
+
+        //自已扩展更多方法 
     }
 }
-
-public class DbContext<T> where T : class, new()
-{
-    public DbContext()
-    {
-        Db = new SqlSugarClient(new ConnectionConfig()
-        {
-            ConnectionString = GlobalsConfig.Configuration[ConfigurationKeys.Sql_Connection],
-            DbType = DbType.@Model.DbType,
-            InitKeyType = InitKeyType.Attribute,//从特性读取主键和自增列信息
-            IsAutoCloseConnection = true,//开启自动释放模式和EF原理一样我就不多解释了
-            SlaveConnectionConfigs = GetSonConnection(),//读写分离
-        });
-
-        //调式代码 用来打印SQL 
-        Db.Aop.OnLogExecuting = (sql, pars) =>
-        {
-            //Console.WriteLine(sql + "\r\n" +
-            //    Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value)));
-            //Console.WriteLine();
-        };
-
-    }
-
-    protected List<SlaveConnectionConfig> GetSonConnection()
-    {
-        return JsonConvert.DeserializeObject<List<SlaveConnectionConfig>>(GlobalsConfig.Configuration[ConfigurationKeys.Sql_ConnectionSon]); ;
-    }
-
-    //注意：不能写成静态的
-    public SqlSugarClient Db;//用来处理事务多表查询和复杂的操作
-	public SimpleClient<T> CurrentDb { get { return new SimpleClient<T>(Db); } }//用来操作当前表的数据
-
-    @foreach(var item in @Model.Tables)
-    {
-  @: public SimpleClient<@item> @(item)Db { get { return new SimpleClient<@item>(Db); } }//用来处理@(item)表的常用操作
-    }
-
-
-   /// <summary>
-    /// 获取所有
-    /// </summary>
-    /// <returns></returns>
-    public virtual List<T> GetList()
-    {
-        return CurrentDb.GetList();
-    }
-
-    /// <summary>
-    /// 获取单个
-    /// </summary>
-    /// <returns></returns>
-    public virtual T GetSingle(Expression<Func<T, bool>> whereExpression)
-    {
-        return CurrentDb.GetSingle(whereExpression);
-    }
-
-    /// <summary>
-    /// 异步获取单个
-    /// </summary>
-    /// <returns></returns>
-    public virtual async Task<T> GetSingleAsync(Expression<Func<T, bool>> whereExpression)
-    {
-        return await Db.Queryable<T>().Where(whereExpression).SingleAsync();
-    }
-
-    /// <summary>
-    /// 获取单个，为空自动自动初始化
-    /// </summary>
-    /// <returns></returns>
-    public virtual T GetSingleDefault(Expression<Func<T, bool>> whereExpression)
-    {
-        T temp = null;
-        try
-        {
-            temp = CurrentDb.GetSingle(whereExpression);
-        }
-        catch
-        {
-        }
-        return temp ?? new T();
-    }
-
-    /// <summary>
-    /// 异步获取单个，为空自动自动初始化
-    /// </summary>
-    /// <returns></returns>
-    public virtual async Task<T> GetSingleDefaultAsync(Expression<Func<T, bool>> whereExpression)
-    {
-        T temp = null;
-        try
-        {
-            temp = await Db.Queryable<T>().Where(whereExpression).SingleAsync();
-        }
-        catch
-        {
-        }
-        return temp ?? new T();
-    }
-
-    /// <summary>
-    /// 判断是否存在
-    /// </summary>
-    /// <returns></returns>
-    public virtual bool IsAny(Expression<Func<T, bool>> whereExpression)
-    {
-        return CurrentDb.IsAny(whereExpression);
-    }
-
-    /// <summary>
-    /// 根据表达式查询
-    /// </summary>
-    /// <returns></returns>
-    public virtual List<T> GetList(Expression<Func<T, bool>> whereExpression)
-    {
-        return CurrentDb.GetList(whereExpression);
-    }
-
-    /// <summary>
-    /// 异步根据表达式查询
-    /// </summary>
-    /// <returns></returns>
-    public virtual async Task<List<T>> GetListAsync(Expression<Func<T, bool>> whereExpression)
-    {
-        return await Db.Queryable<T>().Where(whereExpression).ToListAsync();
-    }
-
-    /// <summary>
-    /// 根据表达式查询分页
-    /// </summary>
-    /// <returns></returns>
-    public virtual List<T> GetPageList(Expression<Func<T, bool>> whereExpression, PageModel pageModel)
-    {
-        return CurrentDb.GetPageList(whereExpression, pageModel);
-    }
-
-    /// <summary>
-    /// 异步根据表达式查询分页
-    /// </summary>
-    /// <returns></returns>
-    public virtual async Task<List<T>> GetPageListAsync(Expression<Func<T, bool>> whereExpression, PageModel pageModel)
-    {
-        int totalNumber = 0;
-        RefAsync<int> re = new RefAsync<int>(totalNumber);
-        List<T> result = await Db.Queryable<T>().Where(whereExpression).ToPageListAsync(pageModel.PageIndex, pageModel.PageSize, re);
-        pageModel.PageCount = re.Value;
-        return result;
-    }
-
-    /// <summary>
-    /// 根据表达式查询分页并排序
-    /// </summary>
-    /// <param name="whereExpression">it</param>
-    /// <param name="pageModel"></param>
-    /// <param name="orderByExpression">it=>it.id或者it=>new{it.id,it.name}</param>
-    /// <param name="orderByType">OrderByType.Desc</param>
-    /// <returns></returns>
-    public virtual List<T> GetPageList(Expression<Func<T, bool>> whereExpression, PageModel pageModel, Expression<Func<T, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc)
-    {
-        return CurrentDb.GetPageList(whereExpression, pageModel, orderByExpression, orderByType);
-    }
-
-    /// <summary>
-    /// 异步根据表达式查询分页并排序
-    /// </summary>
-    /// <param name="whereExpression">it</param>
-    /// <param name="pageModel"></param>
-    /// <param name="orderByExpression">it=>it.id或者it=>new{it.id,it.name}</param>
-    /// <param name="orderByType">OrderByType.Desc</param>
-    /// <returns></returns>
-    public virtual async Task<List<T>> GetPageListAsync(Expression<Func<T, bool>> whereExpression, PageModel pageModel, Expression<Func<T, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc)
-    {
-        int totalNumber = 0;
-        RefAsync<int> re = new RefAsync<int>(totalNumber);
-        List<T> result = await Db.Queryable<T>().OrderByIF(orderByExpression != null, orderByExpression, orderByType).Where(whereExpression)
-            .ToPageListAsync(pageModel.PageIndex, pageModel.PageSize, re);
-        pageModel.PageCount = re.Value;
-        return result;
-    }
-
-
-    /// <summary>
-    /// 根据主键查询
-    /// </summary>
-    /// <returns></returns>
-    public virtual T GetById(dynamic id)
-    {
-        return CurrentDb.GetById(id);
-    }
-
-    /// <summary>
-    /// 异步根据主键查询
-    /// </summary>
-    /// <returns></returns>
-    public virtual async Task<T> GetByIdAsync(dynamic id)
-    {
-        return await Db.Queryable<T>().InSingleAsync(id);
-    }
-
-    /// <summary>
-    /// 根据主键删除
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public virtual bool Delete(dynamic id)
-    {
-        return CurrentDb.Delete(id);
-    }
-
-
-    /// <summary>
-    /// 根据实体删除
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public virtual bool Delete(T data)
-    {
-        return CurrentDb.Delete(data);
-    }
-
-    /// <summary>
-    /// 根据主键删除
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public virtual bool Delete(dynamic[] ids)
-    {
-        return CurrentDb.AsDeleteable().In(ids).ExecuteCommand() > 0;
-    }
-
-    /// <summary>
-    /// 根据表达式删除
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public virtual bool Delete(Expression<Func<T, bool>> whereExpression)
-    {
-        return CurrentDb.Delete(whereExpression);
-    }
-
-
-    /// <summary>
-    /// 根据实体更新，实体需要有主键
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public virtual bool Update(T obj)
-    {
-        return CurrentDb.Update(obj);
-    }
-
-    /// <summary>
-    ///批量更新
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public virtual bool Update(List<T> objs)
-    {
-        return CurrentDb.UpdateRange(objs);
-    }
-
-    /// <summary>
-    /// 插入
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public virtual bool Insert(T obj)
-    {
-        return CurrentDb.Insert(obj);
-    }
-
-
-    /// <summary>
-    /// 批量
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    public virtual bool Insert(List<T> objs)
-    {
-        return CurrentDb.InsertRange(objs);
-    }
-
-
-    //自已扩展更多方法 
-}
-
 

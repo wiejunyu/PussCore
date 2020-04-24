@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
-using Puss.Application.Common;
+using Puss.BusinessCore;
 using Puss.Data.Config;
 using Puss.Data.Models;
 using Puss.Redis;

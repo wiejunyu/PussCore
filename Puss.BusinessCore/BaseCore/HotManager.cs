@@ -2,6 +2,10 @@
 using SqlSugar;
 using System;
 using System.Collections.Generic;
-public class HotManager : DbContext<Hot>
+
+namespace Puss.BusinessCore
 {
+	public class HotManager : DbContext<Hot>
+	{
+	}
 }

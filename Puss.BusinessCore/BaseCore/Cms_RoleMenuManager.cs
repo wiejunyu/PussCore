@@ -2,6 +2,10 @@
 using SqlSugar;
 using System;
 using System.Collections.Generic;
-public class Cms_RoleMenuManager : DbContext<Cms_RoleMenu>
+
+namespace Puss.BusinessCore
 {
+	public class Cms_RoleMenuManager : DbContext<Cms_RoleMenu>
+	{
+	}
 }

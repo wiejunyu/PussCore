@@ -2,6 +2,10 @@
 using SqlSugar;
 using System;
 using System.Collections.Generic;
-public class ShopManager : DbContext<Shop>
+
+namespace Puss.BusinessCore
 {
+	public class ShopManager : DbContext<Shop>
+	{
+	}
 }

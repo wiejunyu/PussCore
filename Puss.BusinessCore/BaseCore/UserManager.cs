@@ -2,6 +2,10 @@
 using SqlSugar;
 using System;
 using System.Collections.Generic;
-public class UserManager : DbContext<User>
+
+namespace Puss.BusinessCore
 {
+	public class UserManager : DbContext<User>
+	{
+	}
 }
