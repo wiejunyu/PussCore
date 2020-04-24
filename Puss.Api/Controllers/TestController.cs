@@ -3,9 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Email;
+using Puss.OAuth1;
 using Puss.RabbitMQ;
 using Puss.Redis;
 using Sugar.Enties;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Puss.Api.Controllers
@@ -24,6 +29,7 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <param name="EmailService"></param>
         /// <param name="RabbitMQPushService"></param>
+        /// <param name="RedisService"></param>
         public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService, IRedisService RedisService) 
         {
             this.EmailService = EmailService;
@@ -53,63 +59,7 @@ namespace Puss.Api.Controllers
         {
             return await Task.Run(() =>
             {
-                OAuthBase oAuth = new OAuthBase();
-                Dictionary<string, string> dic = new Dictionary<string, string>();
-                dic.Add("realm", "https://mdmenrollment.apple.com/session");
-                dic.Add("oauth_consumer_key", "CK_dce7cc016cf57f471b12386f44cadc4757f6ac63de13ad65689eb155a3dd0553d038f9edbb525c045221516a076b6fb4");
-                dic.Add("oauth_token", null);
-                dic.Add("oauth_signature_method", "HMAC-SHA1");
-                string timeStamp = oAuth.GenerateTimeStamp();
-                string nonce = oAuth.GenerateNonce();
-                #region 签名
-                //签名
-                string normalizedUrl = null;
-                string normalizedRequestParameters = null;
-                string sSign = oAuth.GenerateSignature(
-                    url: new Uri(dic["realm"]),
-                    callback: null,
-                    consumerKey: dic["oauth_consumer_key"],
-                    consumerSecret: "CS_58826f88c61a87122d6997df1b50ff313e8c5990",
-                    token: null,
-                    tokenSecret: null,
-                    httpMethod: "GET",
-                    timeStamp: timeStamp,
-                    nonce: nonce,
-                    signatureType: OAuthBase.SignatureTypes.HMACSHA1,
-                    verifier: null,
-                    normalizedUrl: out normalizedUrl,
-                    normalizedRequestParameters: out normalizedRequestParameters);
-                #endregion
-                dic.Add("oauth_signature", sSign);
-                dic.Add("oauth_timestamp", timeStamp);
-                dic.Add("oauth_nonce", nonce);
-                dic.Add("oauth_version", "1.0");
-                string retString = string.Empty;
-
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://mdmenrollment.apple.com/session");
-                request.Method = "GET";
-                string Headers = null;
-                //请求头
-                foreach (var temp in dic)
-                {
-                    Headers += $"{temp.Key}=\"{temp.Value}\",";
-                }
-                Headers = Headers.Substring(0, Headers.ToString().Length - 1);
-                request.Headers.Set("Authorization", $"OAuth {Headers}");
-                try
-                {
-                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                    Stream myResponseStream = response.GetResponseStream();
-                    StreamReader streamReader = new StreamReader(myResponseStream);
-                    retString = streamReader.ReadToEnd();
-                    streamReader.Close();
-                    myResponseStream.Close();
-                }
-                catch (Exception ex)
-                {
-                    throw new AppException(ex);
-                }
-                return new ReturnResult(ReturnResultStatus.Succeed, retString);
+                return new ReturnResult(ReturnResultStatus.Succeed);
             });
         }
 
@@ -154,6 +104,79 @@ namespace Puss.Api.Controllers
         {
             var User = await new UserManager().GetByIdAsync(29);
             return new ReturnResult(ReturnResultStatus.Succeed, User.Email);
+        }
+
+        /// <summary>
+        /// OAuth签名测试
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("OAuth")]
+        [AllowAnonymous]
+        public async Task<ReturnResult> OAuth()
+        {
+            return await Task.Run(() =>
+            {
+                //基本参数
+                OAuthBase oAuth = new OAuthBase();
+                Dictionary<string, string> dic = new Dictionary<string, string>();
+                dic.Add("realm", "https://mdmenrollment.apple.com/session");
+                dic.Add("oauth_consumer_key", "CK_dce7cc016cf57f471b12386f44cadc4757f6ac63de13ad65689eb155a3dd0553d038f9edbb525c045221516a076b6fb4");
+                dic.Add("oauth_token", null);
+                dic.Add("oauth_signature_method", "HMAC-SHA1");
+                string timeStamp = oAuth.GenerateTimeStamp();
+                string nonce = oAuth.GenerateNonce();
+
+                #region 签名
+                //签名
+                string normalizedUrl = null;
+                string normalizedRequestParameters = null;
+                string sSign = oAuth.GenerateSignature(
+                    url: new Uri(dic["realm"]),
+                    callback: null,
+                    consumerKey: dic["oauth_consumer_key"],
+                    consumerSecret: "CS_58826f88c61a87122d6997df1b50ff313e8c5990",
+                    token: null,
+                    tokenSecret: null,
+                    httpMethod: "GET",
+                    timeStamp: timeStamp,
+                    nonce: nonce,
+                    signatureType: OAuthBase.SignatureTypes.HMACSHA1,
+                    verifier: null,
+                    normalizedUrl: out normalizedUrl,
+                    normalizedRequestParameters: out normalizedRequestParameters);
+                #endregion
+                dic.Add("oauth_signature", sSign);
+                dic.Add("oauth_timestamp", timeStamp);
+                dic.Add("oauth_nonce", nonce);
+                dic.Add("oauth_version", "1.0");
+                string retString = string.Empty;
+
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://mdmenrollment.apple.com/session");
+                request.Method = "GET";
+                string Headers = null;
+                //请求头
+                foreach (var temp in dic)
+                {
+                    Headers += $"{temp.Key}=\"{temp.Value}\",";
+                }
+                Headers = Headers.Substring(0, Headers.ToString().Length - 1);
+                request.Headers.Set("Authorization", $"OAuth {Headers}");
+
+                try
+                {
+                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                    Stream myResponseStream = response.GetResponseStream();
+                    StreamReader streamReader = new StreamReader(myResponseStream);
+                    retString = streamReader.ReadToEnd();
+                    streamReader.Close();
+                    myResponseStream.Close();
+                }
+                catch (Exception ex)
+                {
+                    throw new AppException(ex);
+                }
+                return new ReturnResult(ReturnResultStatus.Succeed, retString);
+            });
         }
     }
 }

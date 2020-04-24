@@ -41,6 +41,7 @@
     <ProjectReference Include="..\Puss.Email\Puss.Email.csproj" />
     <ProjectReference Include="..\Puss.Enties\Puss.Enties.csproj" />
     <ProjectReference Include="..\Puss.Log\Puss.Log.csproj" />
+    <ProjectReference Include="..\Puss.OAuth1\Puss.OAuth1.csproj" />
     <ProjectReference Include="..\Puss.QrCode\Puss.QrCode.csproj" />
     <ProjectReference Include="..\Puss.RabbitMQ\Puss.RabbitMQ.csproj" />
     <ProjectReference Include="..\Puss.Redis\Puss.Redis.csproj" />
