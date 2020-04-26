@@ -143,6 +143,7 @@ namespace Puss.Api.Controllers
                     normalizedUrl: out normalizedUrl,
                     normalizedRequestParameters: out normalizedRequestParameters);
                 #endregion
+
                 dic.Add("oauth_signature", sSign);
                 dic.Add("oauth_timestamp", timeStamp);
                 dic.Add("oauth_nonce", nonce);
