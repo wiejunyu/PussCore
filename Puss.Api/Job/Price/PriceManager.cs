@@ -18,6 +18,8 @@ namespace Puss.Api.Job
         /// <summary>
         /// 获取价格
         /// </summary>
+        /// <param name="ReptileService">获取价格类接口</param>
+        /// <param name="RedisService">Redis类接口</param>
         public static void GetPrice(IReptileService ReptileService, IRedisService RedisService)
         {
             string html = ReptileService.GetHtml("http://hangqing.btc112.com/getdata.php");

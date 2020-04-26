@@ -42,5 +42,13 @@ namespace Puss.Data.Models
         {
             get { return "LogJob"; }
         }
+
+        /// <summary>
+        /// 唯一ID获取
+        /// </summary>
+        public static string GetGuid
+        {
+            get { return "GetGuid"; }
+        }
     }
 }

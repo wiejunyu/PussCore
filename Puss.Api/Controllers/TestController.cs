@@ -119,7 +119,7 @@ namespace Puss.Api.Controllers
                 Dictionary<string, string> dic = new Dictionary<string, string>();
                 dic.Add("realm", "https://mdmenrollment.apple.com/session");
                 dic.Add("oauth_consumer_key", "CK_dce7cc016cf57f471b12386f44cadc4757f6ac63de13ad65689eb155a3dd0553d038f9edbb525c045221516a076b6fb4");
-                dic.Add("oauth_token", null);
+                dic.Add("oauth_token", "AT_O17074483117O1139408d744ae5d202005d882c6fe4e3ad82fc80O1587695006526");
                 dic.Add("oauth_signature_method", "HMAC-SHA1");
                 string timeStamp = oAuth.GenerateTimeStamp();
                 string nonce = oAuth.GenerateNonce();
@@ -133,8 +133,8 @@ namespace Puss.Api.Controllers
                     callback: null,
                     consumerKey: dic["oauth_consumer_key"],
                     consumerSecret: "CS_58826f88c61a87122d6997df1b50ff313e8c5990",
-                    token: null,
-                    tokenSecret: null,
+                    token: dic["oauth_token"],
+                    tokenSecret: "AS_95b5db75e23d5e0605295243dcc2c6c3f84b8abc",
                     httpMethod: "GET",
                     timeStamp: timeStamp,
                     nonce: nonce,
@@ -159,8 +159,8 @@ namespace Puss.Api.Controllers
                     Headers += $"{temp.Key}=\"{temp.Value}\",";
                 }
                 Headers = Headers.Substring(0, Headers.ToString().Length - 1);
-                request.Headers.Set("Authorization", $"OAuth {Headers}");
 
+                request.Headers.Set("Authorization", $"OAuth {Headers}");
                 try
                 {
                     HttpWebResponse response = (HttpWebResponse)request.GetResponse();
@@ -176,6 +176,19 @@ namespace Puss.Api.Controllers
                 }
                 return new ReturnResult(ReturnResultStatus.Succeed, retString);
             });
+        }
+
+        /// <summary>
+        /// 获取唯一ID保存
+        /// </summary>
+        /// <param name="deviceId">唯一ID</param>
+        /// <returns></returns>
+        [HttpPost("SetGuid")]
+        [AllowAnonymous]
+        public async Task<ReturnResult> SetGuid(string deviceId)
+        {
+            await RabbitMQPushService.PushMessage(QueueKey.GetGuid, deviceId);
+            return new ReturnResult(ReturnResultStatus.Succeed);
         }
     }
 }
