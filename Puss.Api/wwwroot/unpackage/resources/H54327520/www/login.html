@@ -7,7 +7,7 @@
   <meta name="keywords" content="">
   <meta name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title></title>
+  <title>Amaze UI Examples</title>
   <meta name="renderer" content="webkit">
   <meta http-equiv="Cache-Control" content="no-siteapp"/>
   <link rel="stylesheet" href="./css/amazeui.min.css">
@@ -32,16 +32,28 @@
 <div class="am-g myapp-login">
 	<div class="myapp-login-bg">
 		 <div class="myapp-login-logo">
-			<i class="am-icon-stumbleupon"></i>
+		 	<i class="am-icon-stumbleupon"></i>
 		 </div>
 		 <div class="am-u-sm-10 myapp-login-form">
-			<form class="am-form"  id="from">
+		 	<form class="am-form"  id="from">
 			  <fieldset>
+			    <div class="am-form-group">
+			      <input type="text" name="UserName" placeholder="请输入账号">
+			    </div>
+			    <div class="am-form-group">
+			      <input type="password" name="PassWord" placeholder="请输入密码">
+			    </div>
 				<div class="am-form-group">
-				  <input type="text" name="Price" placeholder="价格" id="Price">
+				  <input type="text" name="Code" placeholder="请输入验证码">
+				  <input type="hidden" name="CodeKey" id="CodeKey">
 				</div>
-				<p><button type="button" class="am-btn am-btn-default" id="btnOutLogin">退出登录</button></p>
-				
+				<div class="am-form-group" style="text-align: center;">
+				  <img id="imgCode"/>
+				</div>
+			    <p><button type="button" class="am-btn am-btn-default" id="btnSubmit">登录</button></p>
+			    <div class="login-text">
+			    	忘记密码?
+			    </div>
 			  </fieldset>
 			</form>
 		 </div>
@@ -49,32 +61,16 @@
 </div>
 <script>
 	$(function () {
-		IsLogin();
-		$.ajax({
-			type: "POST",
-			url: "http://118.89.182.215:85/api/ExpressDelivery/GetPrice?symbol=eth",
-			contentType: 'application/json;charset=utf-8',
-			headers: {
-				Authorization: 'Bearer ' + GetToken(),
-				Accept: "text/plain"
-			},
-			beforeSend: function (xhr) {
-				xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
-			},
-			success: function (data) {
-				if (data.status == 200) {
-				    $("#Price").val(data.message);
-				}
-				else {
-				    alert(data.message);
-				}
-			}
-		});
+		//载入验证码
+		CodeKey();
 	})
-	
-	//退出登录提交
-	$("#btnOutLogin").click(function () {
-		OutLogin();
+	//点击图片刷新验证码
+	$("#imgCode").click(function () {
+		CodeKey();
+	});
+	//登陆提交
+	$("#btnSubmit").click(function () {
+		Login();
 	});
 </script>
 </body>

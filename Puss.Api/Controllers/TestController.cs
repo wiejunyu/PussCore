@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Puss.BusinessCore;
 using Puss.Data.Enum;
@@ -12,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Puss.Api.Controllers
@@ -23,16 +25,19 @@ namespace Puss.Api.Controllers
     {
         private readonly IEmailService EmailService;
         private readonly IRabbitMQPushService RabbitMQPushService;
+        private readonly IHttpContextAccessor _accessor;
 
         /// <summary>
         /// 测试
         /// </summary>
+        /// <param name="accessor"></param>
         /// <param name="EmailService"></param>
         /// <param name="RabbitMQPushService"></param>
-        public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService) 
+        public TestController(IHttpContextAccessor accessor, IEmailService EmailService, IRabbitMQPushService RabbitMQPushService) 
         {
             this.EmailService = EmailService;
             this.RabbitMQPushService = RabbitMQPushService;
+            _accessor = accessor;
         }
         /// <summary>
         /// 登录测试
@@ -183,12 +188,23 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <param name="deviceId">唯一ID</param>
         /// <returns></returns>
-        [HttpPost("SetGuid")]
+        [HttpGet("SetGuid")]
         [AllowAnonymous]
         public async Task<ReturnResult> SetGuid(string deviceId)
         {
             await RabbitMQPushService.PushMessage(QueueKey.GetGuid, deviceId);
             return new ReturnResult(ReturnResultStatus.Succeed);
+        }
+
+        /// <summary>
+        /// 测试
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("Test")]
+        [AllowAnonymous]
+        public async Task<ReturnResult> Test()
+        {
+            return await Task.Run(() => new ReturnResult(ReturnResultStatus.Succeed));
         }
     }
 }

@@ -172,6 +172,7 @@ namespace Puss.Api
 
             #region 定时计划
             services.AddHostedService<PriceJobTrigger>();
+            services.AddHostedService<LogJobTrigger>();
             #endregion
 
             services.AddMvc(options =>
