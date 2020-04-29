@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Puss.BusinessCore;
 using Puss.Data.Enum;
@@ -11,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Text;
@@ -26,10 +28,12 @@ namespace Puss.Api.Controllers
         private readonly IHttpContextAccessor _accessor;
         private readonly IEmailService EmailService;
         private readonly IRabbitMQPushService RabbitMQPushService;
+        private readonly IHttpContextAccessor _accessor;
 
         /// <summary>
         /// 测试
         /// </summary>
+        /// <param name="accessor"></param>
         /// <param name="EmailService"></param>
         /// <param name="RabbitMQPushService"></param>
         /// <param name="accessor"></param>
