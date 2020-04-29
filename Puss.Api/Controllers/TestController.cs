@@ -28,12 +28,10 @@ namespace Puss.Api.Controllers
         private readonly IHttpContextAccessor _accessor;
         private readonly IEmailService EmailService;
         private readonly IRabbitMQPushService RabbitMQPushService;
-        private readonly IHttpContextAccessor _accessor;
 
         /// <summary>
         /// 测试
         /// </summary>
-        /// <param name="accessor"></param>
         /// <param name="EmailService"></param>
         /// <param name="RabbitMQPushService"></param>
         /// <param name="accessor"></param>
@@ -334,6 +332,29 @@ namespace Puss.Api.Controllers
                 }
                 return new ReturnResult(ReturnResultStatus.Succeed, retString);
             });
+        }
+
+        /// <summary>
+        /// 获取唯一ID保存
+        /// </summary>
+        /// <param name="xml">CheckInXml</param>
+        /// <returns></returns>
+        [HttpPut("CheckIn")]
+        [AllowAnonymous]
+        [Consumes("application/xml")]
+        public async Task<ReturnResult> CheckIn(CheckInXml xml)
+        {
+            string str = null;
+            try
+            {
+                str = $"本次推送了:{JsonConvert.SerializeObject(xml) ?? "没有推送"},IP:{_accessor.HttpContext.Connection.RemoteIpAddress}";
+            }
+            catch (Exception ex)
+            {
+                str = ex.Message;
+            }
+            await RabbitMQPushService.PushMessage(QueueKey.GetGuid, str);
+            return new ReturnResult(ReturnResultStatus.Succeed);
         }
     }
 }
