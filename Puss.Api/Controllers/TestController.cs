@@ -6,13 +6,15 @@ using Puss.Data.Models;
 using Puss.Email;
 using Puss.OAuth1;
 using Puss.RabbitMQ;
-using Puss.Redis;
 using Sugar.Enties;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Text;
+using Microsoft.AspNetCore.Http;
 
 namespace Puss.Api.Controllers
 {
@@ -21,6 +23,7 @@ namespace Puss.Api.Controllers
     /// </summary>
     public class TestController : ApiBaseController
     {
+        private readonly IHttpContextAccessor _accessor;
         private readonly IEmailService EmailService;
         private readonly IRabbitMQPushService RabbitMQPushService;
 
@@ -29,10 +32,12 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <param name="EmailService"></param>
         /// <param name="RabbitMQPushService"></param>
-        public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService) 
+        /// <param name="accessor"></param>
+        public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService, IHttpContextAccessor accessor) 
         {
             this.EmailService = EmailService;
             this.RabbitMQPushService = RabbitMQPushService;
+            _accessor = accessor;
         }
         /// <summary>
         /// 登录测试
@@ -118,8 +123,8 @@ namespace Puss.Api.Controllers
                 OAuthBase oAuth = new OAuthBase();
                 Dictionary<string, string> dic = new Dictionary<string, string>();
                 dic.Add("realm", "https://mdmenrollment.apple.com/session");
-                dic.Add("oauth_consumer_key", "CK_dce7cc016cf57f471b12386f44cadc4757f6ac63de13ad65689eb155a3dd0553d038f9edbb525c045221516a076b6fb4");
-                dic.Add("oauth_token", "AT_O17074483117O1139408d744ae5d202005d882c6fe4e3ad82fc80O1587695006526");
+                dic.Add("oauth_consumer_key", "CK_addb7b64e88d62b39aaf4df8d51f92c553a18abc9f363bffe791f56af4340ef7713b6ea96248e6943ddcadeaf43d85cb");
+                dic.Add("oauth_token", "AT_O17074483117O21ff0e2e6294376aa5f22190e32709df3701fdd4O1588039118243");
                 dic.Add("oauth_signature_method", "HMAC-SHA1");
                 string timeStamp = oAuth.GenerateTimeStamp();
                 string nonce = oAuth.GenerateNonce();
@@ -132,9 +137,9 @@ namespace Puss.Api.Controllers
                     url: new Uri(dic["realm"]),
                     callback: null,
                     consumerKey: dic["oauth_consumer_key"],
-                    consumerSecret: "CS_58826f88c61a87122d6997df1b50ff313e8c5990",
+                    consumerSecret: "CS_c69ac3397ce27a60844b4839f1c05620e91ee49b",
                     token: dic["oauth_token"],
-                    tokenSecret: "AS_95b5db75e23d5e0605295243dcc2c6c3f84b8abc",
+                    tokenSecret: "AS_151abc4e67a145da16dbc0f5e14dd13c5811338a",
                     httpMethod: "GET",
                     timeStamp: timeStamp,
                     nonce: nonce,
@@ -183,12 +188,148 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <param name="deviceId">唯一ID</param>
         /// <returns></returns>
-        [HttpPost("SetGuid")]
+        [HttpGet("SetGuid")]
         [AllowAnonymous]
-        public async Task<ReturnResult> SetGuid(string deviceId)
+        public async Task<ReturnResult> SetGuid(string deviceId = null)
         {
-            await RabbitMQPushService.PushMessage(QueueKey.GetGuid, deviceId);
+            string str = null;
+            try
+            {
+                str = $"本次推送了:{deviceId ?? "没有推送"},IP:{_accessor.HttpContext.Connection.RemoteIpAddress}";
+            }
+            catch (Exception ex)
+            {
+                str = ex.Message;
+            }
+            await RabbitMQPushService.PushMessage(QueueKey.GetGuid, str);
             return new ReturnResult(ReturnResultStatus.Succeed);
+        }
+
+        /// <summary>
+        /// iphone-配置配置文件
+        /// </summary>
+        /// <param name="token">token</param>
+        /// <returns></returns>
+        [HttpPost("IphoneProfile")]
+        [AllowAnonymous]
+        public async Task<ReturnResult> IphoneProfile(string token)
+        {
+            return await Task.Run(() =>
+            {
+                string retString = null;
+
+                //头部
+                Dictionary<string, string> dicHeaders = new Dictionary<string, string>();
+                dicHeaders.Add("User-Agent", "ProfileManager-1.0");
+                dicHeaders.Add("X-Server-Protocol-Version", "2");
+                dicHeaders.Add("X-ADM-Auth-Session", token);
+
+                //内容
+                IphoneProfile dicBody = new IphoneProfile();
+                dicBody.profile_name = "Test Profile";
+                dicBody.url = "http://118.89.182.215:86/1.mobileconfig";
+                dicBody.allow_pairing= "true";
+                dicBody.is_supervised= "false";
+                dicBody.is_multi_user="false";
+                dicBody.is_mandatory="false";
+                dicBody.await_device_configured = "false";
+                dicBody.is_mdm_removable = "true";
+                dicBody.auto_advance_setup = "false";
+                dicBody.org_magic = "ecb58a5d-c722-4008-aa60-0d732f6234bb";
+                dicBody.devices = new string[1]{ "FFMWPXCGHXR6"};
+                string Json = JsonConvert.SerializeObject(dicBody);
+
+                //URL
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://mdmenrollment.apple.com/profile");
+
+                //内容
+                byte[] byteData = Encoding.UTF8.GetBytes(Json);
+
+                //请求头
+                foreach (var temp in dicHeaders)
+                {
+                    request.Headers.Set(temp.Key, temp.Value);
+                }
+
+                //请求方式参数
+                request.Method = "POST";
+                request.ContentType = "application/json;charset=UTF-8";
+                request.ContentLength = byteData.Length;
+
+                try
+                {
+                    Stream myResponseStream = request.GetRequestStream();
+                    myResponseStream.Write(byteData, 0, byteData.Length);
+                    myResponseStream.Close();
+                    var response = (HttpWebResponse)request.GetResponse();
+                    var responseString = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding("utf-8")).ReadToEnd();
+                    retString = responseString.ToString();
+                }
+                catch (Exception ex)
+                {
+                    throw new AppException(ex);
+                }
+                return new ReturnResult(ReturnResultStatus.Succeed, retString);
+            });
+        }
+
+        /// <summary>
+        /// iphone-分发
+        /// </summary>
+        /// <param name="token">token</param>
+        /// <returns></returns>
+        [HttpPost("IphoneDevices")]
+        [AllowAnonymous]
+        public async Task<ReturnResult> IphoneDevices(string token)
+        {
+            return await Task.Run(() =>
+            {
+                string retString = null;
+
+                //头部
+                Dictionary<string, string> dicHeaders = new Dictionary<string, string>();
+                dicHeaders.Add("User-Agent", "ProfileManager-1.0");
+                dicHeaders.Add("X-Server-Protocol-Version", "2");
+                dicHeaders.Add("X-ADM-Auth-Session", token);
+
+                //内容
+                IphoneDevices dicBody = new IphoneDevices();
+                dicBody.profile_uuid = "36A4919A8454DB330C1DB98EED28502D";
+                dicBody.devices = new string[1] { "FFMWPXCGHXR6" };
+                string Json = JsonConvert.SerializeObject(dicBody);
+
+                //URL
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://mdmenrollment.apple.com/profile/devices");
+
+                //内容
+                byte[] byteData = Encoding.UTF8.GetBytes(Json);
+
+                //请求头
+                foreach (var temp in dicHeaders)
+                {
+                    request.Headers.Set(temp.Key, temp.Value);
+                }
+
+                //请求方式参数
+                request.Method = "PUT";
+                request.ContentType = "application/json;charset=UTF-8";
+                request.ContentLength = byteData.Length;
+
+                try
+                {
+                    Stream myResponseStream = request.GetRequestStream();
+                    myResponseStream.Write(byteData, 0, byteData.Length);
+                    myResponseStream.Close();
+                    var response = (HttpWebResponse)request.GetResponse();
+                    var responseString = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding("utf-8")).ReadToEnd();
+                    retString = responseString.ToString();
+                }
+                catch (Exception ex)
+                {
+                    throw new AppException(ex);
+                }
+                return new ReturnResult(ReturnResultStatus.Succeed, retString);
+            });
         }
     }
 }
