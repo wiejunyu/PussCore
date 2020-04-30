@@ -36,5 +36,12 @@ namespace Puss.Data.Models
         /// </summary>
         public static string Price { get { return "Price:"; } }
         #endregion
+
+        #region MDM
+        /// <summary>
+        /// MDM Token
+        /// </summary>
+        public static string MDM_Token { get { return "MDM_Token"; } }
+        #endregion
     }
 }

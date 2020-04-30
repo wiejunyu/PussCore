@@ -137,10 +137,11 @@ namespace Puss.Redis
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public async Task SetAsync(string key, object value)
+        /// <param name="expireMinutes"></param>
+        public async Task SetAsync(string key, object value, int expireMinutes = 0)
         {
             key = MergeKey(key);
-            await GetDatabase().StringSetAsync(key, JsonConvert.SerializeObject(value));
+            await GetDatabase().StringSetAsync(key, JsonConvert.SerializeObject(value), TimeSpan.FromMinutes(expireMinutes));
         }
 
         /// <summary>

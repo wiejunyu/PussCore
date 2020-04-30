@@ -51,7 +51,8 @@ namespace Puss.Redis
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        Task SetAsync(string key, object value);
+        /// <param name="expireMinutes"></param>
+        Task SetAsync(string key, object value, int expireMinutes = 0);
 
         /// <summary>
         /// 根据key获取缓存对象

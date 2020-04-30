@@ -181,6 +181,7 @@ namespace Puss.Api
                 options.Filters.Add<HttpGlobalExceptionFilter>();
                 //身份验证
                 options.Filters.Add<RequestAuthorizeAttribute>();
+                
             }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             #region 跨域

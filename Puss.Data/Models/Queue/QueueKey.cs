@@ -50,5 +50,13 @@ namespace Puss.Data.Models
         {
             get { return "GetGuid"; }
         }
+
+        /// <summary>
+        /// 唯一ID获取参数
+        /// </summary>
+        public static string GetGuidBody
+        {
+            get { return "GetGuidBody"; }
+        }
     }
 }

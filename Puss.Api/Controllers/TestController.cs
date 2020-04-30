@@ -12,11 +12,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Text;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
+using System.Xml;
+using Puss.Api.Aop;
+using Puss.Iphone;
+using Puss.Redis;
 
 namespace Puss.Api.Controllers
 {
@@ -28,17 +31,20 @@ namespace Puss.Api.Controllers
         private readonly IHttpContextAccessor _accessor;
         private readonly IEmailService EmailService;
         private readonly IRabbitMQPushService RabbitMQPushService;
+        private readonly IRedisService RedisService;
 
         /// <summary>
         /// 测试
         /// </summary>
         /// <param name="EmailService"></param>
         /// <param name="RabbitMQPushService"></param>
+        /// <param name="RedisService"></param>
         /// <param name="accessor"></param>
-        public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService, IHttpContextAccessor accessor) 
+        public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService, IRedisService RedisService, IHttpContextAccessor accessor)
         {
             this.EmailService = EmailService;
             this.RabbitMQPushService = RabbitMQPushService;
+            this.RedisService = RedisService;
             _accessor = accessor;
         }
         /// <summary>
@@ -186,93 +192,68 @@ namespace Puss.Api.Controllers
         }
 
         /// <summary>
-        /// 获取唯一ID保存
-        /// </summary>
-        /// <param name="deviceId">唯一ID</param>
-        /// <returns></returns>
-        [HttpGet("SetGuid")]
-        [AllowAnonymous]
-        public async Task<ReturnResult> SetGuid(string deviceId = null)
-        {
-            string str = null;
-            try
-            {
-                str = $"本次推送了:{deviceId ?? "没有推送"},IP:{_accessor.HttpContext.Connection.RemoteIpAddress}";
-            }
-            catch (Exception ex)
-            {
-                str = ex.Message;
-            }
-            await RabbitMQPushService.PushMessage(QueueKey.GetGuid, str);
-            return new ReturnResult(ReturnResultStatus.Succeed);
-        }
-
-        /// <summary>
         /// iphone-配置配置文件
         /// </summary>
-        /// <param name="token">token</param>
+        /// <param name="IsToken">IsToken</param>
         /// <returns></returns>
         [HttpPost("IphoneProfile")]
         [AllowAnonymous]
-        public async Task<ReturnResult> IphoneProfile(string token)
+        public async Task<ReturnResult> IphoneProfile(bool IsToken = false)
         {
-            return await Task.Run(() =>
+            string retString = null;
+
+            //头部
+            Dictionary<string, string> dicHeaders = new Dictionary<string, string>();
+            dicHeaders.Add("User-Agent", "ProfileManager-1.0");
+            dicHeaders.Add("X-Server-Protocol-Version", "2");
+            dicHeaders.Add("X-ADM-Auth-Session", await IphoneService.OAuth(IsToken,RedisService));
+
+            //内容
+            IphoneProfile dicBody = new IphoneProfile();
+            dicBody.profile_name = "Test Profile";
+            dicBody.url = "https://118.89.182.215/GetProfile";
+            dicBody.allow_pairing = "true";
+            dicBody.is_supervised = "false";
+            dicBody.is_multi_user = "false";
+            dicBody.is_mandatory = "false";
+            dicBody.await_device_configured = "false";
+            dicBody.is_mdm_removable = "true";
+            dicBody.auto_advance_setup = "false";
+            dicBody.org_magic = "ecb58a5d-c722-4008-aa60-0d732f6234bb";
+            dicBody.devices = new string[1] { "FFMWPXCGHXR6" };
+            string Json = JsonConvert.SerializeObject(dicBody);
+
+            //URL
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://mdmenrollment.apple.com/profile");
+
+            //内容
+            byte[] byteData = Encoding.UTF8.GetBytes(Json);
+
+            //请求头
+            foreach (var temp in dicHeaders)
             {
-                string retString = null;
+                request.Headers.Set(temp.Key, temp.Value);
+            }
 
-                //头部
-                Dictionary<string, string> dicHeaders = new Dictionary<string, string>();
-                dicHeaders.Add("User-Agent", "ProfileManager-1.0");
-                dicHeaders.Add("X-Server-Protocol-Version", "2");
-                dicHeaders.Add("X-ADM-Auth-Session", token);
+            //请求方式参数
+            request.Method = "POST";
+            request.ContentType = "application/json;charset=UTF-8";
+            request.ContentLength = byteData.Length;
 
-                //内容
-                IphoneProfile dicBody = new IphoneProfile();
-                dicBody.profile_name = "Test Profile";
-                dicBody.url = "http://118.89.182.215:86/1.mobileconfig";
-                dicBody.allow_pairing= "true";
-                dicBody.is_supervised= "false";
-                dicBody.is_multi_user="false";
-                dicBody.is_mandatory="false";
-                dicBody.await_device_configured = "false";
-                dicBody.is_mdm_removable = "true";
-                dicBody.auto_advance_setup = "false";
-                dicBody.org_magic = "ecb58a5d-c722-4008-aa60-0d732f6234bb";
-                dicBody.devices = new string[1]{ "FFMWPXCGHXR6"};
-                string Json = JsonConvert.SerializeObject(dicBody);
-
-                //URL
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://mdmenrollment.apple.com/profile");
-
-                //内容
-                byte[] byteData = Encoding.UTF8.GetBytes(Json);
-
-                //请求头
-                foreach (var temp in dicHeaders)
-                {
-                    request.Headers.Set(temp.Key, temp.Value);
-                }
-
-                //请求方式参数
-                request.Method = "POST";
-                request.ContentType = "application/json;charset=UTF-8";
-                request.ContentLength = byteData.Length;
-
-                try
-                {
-                    Stream myResponseStream = request.GetRequestStream();
-                    myResponseStream.Write(byteData, 0, byteData.Length);
-                    myResponseStream.Close();
-                    var response = (HttpWebResponse)request.GetResponse();
-                    var responseString = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding("utf-8")).ReadToEnd();
-                    retString = responseString.ToString();
-                }
-                catch (Exception ex)
-                {
-                    throw new AppException(ex);
-                }
-                return new ReturnResult(ReturnResultStatus.Succeed, retString);
-            });
+            try
+            {
+                Stream myResponseStream = request.GetRequestStream();
+                myResponseStream.Write(byteData, 0, byteData.Length);
+                myResponseStream.Close();
+                var response = (HttpWebResponse)request.GetResponse();
+                var responseString = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding("utf-8")).ReadToEnd();
+                retString = responseString.ToString();
+            }
+            catch (Exception ex)
+            {
+                throw new AppException(ex);
+            }
+            return new ReturnResult(ReturnResultStatus.Succeed, retString);
         }
 
         /// <summary>
@@ -335,19 +316,89 @@ namespace Puss.Api.Controllers
         }
 
         /// <summary>
-        /// 获取唯一ID保存
+        /// CheckIn文件流
         /// </summary>
-        /// <param name="xml">CheckInXml</param>
         /// <returns></returns>
         [HttpPut("CheckIn")]
         [AllowAnonymous]
-        [Consumes("application/xml")]
-        public async Task<ReturnResult> CheckIn(CheckInXml xml)
+        [AopIphone]
+        public object CheckIn()
+        {
+            //string str = $"本次推送了:{deviceId ?? "没有推送"},IP:{_accessor.HttpContext.Connection.RemoteIpAddress}";
+            //RabbitMQPushService.PushMessage(QueueKey.GetGuid, str);
+            var syncIOFeature = HttpContext.Features.Get<IHttpBodyControlFeature>();
+            if (syncIOFeature != null)
+            {
+                syncIOFeature.AllowSynchronousIO = true;
+            }
+            using (var ms = new MemoryStream())
+            {
+                string sXml = null;
+                try
+                {
+                    Request.Body.CopyTo(ms);
+                    var b = ms.ToArray();
+                    var postParamsString = Encoding.UTF8.GetString(b);
+                    byte[] array = Encoding.ASCII.GetBytes(postParamsString);
+                    MemoryStream stream = new MemoryStream(array);             //convert stream 2 string      
+                    StreamReader reader = new StreamReader(stream);
+                    sXml = JsonConvert.SerializeObject(PListNet.PList.Load(reader.BaseStream));
+                    sXml = $"本次推送了:{sXml ?? "没有推送"},IP:{_accessor.HttpContext.Connection.RemoteIpAddress}";
+                }
+                catch (Exception ex)
+                {
+                    sXml = ex.Message;
+                }
+                RabbitMQPushService.PushMessage(QueueKey.GetGuid, sXml);
+            }
+
+            object objXml = new object();
+            try
+            {
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    XmlWriterSettings settings = new XmlWriterSettings
+                    {
+                        Encoding = Encoding.UTF8,
+                        Indent = true,
+                        IndentChars = "\t",
+                        NewLineChars = "\n"
+                    };
+                    using (XmlWriter xmlWriter = XmlWriter.Create(memoryStream, settings))
+                    {
+                        xmlWriter.WriteDocType("plist", "-//Apple Computer//DTD PLIST 1.0//EN", "http://www.apple.com/DTDs/PropertyList-1.0.dtd", null);
+                        xmlWriter.WriteStartElement("plist");
+                        xmlWriter.WriteAttributeString("version", "1.0");
+                        xmlWriter.WriteStartElement("dict");
+                        xmlWriter.WriteEndElement();
+                        xmlWriter.Flush();
+                    }
+
+                    StreamReader reader = new StreamReader(memoryStream);
+                    objXml = PListNet.PList.Load(reader.BaseStream);
+                }
+            }
+            catch (Exception ex)
+            {
+                objXml = new object();
+            }
+            return objXml;
+        }
+
+        /// <summary>
+        /// CheckIn字符串
+        /// </summary>
+        /// <param name="deviceId">唯一ID</param>
+        /// <returns></returns>
+        [HttpPut("CheckInOfString")]
+        [AllowAnonymous]
+        [AopIphone]
+        public async Task<ReturnResult> CheckInOfString(string deviceId = null)
         {
             string str = null;
             try
             {
-                str = $"本次推送了:{JsonConvert.SerializeObject(xml) ?? "没有推送"},IP:{_accessor.HttpContext.Connection.RemoteIpAddress}";
+                str = $"本次推送了:{deviceId ?? "没有推送"},IP:{_accessor.HttpContext.Connection.RemoteIpAddress}";
             }
             catch (Exception ex)
             {
