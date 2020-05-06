@@ -29,23 +29,6 @@ namespace Puss.Api.Controllers
     [ApiController]
     public class MDMController : ControllerBase
     {
-        private readonly IHttpContextAccessor _accessor;
-        private readonly IEmailService EmailService;
-        private readonly IRabbitMQPushService RabbitMQPushService;
-
-        /// <summary>
-        /// 测试
-        /// </summary>
-        /// <param name="EmailService"></param>
-        /// <param name="RabbitMQPushService"></param>
-        /// <param name="accessor"></param>
-        public MDMController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService, IHttpContextAccessor accessor)
-        {
-            this.EmailService = EmailService;
-            this.RabbitMQPushService = RabbitMQPushService;
-            _accessor = accessor;
-        }
-
         /// <summary>
         /// 获取MDM服务器信息
         /// </summary>
@@ -55,12 +38,13 @@ namespace Puss.Api.Controllers
         public JsonResult MDMServiceConfig()
         {
             return new JsonResult(
-                new { dep_enrollment_url = "https://118.89.182.215/api/Test/CheckIn" ,
-                dep_anchor_certs_url = "https://118.89.182.215/GetCertificate",
-                //trust_profile_url = "http://118.89.182.215:86/1.mobileconfig"
-                trust_profile_url = "https://118.89.182.215/api/Test/IphoneProfile"
-                }
-                );
+                new
+                {
+                    dep_enrollment_url = "https://118.89.182.215/api/Test/CheckIn",
+                    dep_anchor_certs_url = "https://118.89.182.215/GetCertificate",
+                    //trust_profile_url = "http://118.89.182.215:86/1.mobileconfig"
+                    trust_profile_url = "https://118.89.182.215/api/Test/IphoneProfile"
+                });
         }
 
         /// <summary>

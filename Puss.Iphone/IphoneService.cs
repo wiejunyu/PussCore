@@ -13,14 +13,14 @@ namespace Puss.Iphone
     public class IphoneService
     {
         /// <summary>
-        /// OAuth
+        /// OAuth验证并获取token
         /// </summary>
-        /// <param name="IsToken">IsToken</param>
+        /// <param name="IsToken">是否需要更新token</param>
         /// <param name="RedisService">Redis类接口</param>
         /// <returns></returns>
         public static async Task<string> OAuth(bool IsToken, IRedisService RedisService)
         {
-            if (RedisService.Exists(CommentConfig.MDM_Token) && IsToken) return (await RedisService.GetAsync(CommentConfig.MDM_Token)).ToString();
+            if (RedisService.Exists(CommentConfig.MDM_Token) && !IsToken) return (await RedisService.GetAsync(CommentConfig.MDM_Token)).ToString();
             return await Task.Run(() =>
             {
                 string retString = string.Empty;
@@ -28,18 +28,18 @@ namespace Puss.Iphone
                 {
                     //基本参数
                     OAuthBase oAuth = new OAuthBase();
-                    Dictionary<string, string> dic = new Dictionary<string, string>();
-                    dic.Add("realm", "https://mdmenrollment.apple.com/session");
-                    dic.Add("oauth_consumer_key", "CK_addb7b64e88d62b39aaf4df8d51f92c553a18abc9f363bffe791f56af4340ef7713b6ea96248e6943ddcadeaf43d85cb");
-                    dic.Add("oauth_token", "AT_O17074483117O21ff0e2e6294376aa5f22190e32709df3701fdd4O1588039118243");
-                    dic.Add("oauth_signature_method", "HMAC-SHA1");
+                    Dictionary<string, string> dic = new Dictionary<string, string>()
+                    {
+                        { "realm", "https://mdmenrollment.apple.com/session" },
+                        {"oauth_consumer_key", "CK_addb7b64e88d62b39aaf4df8d51f92c553a18abc9f363bffe791f56af4340ef7713b6ea96248e6943ddcadeaf43d85cb" },
+                        {"oauth_token", "AT_O17074483117O21ff0e2e6294376aa5f22190e32709df3701fdd4O1588039118243" },
+                        { "oauth_signature_method", "HMAC-SHA1"}
+                    };
                     string timeStamp = oAuth.GenerateTimeStamp();
                     string nonce = oAuth.GenerateNonce();
 
                     #region 签名
                     //签名
-                    string normalizedUrl = null;
-                    string normalizedRequestParameters = null;
                     string sSign = oAuth.GenerateSignature(
                         url: new Uri(dic["realm"]),
                         callback: null,
@@ -52,8 +52,8 @@ namespace Puss.Iphone
                         nonce: nonce,
                         signatureType: OAuthBase.SignatureTypes.HMACSHA1,
                         verifier: null,
-                        normalizedUrl: out normalizedUrl,
-                        normalizedRequestParameters: out normalizedRequestParameters);
+                        normalizedUrl: out string normalizedUrl,
+                        normalizedRequestParameters: out string normalizedRequestParameters);
                     #endregion
 
                     dic.Add("oauth_signature", sSign);
