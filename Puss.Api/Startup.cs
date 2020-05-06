@@ -197,7 +197,6 @@ namespace Puss.Api
             #endregion
 
             #region Autofac
-            // 或者将Controller加入到Services中，这样写上面的代码就可以省略了
             services.AddControllersWithViews().AddControllersAsServices();
             #endregion
         }

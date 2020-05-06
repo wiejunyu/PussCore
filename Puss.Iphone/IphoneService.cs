@@ -30,10 +30,10 @@ namespace Puss.Iphone
                     OAuthBase oAuth = new OAuthBase();
                     Dictionary<string, string> dic = new Dictionary<string, string>()
                     {
-                        { "realm", realm },
-                        {"oauth_consumer_key", consumer_key },
-                        {"oauth_token", access_token },
-                        { "oauth_signature_method", oauth_signature_method}
+                        { "realm", IphoneServiceKey.realm },
+                        {"oauth_consumer_key", IphoneServiceKey.consumer_key },
+                        {"oauth_token", IphoneServiceKey.access_token },
+                        { "oauth_signature_method", IphoneServiceKey.oauth_signature_method}
                     };
                     string timeStamp = oAuth.GenerateTimeStamp();
                     string nonce = oAuth.GenerateNonce();
@@ -44,9 +44,9 @@ namespace Puss.Iphone
                         url: new Uri(dic["realm"]),
                         callback: null,
                         consumerKey: dic["oauth_consumer_key"],
-                        consumerSecret: consumer_secret,
+                        consumerSecret: IphoneServiceKey.consumer_secret,
                         token: dic["oauth_token"],
-                        tokenSecret: access_secret,
+                        tokenSecret: IphoneServiceKey.access_secret,
                         httpMethod: "GET",
                         timeStamp: timeStamp,
                         nonce: nonce,
@@ -92,9 +92,10 @@ namespace Puss.Iphone
                 return retString;
             });
         }
+    }
 
-
-
+    public class IphoneServiceKey
+    {
         /// <summary>
         /// realm
         /// </summary>
