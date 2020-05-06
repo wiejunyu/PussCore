@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using System.Xml;
 using Puss.Redis;
+using Microsoft.Net.Http.Headers;
 
 namespace Puss.Api.Controllers
 {
@@ -36,6 +37,7 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <param name="Accessor"></param>
         /// <param name="RabbitMQPushService"></param>
+        /// <param name="RedisService"></param>
         public MDMController(IHttpContextAccessor Accessor, IRabbitMQPushService RabbitMQPushService, IRedisService RedisService) 
         {
             this.Accessor = Accessor;
@@ -54,8 +56,11 @@ namespace Puss.Api.Controllers
             return new JsonResult(
                 new
                 {
+                    //CheckIn
                     dep_enrollment_url = "https://118.89.182.215/api/MDM/CheckIn",
+                    //获取证书的地址
                     dep_anchor_certs_url = "https://118.89.182.215/api/MDM/GetCertificate",
+                    //配置文件地址
                     trust_profile_url = "https://118.89.182.215/api/MDM/GetProfile"
                 });
         }
@@ -69,8 +74,17 @@ namespace Puss.Api.Controllers
         [Route("api/MDM/GetProfile")]
         public FileResult GetProfile()
         {
+            if (!Accessor.HttpContext.Response.HasStarted)
+            {
+                Accessor.HttpContext.Response.Headers[HeaderNames.ContentDisposition] = "attachment; filename=1.mobileconfig";
+                Accessor.HttpContext.Response.Headers[HeaderNames.ContentType] = "application/x-apple-aspen-config";
+                Accessor.HttpContext.Response.Headers[HeaderNames.ContentEncoding] = "UTF-8";
+            }
+            //Response.Headers[HeaderNames.ContentEncoding] = "UTF-8";
+
             var stream = System.IO.File.OpenRead(Path.Combine(Directory.GetCurrentDirectory(), "1.mobileconfig"));
-            return File(stream, "text/plain", "1.mobileconfig");
+            FileStreamResult result = File(stream, "application/x-apple-aspen-config", "1.mobileconfig");
+            return result;
         }
 
         /// <summary>

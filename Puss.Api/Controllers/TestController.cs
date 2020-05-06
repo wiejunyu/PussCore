@@ -31,8 +31,6 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <param name="EmailService"></param>
         /// <param name="RabbitMQPushService"></param>
-        /// <param name="RedisService"></param>
-        /// <param name="accessor"></param>
         public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService)
         {
             this.EmailService = EmailService;

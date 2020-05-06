@@ -30,10 +30,10 @@ namespace Puss.Iphone
                     OAuthBase oAuth = new OAuthBase();
                     Dictionary<string, string> dic = new Dictionary<string, string>()
                     {
-                        { "realm", IphoneServiceKey.realm },
-                        {"oauth_consumer_key", IphoneServiceKey.consumer_key },
-                        {"oauth_token", IphoneServiceKey.access_token },
-                        { "oauth_signature_method", IphoneServiceKey.oauth_signature_method}
+                        { "realm", IphoneServiceKey.Realm },
+                        {"oauth_consumer_key", IphoneServiceKey.Consumer_key },
+                        {"oauth_token", IphoneServiceKey.Access_token },
+                        { "oauth_signature_method", IphoneServiceKey.Oauth_signature_method}
                     };
                     string timeStamp = oAuth.GenerateTimeStamp();
                     string nonce = oAuth.GenerateNonce();
@@ -44,9 +44,9 @@ namespace Puss.Iphone
                         url: new Uri(dic["realm"]),
                         callback: null,
                         consumerKey: dic["oauth_consumer_key"],
-                        consumerSecret: IphoneServiceKey.consumer_secret,
+                        consumerSecret: IphoneServiceKey.Consumer_secret,
                         token: dic["oauth_token"],
-                        tokenSecret: IphoneServiceKey.access_secret,
+                        tokenSecret: IphoneServiceKey.Access_secret,
                         httpMethod: "GET",
                         timeStamp: timeStamp,
                         nonce: nonce,
@@ -99,7 +99,7 @@ namespace Puss.Iphone
         /// <summary>
         /// realm
         /// </summary>
-        public static string realm
+        public static string Realm
         {
             get { return "https://mdmenrollment.apple.com/session"; }
         }
@@ -107,7 +107,7 @@ namespace Puss.Iphone
         /// <summary>
         /// consumer_key
         /// </summary>
-        public static string consumer_key
+        public static string Consumer_key
         {
             get { return "CK_addb7b64e88d62b39aaf4df8d51f92c553a18abc9f363bffe791f56af4340ef7713b6ea96248e6943ddcadeaf43d85cb"; }
         }
@@ -115,7 +115,7 @@ namespace Puss.Iphone
         /// <summary>
         /// access_token
         /// </summary>
-        public static string access_token
+        public static string Access_token
         {
             get { return "AT_O17074483117O21ff0e2e6294376aa5f22190e32709df3701fdd4O1588039118243"; }
         }
@@ -123,7 +123,7 @@ namespace Puss.Iphone
         /// <summary>
         /// oauth_signature_method
         /// </summary>
-        public static string oauth_signature_method
+        public static string Oauth_signature_method
         {
             get { return "HMAC-SHA1"; }
         }
@@ -132,7 +132,7 @@ namespace Puss.Iphone
         /// <summary>
         /// consumer_secret
         /// </summary>
-        public static string consumer_secret
+        public static string Consumer_secret
         {
             get { return "CS_c69ac3397ce27a60844b4839f1c05620e91ee49b"; }
         }
@@ -140,7 +140,7 @@ namespace Puss.Iphone
         /// <summary>
         /// access_secret
         /// </summary>
-        public static string access_secret
+        public static string Access_secret
         {
             get { return "AS_151abc4e67a145da16dbc0f5e14dd13c5811338a"; }
         }
