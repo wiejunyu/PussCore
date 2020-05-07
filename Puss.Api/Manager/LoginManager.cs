@@ -8,7 +8,7 @@ using Puss.Data.Models;
 using Puss.Email;
 using Puss.RabbitMQ;
 using Puss.Redis;
-using Sugar.Enties;
+using Puss.Enties;
 using System;
 using System.Threading.Tasks;
 
@@ -24,11 +24,12 @@ namespace Puss.Api.Manager
         /// </summary>
         /// <param name="request">登陆模型</param>
         /// <param name="RedisService">Redis类接口</param>
+        /// <param name="UserManager"></param>
         /// <returns></returns>
-        public static async Task<string> Login(LoginRequest request, IRedisService RedisService)
+        public static async Task<string> Login(LoginRequest request, IRedisService RedisService, IUserManager UserManager)
         {
             request.PassWord = MD5.Md5(request.PassWord);
-            User account = await new UserManager().GetSingleAsync(a => (a.UserName == request.UserName.Trim() || a.Phone == request.UserName.Trim() || a.Email == request.UserName.Trim()) && a.PassWord == request.PassWord);
+            User account = await UserManager.GetSingleAsync(a => (a.UserName == request.UserName.Trim() || a.Phone == request.UserName.Trim() || a.Email == request.UserName.Trim()) && a.PassWord == request.PassWord);
             if (account == null) throw new AppException("账号密码错误");
             return Token.UserGetToken(account, RedisService);
         }
@@ -96,23 +97,24 @@ namespace Puss.Api.Manager
         /// <param name="Email">邮箱</param>
         /// <param name="EmailService">邮箱类接口</param>
         /// <param name="RedisService">Redis类接口</param>
+        /// <param name="CodeManager"></param>
+        /// <param name="Cms_SysconfigManager"></param>
         /// <returns></returns>
-        public static async Task<string> EmailGetCode(string CodeKey, string Email, IEmailService EmailService, IRedisService RedisService)
+        public static async Task<string> EmailGetCode(string CodeKey, string Email, IEmailService EmailService, IRedisService RedisService, ICodeManager CodeManager, ICms_SysconfigManager Cms_SysconfigManager)
         {
-            new DbContext().Db.Ado.IsDisableMasterSlaveSeparation = true;
+            //读写分离强制走主库
+            CodeManager.GetDB().Db.Ado.IsDisableMasterSlaveSeparation = true;
 
             DateTime dt = DateTime.Now.Date;
-
             //批量删除今天之前的验证码
-            var t5 = new DbContext().Db.Deleteable<Code>().Where(x => x.time < dt).ExecuteCommand();
-
-            Code cModel = await new CodeManager().GetSingleAsync(x => x.email == Email && x.time > dt && x.type == (int)CodeType.Email);
+            var t5 = CodeManager.GetDB().Db.Deleteable<Code>().Where(x => x.time < dt).ExecuteCommand();
+            Code cModel = await CodeManager.GetSingleAsync(x => x.email == Email && x.time > dt && x.type == (int)CodeType.Email);
             //判断验证码是否超出次数
             if (cModel != null ? cModel.count >= 6 : false) throw new AppException("发送超出次数");
             //获得验证码
             string code = new ValidateCode().CreateValidateCode(6);//生成验证码，传几就是几位验证码
             //发送邮件
-            Cms_Sysconfig sys = await new Cms_SysconfigManager().GetSingleAsync(x => x.Id == 1);
+            Cms_Sysconfig sys = await Cms_SysconfigManager.GetSingleAsync(x => x.Id == 1);
             if (!EmailService.MailSending(Email, "宇宙物流验证码", $"您在宇宙物流的验证码是:{code},10分钟内有效", sys.Mail_From, sys.Mail_Code, sys.Mail_Host)) throw new AppException("发送失败");
             #region 保存验证码统计
             if (cModel == null)
@@ -124,7 +126,7 @@ namespace Puss.Api.Manager
                     time = DateTime.Now,
                     count = 1
                 };
-                new CodeManager().Insert(cModel);
+                CodeManager.Insert(cModel);
             }
             else
             {
@@ -134,7 +136,9 @@ namespace Puss.Api.Manager
             cModel.code = code;
             //保存验证码进缓存
             RedisService.Set(CommentConfig.MailCacheCode + CodeKey, cModel, 10);
-            new DbContext().Db.Ado.IsDisableMasterSlaveSeparation = false;
+
+            //读写分离取消强制走主库
+            CodeManager.GetDB().Db.Ado.IsDisableMasterSlaveSeparation = false;
             return "验证码发送成功";
         }
 
@@ -144,13 +148,15 @@ namespace Puss.Api.Manager
         /// <param name="request">注册模型</param>
         /// <param name="ip">IP</param>
         /// <param name="RabbitMQPush">MQ接口</param>
+        /// <param name="UserManager"></param>
+        /// <param name="UserDetailsManager"></param>
         /// <returns></returns>
-        public static async Task<bool> UserRegister(RegisterRequest request, string ip, IRabbitMQPushService RabbitMQPush)
+        public static async Task<bool> UserRegister(RegisterRequest request, string ip, IRabbitMQPushService RabbitMQPush, IUserManager UserManager, IUserDetailsManager UserDetailsManager)
         {
             #region 验证
-            if (new UserManager().IsAny(x => x.UserName == request.UserName)) throw new AppException("该用户名已经注册过");
+            if (UserManager.IsAny(x => x.UserName == request.UserName)) throw new AppException("该用户名已经注册过");
             if (string.IsNullOrWhiteSpace(request.Email)) throw new AppException("请输入邮箱");
-            if (new UserManager().IsAny(x => x.Email == request.Email)) throw new AppException("该邮箱已经注册过");
+            if (UserManager.IsAny(x => x.Email == request.Email)) throw new AppException("该邮箱已经注册过");
             if (string.IsNullOrWhiteSpace(request.PassWord)) throw new AppException("请输入密码");
             if (string.IsNullOrWhiteSpace(request.ConfirmPassWord)) throw new AppException("请输入确认密码");
             if (string.IsNullOrWhiteSpace(request.ConfirmPassWord)) throw new AppException("请输入确认密码");
@@ -166,10 +172,10 @@ namespace Puss.Api.Manager
             user.Portrait = "/Image/user.png";
             user.Money = 0;
 
-            var result = new UserManager().Db.Ado.UseTran(() =>
+            var result = UserManager.GetDB().Db.Ado.UseTran(() =>
             {
-                new UserManager().Insert(user);
-                new UserDetailsManager().Insert(new UserDetails() { UID = user.ID });
+                UserManager.Insert(user);
+                UserDetailsManager.Insert(new UserDetails() { UID = user.ID });
             });
             await RabbitMQPush.PushMessage(QueueKey.SendRegisterMessageIsEmail, request.Email);
             return true;

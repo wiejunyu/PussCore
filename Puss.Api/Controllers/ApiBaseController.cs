@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 using Puss.Data;
 using Puss.Data.Enum;
 using Puss.Data.Models;
-using Sugar.Enties;
+using Puss.Enties;
 
 namespace Puss.Api.Controllers
 {
@@ -25,7 +25,6 @@ namespace Puss.Api.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize("Permission")]
     public class ApiBaseController : ControllerBase
     {
     }

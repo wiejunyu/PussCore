@@ -6,7 +6,7 @@ using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Email;
 using Puss.RabbitMQ;
-using Sugar.Enties;
+using Puss.Enties;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -25,16 +25,22 @@ namespace Puss.Api.Controllers
     {
         private readonly IEmailService EmailService;
         private readonly IRabbitMQPushService RabbitMQPushService;
+        private readonly IUserManager UserManager;
+        private readonly ICms_SysconfigManager Cms_SysconfigManager;
 
         /// <summary>
         /// 测试
         /// </summary>
         /// <param name="EmailService"></param>
         /// <param name="RabbitMQPushService"></param>
-        public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService)
+        /// <param name="UserManager"></param>
+        /// <param name="Cms_SysconfigManager"></param>
+        public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService, IUserManager UserManager, ICms_SysconfigManager Cms_SysconfigManager)
         {
             this.EmailService = EmailService;
             this.RabbitMQPushService = RabbitMQPushService;
+            this.UserManager = UserManager;
+            this.Cms_SysconfigManager = Cms_SysconfigManager;
         }
 
         /// <summary>
@@ -88,7 +94,7 @@ namespace Puss.Api.Controllers
             {
                 RabbitMQPushService.PullMessage(QueueKey.SendRegisterMessageIsEmail, (Message) =>
                 {
-                    Cms_Sysconfig sys = new Cms_SysconfigManager().GetById(1);
+                    Cms_Sysconfig sys = Cms_SysconfigManager.GetById(1);
                     return EmailService.MailSending(Message, "欢迎你注册宇宙物流", "欢迎你注册宇宙物流", sys.Mail_From, sys.Mail_Code, sys.Mail_Host);
                 });
                 return new ReturnResult(ReturnResultStatus.Succeed);
@@ -103,7 +109,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public async Task<ReturnResult> GetEmail()
         {
-            var User = await new UserManager().GetByIdAsync(29);
+            var User = await UserManager.GetByIdAsync(29);
             return new ReturnResult(ReturnResultStatus.Succeed, User.Email);
         }
     }

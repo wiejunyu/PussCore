@@ -1,4 +1,5 @@
-﻿using Puss.Data.Models;
+﻿using Puss.Data.Config;
+using Puss.Data.Models;
 using Puss.OAuth1;
 using Puss.Redis;
 using System;
@@ -101,7 +102,7 @@ namespace Puss.Iphone
         /// </summary>
         public static string Realm
         {
-            get { return "https://mdmenrollment.apple.com/session"; }
+            get { return GlobalsConfig.Configuration[ConfigurationKeys.MDM_Realm]; }
         }
 
         /// <summary>
@@ -109,7 +110,7 @@ namespace Puss.Iphone
         /// </summary>
         public static string Consumer_key
         {
-            get { return "CK_addb7b64e88d62b39aaf4df8d51f92c553a18abc9f363bffe791f56af4340ef7713b6ea96248e6943ddcadeaf43d85cb"; }
+            get { return GlobalsConfig.Configuration[ConfigurationKeys.MDM_ConsumerKey]; }
         }
 
         /// <summary>
@@ -117,7 +118,7 @@ namespace Puss.Iphone
         /// </summary>
         public static string Access_token
         {
-            get { return "AT_O17074483117O21ff0e2e6294376aa5f22190e32709df3701fdd4O1588039118243"; }
+            get { return GlobalsConfig.Configuration[ConfigurationKeys.MDM_AccessToken]; }
         }
 
         /// <summary>
@@ -125,7 +126,7 @@ namespace Puss.Iphone
         /// </summary>
         public static string Oauth_signature_method
         {
-            get { return "HMAC-SHA1"; }
+            get { return GlobalsConfig.Configuration[ConfigurationKeys.MDM_OauthSignatureMethod]; }
         }
 
 
@@ -134,7 +135,7 @@ namespace Puss.Iphone
         /// </summary>
         public static string Consumer_secret
         {
-            get { return "CS_c69ac3397ce27a60844b4839f1c05620e91ee49b"; }
+            get { return GlobalsConfig.Configuration[ConfigurationKeys.MDM_ConsumerSecret]; }
         }
 
         /// <summary>
@@ -142,7 +143,7 @@ namespace Puss.Iphone
         /// </summary>
         public static string Access_secret
         {
-            get { return "AS_151abc4e67a145da16dbc0f5e14dd13c5811338a"; }
+            get { return GlobalsConfig.Configuration[ConfigurationKeys.MDM_AccessSecret]; }
         }
     }
 }

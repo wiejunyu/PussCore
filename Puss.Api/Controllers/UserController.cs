@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Puss.Api.Aop;
 using Puss.Api.Manager;
+using Puss.BusinessCore;
 using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Email;
@@ -21,6 +22,10 @@ namespace Puss.Api.Controllers
         private readonly IEmailService EmailService;
         private readonly IRabbitMQPushService RabbitMQPushService;
         private readonly IRedisService RedisService;
+        private readonly IUserManager UserManager;
+        private readonly ICodeManager CodeManager;
+        private readonly ICms_SysconfigManager Cms_SysconfigManager;
+        private readonly IUserDetailsManager UserDetailsManager;
 
         /// <summary>
         /// 用户
@@ -29,17 +34,29 @@ namespace Puss.Api.Controllers
         /// <param name="EmailService"></param>
         /// <param name="RabbitMQPushService"></param>
         /// <param name="RedisService"></param>
+        /// <param name="UserManager"></param>
+        /// <param name="CodeManager"></param>
+        /// <param name="Cms_SysconfigManager"></param>
+        /// <param name="UserDetailsManager"></param>
         public UserController(
             IHttpContextAccessor accessor,
             IEmailService EmailService,
             IRabbitMQPushService RabbitMQPushService,
-            IRedisService RedisService
+            IRedisService RedisService,
+            IUserManager UserManager,
+            ICodeManager CodeManager,
+            ICms_SysconfigManager Cms_SysconfigManager,
+            IUserDetailsManager UserDetailsManager
             )
         {
             _accessor = accessor;
             this.EmailService = EmailService;
             this.RabbitMQPushService = RabbitMQPushService;
             this.RedisService = RedisService;
+            this.UserManager = UserManager;
+            this.CodeManager = CodeManager;
+            this.Cms_SysconfigManager = Cms_SysconfigManager;
+            this.UserDetailsManager = UserDetailsManager;
         }
 
         #region 验证码
@@ -78,7 +95,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public async Task<ReturnResult> EmailGetCode(string CodeKey,string Email)
         {
-            return new ReturnResult(ReturnResultStatus.Succeed ,await LoginManager.EmailGetCode(CodeKey, Email, EmailService,RedisService));
+            return new ReturnResult(ReturnResultStatus.Succeed ,await LoginManager.EmailGetCode(CodeKey, Email, EmailService,RedisService, CodeManager, Cms_SysconfigManager));
         }
         #endregion
 
@@ -97,7 +114,7 @@ namespace Puss.Api.Controllers
             {
                 return ReturnResult.ResultCalculation(() =>
                 {
-                    return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString(), RabbitMQPushService).Result;
+                    return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString(), RabbitMQPushService, UserManager, UserDetailsManager).Result;
                 });
             });
         }
@@ -113,7 +130,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public async Task<ReturnResult> Login([FromBody]LoginRequest request)
         {
-            return new ReturnResult(ReturnResultStatus.Succeed, await LoginManager.Login(request, RedisService));
+            return new ReturnResult(ReturnResultStatus.Succeed, await LoginManager.Login(request, RedisService, UserManager));
         }
 
         /// <summary>

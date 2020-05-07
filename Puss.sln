@@ -109,3 +109,15 @@ Global
 		SolutionGuid = {59F6E3B6-A66D-4C21-9329-CF920749F1C2}
 	EndGlobalSection
 EndGlobal
+
+Project("{7c151cd6-ad7b-407e-82e0-881d5375a48c}") = "Puss.BusinessCore", "Puss.BusinessCore\Puss.BusinessCore.csproj", "{5448bac6-41d9-410a-ae6a-673f9caaf9f5}"
+EndProject
+
+Project("{c4151ff9-bf24-4b0b-8b3e-a89e62dd10c7}") = "Puss.Enties", "Puss.Enties\Puss.Enties.csproj", "{06c30064-e1a6-4d83-b21c-a2b1de6264ea}"
+EndProject
+
+Project("{f3f15863-13f5-4a6a-9d64-2ff914734e77}") = "Puss.Enties", "Puss.Enties\Puss.Enties.csproj", "{89b5eef3-d12a-4e80-b018-4c4f59d07afb}"
+EndProject
+
+Project("{2413012c-9fd3-48e3-85b5-b5435228e02a}") = "Puss.BusinessCore", "Puss.BusinessCore\Puss.BusinessCore.csproj", "{709096da-f5a0-4e33-aa01-c4070b21e8ca}"
+EndProject

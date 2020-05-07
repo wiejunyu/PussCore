@@ -17,9 +17,20 @@ namespace Puss.Data.Config
         /// </summary>
         public static string Sql_Connection = "SqlConnection:ConnectionString";
         /// <summary>
-        /// 从数据库连接字符串
+        /// 从数据库连接字符串json
         /// </summary>
         public static string Sql_ConnectionSon = "SqlConnection:ConnectionStringSon";
+        #endregion
+
+        #region Verification(验证统一管理)
+        /// <summary>
+        /// 是否开启验证码验证
+        /// </summary>
+        public static string Verification_Code = "Verification:Code";
+        /// <summary>
+        /// 是否开启Token验证
+        /// </summary>
+        public static string Verification_Token = "Verification:Token";
         #endregion
 
         #region Token
@@ -75,25 +86,25 @@ namespace Puss.Data.Config
         public static string Redis_DefaultDB = "Redis:DefaultDB";
         #endregion
 
-        #region InfluxDB
+        #region InfluxDB(健康检查)
         /// <summary>
-        /// IsOpen
+        /// 是否开启健康检查
         /// </summary>
         public static string InfluxDB_IsOpen = "InfluxDB:IsOpen";
         /// <summary>
-        /// DataBaseName
+        /// 健康检查数据库
         /// </summary>
         public static string InfluxDB_DataBase = "InfluxDB:DataBase";
         /// <summary>
-        /// Connection
+        /// 健康检查数据库地址
         /// </summary>
         public static string InfluxDB_Connection = "InfluxDB:Connection";
         /// <summary>
-        /// UserName
+        /// 健康检查数据库名称
         /// </summary>
         public static string InfluxDB_UserName = "InfluxDB:UserName";
         /// <summary>
-        /// PassWord
+        /// 健康检查数据库密码
         /// </summary>
         public static string InfluxDB_PassWord = "InfluxDB:PassWord";
         /// <summary>
@@ -108,16 +119,52 @@ namespace Puss.Data.Config
 
         #region Swagger
         /// <summary>
-        /// IsXml
+        /// 是否生成swaggerXML文件
         /// </summary>
         public static string Swagger_IsXml = "Swagger:IsXml";
         #endregion
 
-        #region Permission
+        #region MDM
         /// <summary>
-        /// IsOpen
+        /// Realm
         /// </summary>
-        public static string Permission_IsOpen = "Permission:IsOpen";
+        public static string MDM_Realm = "MDM:Realm";
+        /// <summary>
+        /// ConsumerKey
+        /// </summary>
+        public static string MDM_ConsumerKey = "MDM:ConsumerKey";
+        /// <summary>
+        /// AccessToken
+        /// </summary>
+        public static string MDM_AccessToken = "MDM:AccessToken";
+        /// <summary>
+        /// OauthSignatureMethod
+        /// </summary>
+        public static string MDM_OauthSignatureMethod = "MDM:OauthSignatureMethod";
+        /// <summary>
+        /// ConsumerSecret
+        /// </summary>
+        public static string MDM_ConsumerSecret = "MDM:ConsumerSecret";
+        /// <summary>
+        /// AccessSecret
+        /// </summary>
+        public static string MDM_AccessSecret = "MDM:AccessSecret";
+        /// <summary>
+        /// DepEnrollmentUrl
+        /// </summary>
+        public static string MDM_DepEnrollmentUrl = "MDM:DepEnrollmentUrl";
+        /// <summary>
+        /// DepAnchorCertsUrl
+        /// </summary>
+        public static string MDM_DepAnchorCertsUrl = "MDM:DepAnchorCertsUrl";
+        /// <summary>
+        /// TrustProfileUrl
+        /// </summary>
+        public static string MDM_TrustProfileUrl = "MDM:TrustProfileUrl";
+        /// <summary>
+        /// Certificate
+        /// </summary>
+        public static string MDM_Certificate = "MDM:Certificate";
         #endregion
     }
 }

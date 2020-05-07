@@ -291,6 +291,7 @@ namespace Puss.Api
             builder.RegisterTypes(Assembly.Load("Puss.Redis").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
             builder.RegisterTypes(Assembly.Load("Puss.Reptile").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
             builder.RegisterTypes(Assembly.Load("Puss.Log").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
+            builder.RegisterTypes(Assembly.Load("Puss.BusinessCore").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
 
             var controllerBaseType = typeof(ControllerBase);
             builder.RegisterAssemblyTypes(typeof(Program).Assembly)

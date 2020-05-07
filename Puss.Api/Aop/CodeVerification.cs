@@ -3,9 +3,10 @@ using Puss.Data.Models;
 using Puss.Redis;
 using System;
 using System.Reflection;
-using Sugar.Enties;
+using Puss.Enties;
 using System.Linq;
 using System.Collections.Generic;
+using Puss.Data.Config;
 
 namespace Puss.Api.Aop
 {
@@ -26,8 +27,7 @@ namespace Puss.Api.Aop
         [Argument(Source.Name)] string name,
         [Argument(Source.Arguments)] object[] arguments)
         {
-//#if DEBUG
-//#else
+            if (GlobalsConfig.Configuration[ConfigurationKeys.Verification_Code].ToLower() == "false") return;
             Type t = arguments[0].GetType();
             List<PropertyInfo> lPropertyInfo = t.GetProperties().ToList();
             //取得Code
@@ -61,7 +61,6 @@ namespace Puss.Api.Aop
                 if (code.code.ToLower() != Code.ToLower()) throw new AppException("验证码错误或已过期");
             }
             else throw new AppException("验证码错误或已过期");
-//#endif
         }
     }
 }

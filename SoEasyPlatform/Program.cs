@@ -18,7 +18,9 @@ namespace SugarCodeGeneration
     /// <param name="args"></param>
     class Program
     {
-        #region 3个必填参数
+
+        /***3个必填参数***/
+
         //如果你不需要自定义，直接配好数据库连接，F5运行项目
         const SqlSugar.DbType dbType = SqlSugar.DbType.SqlServer;
         /// <summary>
@@ -29,7 +31,11 @@ namespace SugarCodeGeneration
         ///解决方案名称
         /// </summary>
         const string SolutionName = "Puss";//如果修改解决方案名称，F5执行完成后会自动关闭项目，找到目录重新打开项目解决方案便可
-        #endregion
+
+        /***3个必填参数***/
+
+
+
 
         /// <summary>
         /// 执行生成
@@ -40,17 +46,24 @@ namespace SugarCodeGeneration
             /***连接数据库***/
             var db = GetDB();
 
+
             /***生成实体***/ //CodeFirst可以注释生成实体
+
             //配置参数
             string classProjectName = SolutionName+".Enties";//实体类项目名称
             string classPath = "DbModels";//生成的目录
-            string classNamespace = "Sugar.Enties";//实体命名空间
+            string classNamespace = "Puss.Enties";//实体命名空间
             var classDirectory = Methods.GetSlnPath + "\\" + classProjectName + "\\" + classPath.TrimStart('\\');
             //执行生成
             GenerationClass(classProjectName, classPath, classNamespace, classDirectory);
             Print("实体创建成功");
 
+
+
+
+
             /***生成DbContext***/
+
             //配置参数
             var contextProjectName = SolutionName+".BusinessCore";//DbContext所在项目
             var contextPath = "DbCore";//dbcontext存储目录
@@ -60,7 +73,12 @@ namespace SugarCodeGeneration
             GenerationDContext(contextProjectName, contextPath, savePath, tables, classNamespace);
             Print("DbContext创建成功");
 
+            
+
+
+
             /***生成BLL***/
+
             //配置参数
             var bllProjectName2 = SolutionName+".BusinessCore";//具体项目
             var bllPath2 = "BaseCore";//文件目录
@@ -70,17 +88,30 @@ namespace SugarCodeGeneration
             GenerationBLL(bllProjectName2,bllPath2,savePath2, tables2, classNamespace);
             Print("BLL创建成功");
 
+
+
+
+
             /***修改解决方案***/
             UpdateCsproj();
             Methods.RenameSln(SolutionName);
             Print("项目解决方案修改成功");
 
+
             /***添加项目引用***/
             Methods.AddRef(bllProjectName2,classProjectName);
             Print("引用添加成功");
+
+            //如何使用创建好的业务类（注意 SchoolManager 不能是静态的）
+            //SchoolManager sm = new SchoolManager();
+            //sm.GetList();
+            //sm.StudentDb.AsQueryable().Where(it => it.Id == 1).ToList();
+            //sm.Db.Queryable<Student>().ToList();
+
         }
 
-        /// <summary>
+ 
+      /// <summary>
         /// 生成BLL
         /// </summary>
         private static void GenerationBLL(string bllProjectName, string bllPath, string savePath, List<string>tables,string classNamespace)
@@ -90,6 +121,8 @@ namespace SugarCodeGeneration
             Methods.CreateBLL(templatePath, savePath, tables, classNamespace);
             AddTask(bllProjectName, bllPath);
         }
+
+
 
         /// <summary>
         /// 生成DbContext
@@ -132,7 +165,6 @@ namespace SugarCodeGeneration
                 item.Wait();
             }
         }
-
         private static void Print(string message)
         {
             Console.WriteLine("");
@@ -148,11 +180,10 @@ namespace SugarCodeGeneration
             });
             CsprojList.Add(task);
         }
-
         static List<Task> CsprojList = new List<Task>();
-
         static SqlSugar.SqlSugarClient GetDB()
         {
+
             return new SqlSugar.SqlSugarClient(new SqlSugar.ConnectionConfig()
             {
                 DbType = dbType,

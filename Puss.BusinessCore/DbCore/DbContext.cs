@@ -1,12 +1,12 @@
-﻿using Sugar.Enties;
+﻿using Puss.Enties;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Newtonsoft.Json;
 using Puss.Data.Config;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Puss.BusinessCore
 {
@@ -44,9 +44,22 @@ namespace Puss.BusinessCore
             return Db;
         }
 
+        /// <summary>
+        /// 获取读写分离从数据库配置
+        /// </summary>
+        /// <returns></returns>
         protected List<SlaveConnectionConfig> GetSonConnection()
         {
-            return JsonConvert.DeserializeObject<List<SlaveConnectionConfig>>(GlobalsConfig.Configuration[ConfigurationKeys.Sql_ConnectionSon]); ;
+            try
+            {
+                string SonConnection = GlobalsConfig.Configuration[ConfigurationKeys.Sql_ConnectionSon];
+                if (string.IsNullOrWhiteSpace(SonConnection)) return null;
+                return JsonConvert.DeserializeObject<List<SlaveConnectionConfig>>(SonConnection);
+            }
+            catch 
+            {
+                return null;
+            }
         }
     }
 
@@ -62,7 +75,6 @@ namespace Puss.BusinessCore
                 IsAutoCloseConnection = true,//开启自动释放模式和EF原理一样我就不多解释了
                 SlaveConnectionConfigs = GetSonConnection(),//读写分离
             });
-
             //调式代码 用来打印SQL 
             Db.Aop.OnLogExecuting = (sql, pars) =>
             {
@@ -73,9 +85,22 @@ namespace Puss.BusinessCore
 
         }
 
+        /// <summary>
+        /// 获取读写分离从数据库配置
+        /// </summary>
+        /// <returns></returns>
         protected List<SlaveConnectionConfig> GetSonConnection()
         {
-            return JsonConvert.DeserializeObject<List<SlaveConnectionConfig>>(GlobalsConfig.Configuration[ConfigurationKeys.Sql_ConnectionSon]); ;
+            try
+            {
+                string SonConnection = GlobalsConfig.Configuration[ConfigurationKeys.Sql_ConnectionSon];
+                if (string.IsNullOrWhiteSpace(SonConnection)) return null;
+                return JsonConvert.DeserializeObject<List<SlaveConnectionConfig>>(SonConnection);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         //注意：不能写成静态的
@@ -345,9 +370,7 @@ namespace Puss.BusinessCore
         {
             return CurrentDb.InsertRange(objs);
         }
-
-
-        //自已扩展更多方法 
+        //自已扩展更多方法  
     }
 }
 

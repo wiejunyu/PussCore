@@ -4,7 +4,7 @@ using Puss.BusinessCore;
 using Puss.Data.Config;
 using Puss.Data.Models;
 using Puss.Redis;
-using Sugar.Enties;
+using Puss.Enties;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

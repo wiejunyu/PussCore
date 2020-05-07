@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http.Features;
 using System.Xml;
 using Puss.Redis;
 using Microsoft.Net.Http.Headers;
+using Puss.Data.Config;
 
 namespace Puss.Api.Controllers
 {
@@ -57,11 +58,11 @@ namespace Puss.Api.Controllers
                 new
                 {
                     //CheckIn
-                    dep_enrollment_url = "https://118.89.182.215/api/MDM/CheckIn",
+                    dep_enrollment_url = GlobalsConfig.Configuration[ConfigurationKeys.MDM_DepEnrollmentUrl],
                     //获取证书的地址
-                    dep_anchor_certs_url = "https://118.89.182.215/api/MDM/GetCertificate",
+                    dep_anchor_certs_url = GlobalsConfig.Configuration[ConfigurationKeys.MDM_DepAnchorCertsUrl],
                     //配置文件地址
-                    trust_profile_url = "https://118.89.182.215/api/MDM/GetProfile"
+                    trust_profile_url = GlobalsConfig.Configuration[ConfigurationKeys.MDM_TrustProfileUrl]
                 });
         }
 
@@ -74,14 +75,6 @@ namespace Puss.Api.Controllers
         [Route("api/MDM/GetProfile")]
         public FileResult GetProfile()
         {
-            if (!Accessor.HttpContext.Response.HasStarted)
-            {
-                Accessor.HttpContext.Response.Headers[HeaderNames.ContentDisposition] = "attachment; filename=1.mobileconfig";
-                Accessor.HttpContext.Response.Headers[HeaderNames.ContentType] = "application/x-apple-aspen-config";
-                Accessor.HttpContext.Response.Headers[HeaderNames.ContentEncoding] = "UTF-8";
-            }
-            //Response.Headers[HeaderNames.ContentEncoding] = "UTF-8";
-
             var stream = System.IO.File.OpenRead(Path.Combine(Directory.GetCurrentDirectory(), "1.mobileconfig"));
             FileStreamResult result = File(stream, "application/x-apple-aspen-config", "1.mobileconfig");
             return result;
@@ -95,7 +88,7 @@ namespace Puss.Api.Controllers
         [Route("api/MDM/GetCertificate")]
         public JsonResult GetCertificate()
         {
-            return new JsonResult(new string[] { });
+            return new JsonResult(new string[] { GlobalsConfig.Configuration[ConfigurationKeys.MDM_Certificate] });
         }
 
         /// <summary>

@@ -5,7 +5,7 @@ using Puss.Data.Config;
 using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Redis;
-using Sugar.Enties;
+using Puss.Enties;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -40,7 +40,7 @@ namespace Puss.Api.Filters
                 //不允许匿名访问逻辑
                 if (context.ActionDescriptor.EndpointMetadata.Any(item => item is AllowAnonymousAttribute)) return;
                 //判断是否开启权限验证
-                if (GlobalsConfig.Configuration[ConfigurationKeys.Permission_IsOpen].ToLower() == "false") return;
+                if (GlobalsConfig.Configuration[ConfigurationKeys.Verification_Token].ToLower() == "false") return;
                 //从http请求的头里面获取身份验证信息，验证Jwt
                 string sAuthorization = context.HttpContext.Request.Headers["Authorization"].ToString();
                 if (string.IsNullOrWhiteSpace(sAuthorization))
