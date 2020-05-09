@@ -297,7 +297,7 @@ namespace Puss.Api
             app.UseHangfireDashboard();
 
             //日志消费后台作业
-            //LogManager.Log();
+            LogManager.Log();
             #endregion
 
             app.UseEndpoints(endpoints =>

@@ -37,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.BusinessCore", "Puss.B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.Enties", "Puss.Enties\Puss.Enties.csproj", "{30036A25-C180-4C60-9890-16328827BD59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.Attendance", "Puss.Attendance\Puss.Attendance.csproj", "{E7ABE669-4C1E-45E6-A95F-5438FA0FFD02}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.Attendance", "Puss.Attendance\Puss.Attendance.csproj", "{E7ABE669-4C1E-45E6-A95F-5438FA0FFD02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
