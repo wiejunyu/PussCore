@@ -61,32 +61,33 @@ namespace Puss.RabbitMQ
         /// <param name="MessageHandler">委托</param>
         public void PullMessage(string sQueueName, MessageHandler MessageHandler)
         {
-            //3. 创建信道
+            //创建信道
             using (var channel = GetConection().CreateModel())
             {
-                //4. 申明队列(指定durable:true,告知rabbitmq对消息进行持久化)
+                //申明队列(指定durable:true,告知rabbitmq对消息进行持久化)
                 channel.QueueDeclare(queue: sQueueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
                 //将消息标记为持久性 - 将IBasicProperties.SetPersistent设置为true
                 var properties = channel.CreateBasicProperties();
                 properties.Persistent = true;
-                //5. 构造消费者实例
+                //构造消费者实例
                 var consumer = new EventingBasicConsumer(channel);
-                //公平分发,设置prefetchCount : 1来告知RabbitMQ，在未收到消费端的消息确认时，不再分发消息，也就确保了当消费端处于忙碌状态时
+                //公平分发,设置prefetchCount : 来告知RabbitMQ，在未收到消费端的消息确认时，不再分发消息，也就确保了当消费端处于忙碌状态时
                 channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
-                //6. 启动消费者
+                //启动消费者
                 //autoAck:true；自动进行消息确认，当消费端接收到消息后，就自动发送ack信号，不管消息是否正确处理完毕
                 //autoAck:false；关闭自动消息确认，通过调用BasicAck方法手动进行消息确认
-                channel.BasicConsume(queue: sQueueName, autoAck: false, consumer: consumer);
-                //7. 绑定消息接收后的事件委托
+                channel.BasicConsume(queue: sQueueName, autoAck: true, consumer: consumer);
+                //绑定消息接收后的事件委托
                 consumer.Received += (model, ea) =>
                 {
                     string sMessage = Encoding.UTF8.GetString(ea.Body);
                     if (MessageHandler(sMessage))
                     {
-                        //8. 发送消息确认信号（手动消息确认）
-                        ((EventingBasicConsumer)model).Model.BasicAck(ea.DeliveryTag, false);
+                        //发送消息确认信号（手动消息确认）
+                        //((EventingBasicConsumer)model).Model.BasicAck(ea.DeliveryTag, false);
                     }
                 };
+                
 
             }
         }

@@ -7,15 +7,15 @@ using System.Linq.Expressions;
 
 namespace Puss.BusinessCore
 {
-	public class LogDetailsManager : ILogDetailsManager
+	public class LogJobDetailsManager : ILogJobDetailsManager
 	{
-        public DbContext<LogDetails> CurrentDb { get { return new DbContext<LogDetails>(); } }
+        public DbContext<LogJobDetails> CurrentDb { get { return new DbContext<LogJobDetails>(); } }
 
         /// <summary>
         /// 获取所有
         /// </summary>
         /// <returns></returns>
-        public virtual List<LogDetails> GetList()
+        public virtual List<LogJobDetails> GetList()
         {
             return CurrentDb.GetList();
         }
@@ -24,7 +24,7 @@ namespace Puss.BusinessCore
         /// 获取单个
         /// </summary>
         /// <returns></returns>
-        public virtual LogDetails GetSingle(Expression<Func<LogDetails, bool>> whereExpression)
+        public virtual LogJobDetails GetSingle(Expression<Func<LogJobDetails, bool>> whereExpression)
         {
             return CurrentDb.GetSingle(whereExpression);
         }
@@ -34,7 +34,7 @@ namespace Puss.BusinessCore
         /// 异步获取单个
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<LogDetails> GetSingleAsync(Expression<Func<LogDetails, bool>> whereExpression)
+        public virtual async Task<LogJobDetails> GetSingleAsync(Expression<Func<LogJobDetails, bool>> whereExpression)
         {
             return await CurrentDb.GetSingleAsync(whereExpression);
         }
@@ -43,7 +43,7 @@ namespace Puss.BusinessCore
         /// 获取单个，为空自动自动初始化
         /// </summary>
         /// <returns></returns>
-        public virtual LogDetails GetSingleDefault(Expression<Func<LogDetails, bool>> whereExpression)
+        public virtual LogJobDetails GetSingleDefault(Expression<Func<LogJobDetails, bool>> whereExpression)
         {
             return CurrentDb.GetSingleDefault(whereExpression);
         }
@@ -52,7 +52,7 @@ namespace Puss.BusinessCore
         /// 异步获取单个，为空自动自动初始化
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<LogDetails> GetSingleDefaultAsync(Expression<Func<LogDetails, bool>> whereExpression)
+        public virtual async Task<LogJobDetails> GetSingleDefaultAsync(Expression<Func<LogJobDetails, bool>> whereExpression)
         {
             return await CurrentDb.GetSingleDefaultAsync(whereExpression);
         }
@@ -61,7 +61,7 @@ namespace Puss.BusinessCore
         /// 判断是否存在
         /// </summary>
         /// <returns></returns>
-        public virtual bool IsAny(Expression<Func<LogDetails, bool>> whereExpression)
+        public virtual bool IsAny(Expression<Func<LogJobDetails, bool>> whereExpression)
         {
             return CurrentDb.IsAny(whereExpression);
         }
@@ -70,7 +70,7 @@ namespace Puss.BusinessCore
         /// 根据表达式查询
         /// </summary>
         /// <returns></returns>
-        public virtual List<LogDetails> GetList(Expression<Func<LogDetails, bool>> whereExpression)
+        public virtual List<LogJobDetails> GetList(Expression<Func<LogJobDetails, bool>> whereExpression)
         {
             return CurrentDb.GetList(whereExpression);
         }
@@ -79,7 +79,7 @@ namespace Puss.BusinessCore
         /// 异步根据表达式查询
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<List<LogDetails>> GetListAsync(Expression<Func<LogDetails, bool>> whereExpression)
+        public virtual async Task<List<LogJobDetails>> GetListAsync(Expression<Func<LogJobDetails, bool>> whereExpression)
         {
             return await CurrentDb.GetListAsync(whereExpression);
         }
@@ -88,7 +88,7 @@ namespace Puss.BusinessCore
         /// 根据表达式查询分页
         /// </summary>
         /// <returns></returns>
-        public virtual List<LogDetails> GetPageList(Expression<Func<LogDetails, bool>> whereExpression, PageModel pageModel)
+        public virtual List<LogJobDetails> GetPageList(Expression<Func<LogJobDetails, bool>> whereExpression, PageModel pageModel)
         {
             return CurrentDb.GetPageList(whereExpression, pageModel);
         }
@@ -97,7 +97,7 @@ namespace Puss.BusinessCore
         /// 异步根据表达式查询分页
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<List<LogDetails>> GetPageListAsync(Expression<Func<LogDetails, bool>> whereExpression, PageModel pageModel)
+        public virtual async Task<List<LogJobDetails>> GetPageListAsync(Expression<Func<LogJobDetails, bool>> whereExpression, PageModel pageModel)
         {
             return await CurrentDb.GetPageListAsync(whereExpression, pageModel);
         }
@@ -110,7 +110,7 @@ namespace Puss.BusinessCore
         /// <param name="orderByExpression">it=>it.id或者it=>new{it.id,it.name}</param>
         /// <param name="orderByType">OrderByType.Desc</param>
         /// <returns></returns>
-        public virtual List<LogDetails> GetPageList(Expression<Func<LogDetails, bool>> whereExpression, PageModel pageModel, Expression<Func<LogDetails, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc)
+        public virtual List<LogJobDetails> GetPageList(Expression<Func<LogJobDetails, bool>> whereExpression, PageModel pageModel, Expression<Func<LogJobDetails, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc)
         {
             return CurrentDb.GetPageList(whereExpression, pageModel, orderByExpression, orderByType);
         }
@@ -123,7 +123,7 @@ namespace Puss.BusinessCore
         /// <param name="orderByExpression">it=>it.id或者it=>new{it.id,it.name}</param>
         /// <param name="orderByType">OrderByType.Desc</param>
         /// <returns></returns>
-        public virtual async Task<List<LogDetails>> GetPageListAsync(Expression<Func<LogDetails, bool>> whereExpression, PageModel pageModel, Expression<Func<LogDetails, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc)
+        public virtual async Task<List<LogJobDetails>> GetPageListAsync(Expression<Func<LogJobDetails, bool>> whereExpression, PageModel pageModel, Expression<Func<LogJobDetails, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc)
         {
             return await CurrentDb.GetPageListAsync(whereExpression, pageModel, orderByExpression, orderByType);
         }
@@ -133,7 +133,7 @@ namespace Puss.BusinessCore
         /// 根据主键查询
         /// </summary>
         /// <returns></returns>
-        public virtual LogDetails GetById(dynamic id)
+        public virtual LogJobDetails GetById(dynamic id)
         {
             return CurrentDb.GetById(id);
         }
@@ -142,7 +142,7 @@ namespace Puss.BusinessCore
         /// 异步根据主键查询
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<LogDetails> GetByIdAsync(dynamic id)
+        public virtual async Task<LogJobDetails> GetByIdAsync(dynamic id)
         {
             return await CurrentDb.GetByIdAsync(id);
         }
@@ -163,7 +163,7 @@ namespace Puss.BusinessCore
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual bool Delete(LogDetails data)
+        public virtual bool Delete(LogJobDetails data)
         {
             return CurrentDb.Delete(data);
         }
@@ -183,7 +183,7 @@ namespace Puss.BusinessCore
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual bool Delete(Expression<Func<LogDetails, bool>> whereExpression)
+        public virtual bool Delete(Expression<Func<LogJobDetails, bool>> whereExpression)
         {
             return CurrentDb.Delete(whereExpression);
         }
@@ -194,7 +194,7 @@ namespace Puss.BusinessCore
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual bool Update(LogDetails obj)
+        public virtual bool Update(LogJobDetails obj)
         {
             return CurrentDb.Update(obj);
         }
@@ -204,7 +204,7 @@ namespace Puss.BusinessCore
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual bool Update(List<LogDetails> objs)
+        public virtual bool Update(List<LogJobDetails> objs)
         {
             return CurrentDb.Update(objs);
         }
@@ -214,7 +214,7 @@ namespace Puss.BusinessCore
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual bool Insert(LogDetails obj)
+        public virtual bool Insert(LogJobDetails obj)
         {
             return CurrentDb.Insert(obj);
         }
@@ -225,7 +225,7 @@ namespace Puss.BusinessCore
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual bool Insert(List<LogDetails> objs)
+        public virtual bool Insert(List<LogJobDetails> objs)
         {
             return CurrentDb.Insert(objs);
         }
@@ -234,74 +234,74 @@ namespace Puss.BusinessCore
         /// 获取数据库上下文
         /// </summary>
         /// <returns></returns>
-        public virtual DbContext<LogDetails> GetDB()
+        public virtual DbContext<LogJobDetails> GetDB()
         {
             return CurrentDb;
         }
     }
 
-    public interface ILogDetailsManager 
+    public interface ILogJobDetailsManager 
 	{
         /// <summary>
         /// 获取所有
         /// </summary>
         /// <returns></returns>
-        List<LogDetails> GetList();
+        List<LogJobDetails> GetList();
 
         /// <summary>
         /// 获取单个
         /// </summary>
         /// <returns></returns>
-        LogDetails GetSingle(Expression<Func<LogDetails, bool>> whereExpression);
+        LogJobDetails GetSingle(Expression<Func<LogJobDetails, bool>> whereExpression);
 
 
         /// <summary>
         /// 异步获取单个
         /// </summary>
         /// <returns></returns>
-        Task<LogDetails> GetSingleAsync(Expression<Func<LogDetails, bool>> whereExpression);
+        Task<LogJobDetails> GetSingleAsync(Expression<Func<LogJobDetails, bool>> whereExpression);
 
         /// <summary>
         /// 获取单个，为空自动自动初始化
         /// </summary>
         /// <returns></returns>
-        LogDetails GetSingleDefault(Expression<Func<LogDetails, bool>> whereExpression);
+        LogJobDetails GetSingleDefault(Expression<Func<LogJobDetails, bool>> whereExpression);
 
         /// <summary>
         /// 异步获取单个，为空自动自动初始化
         /// </summary>
         /// <returns></returns>
-        Task<LogDetails> GetSingleDefaultAsync(Expression<Func<LogDetails, bool>> whereExpression);
+        Task<LogJobDetails> GetSingleDefaultAsync(Expression<Func<LogJobDetails, bool>> whereExpression);
 
         /// <summary>
         /// 判断是否存在
         /// </summary>
         /// <returns></returns>
-        bool IsAny(Expression<Func<LogDetails, bool>> whereExpression);
+        bool IsAny(Expression<Func<LogJobDetails, bool>> whereExpression);
 
         /// <summary>
         /// 根据表达式查询
         /// </summary>
         /// <returns></returns>
-        List<LogDetails> GetList(Expression<Func<LogDetails, bool>> whereExpression);
+        List<LogJobDetails> GetList(Expression<Func<LogJobDetails, bool>> whereExpression);
 
         /// <summary>
         /// 异步根据表达式查询
         /// </summary>
         /// <returns></returns>
-        Task<List<LogDetails>> GetListAsync(Expression<Func<LogDetails, bool>> whereExpression);
+        Task<List<LogJobDetails>> GetListAsync(Expression<Func<LogJobDetails, bool>> whereExpression);
 
         /// <summary>
         /// 根据表达式查询分页
         /// </summary>
         /// <returns></returns>
-        List<LogDetails> GetPageList(Expression<Func<LogDetails, bool>> whereExpression, PageModel pageModel);
+        List<LogJobDetails> GetPageList(Expression<Func<LogJobDetails, bool>> whereExpression, PageModel pageModel);
 
         /// <summary>
         /// 异步根据表达式查询分页
         /// </summary>
         /// <returns></returns>
-        Task<List<LogDetails>> GetPageListAsync(Expression<Func<LogDetails, bool>> whereExpression, PageModel pageModel);
+        Task<List<LogJobDetails>> GetPageListAsync(Expression<Func<LogJobDetails, bool>> whereExpression, PageModel pageModel);
 
         /// <summary>
         /// 根据表达式查询分页并排序
@@ -311,7 +311,7 @@ namespace Puss.BusinessCore
         /// <param name="orderByExpression">it=>it.id或者it=>new{it.id,it.name}</param>
         /// <param name="orderByType">OrderByType.Desc</param>
         /// <returns></returns>
-        List<LogDetails> GetPageList(Expression<Func<LogDetails, bool>> whereExpression, PageModel pageModel, Expression<Func<LogDetails, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc);
+        List<LogJobDetails> GetPageList(Expression<Func<LogJobDetails, bool>> whereExpression, PageModel pageModel, Expression<Func<LogJobDetails, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc);
 
         /// <summary>
         /// 异步根据表达式查询分页并排序
@@ -321,20 +321,20 @@ namespace Puss.BusinessCore
         /// <param name="orderByExpression">it=>it.id或者it=>new{it.id,it.name}</param>
         /// <param name="orderByType">OrderByType.Desc</param>
         /// <returns></returns>
-        Task<List<LogDetails>> GetPageListAsync(Expression<Func<LogDetails, bool>> whereExpression, PageModel pageModel, Expression<Func<LogDetails, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc);
+        Task<List<LogJobDetails>> GetPageListAsync(Expression<Func<LogJobDetails, bool>> whereExpression, PageModel pageModel, Expression<Func<LogJobDetails, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc);
 
 
         /// <summary>
         /// 根据主键查询
         /// </summary>
         /// <returns></returns>
-        LogDetails GetById(dynamic id);
+        LogJobDetails GetById(dynamic id);
 
         /// <summary>
         /// 异步根据主键查询
         /// </summary>
         /// <returns></returns>
-        Task<LogDetails> GetByIdAsync(dynamic id);
+        Task<LogJobDetails> GetByIdAsync(dynamic id);
 
         /// <summary>
         /// 根据主键删除
@@ -349,7 +349,7 @@ namespace Puss.BusinessCore
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        bool Delete(LogDetails data);
+        bool Delete(LogJobDetails data);
 
         /// <summary>
         /// 根据主键删除
@@ -363,7 +363,7 @@ namespace Puss.BusinessCore
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        bool Delete(Expression<Func<LogDetails, bool>> whereExpression);
+        bool Delete(Expression<Func<LogJobDetails, bool>> whereExpression);
 
 
         /// <summary>
@@ -371,21 +371,21 @@ namespace Puss.BusinessCore
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        bool Update(LogDetails obj);
+        bool Update(LogJobDetails obj);
 
         /// <summary>
         ///批量更新
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        bool Update(List<LogDetails> objs);
+        bool Update(List<LogJobDetails> objs);
 
         /// <summary>
         /// 插入
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        bool Insert(LogDetails obj);
+        bool Insert(LogJobDetails obj);
 
 
         /// <summary>
@@ -393,12 +393,12 @@ namespace Puss.BusinessCore
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        bool Insert(List<LogDetails> objs);
+        bool Insert(List<LogJobDetails> objs);
 
         /// <summary>
         /// 获取数据库上下文
         /// </summary>
         /// <returns></returns>
-        DbContext<LogDetails> GetDB();
+        DbContext<LogJobDetails> GetDB();
     }
 }

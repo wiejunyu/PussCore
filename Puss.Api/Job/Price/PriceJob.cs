@@ -53,7 +53,7 @@ namespace Puss.Api.Job
         /// </summary>
         public void StartJob()
         {
-            PriceManager.GetPrice(ReptileService,RedisService);
+            //PriceManager.GetPrice(ReptileService,RedisService);
         }
 
         /// <summary>

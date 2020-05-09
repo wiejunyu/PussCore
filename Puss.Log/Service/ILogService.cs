@@ -1,7 +1,5 @@
 ﻿using Puss.RabbitMQ;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Puss.Log
 {
@@ -11,9 +9,9 @@ namespace Puss.Log
         /// 日志收集
         /// </summary>
         /// <param name="QueueKey">队列名称</param>
-        /// <param name="ex">错误信息</param>
+        /// <param name="sException">错误信息</param>
         /// <param name="RabbitMQPushService">MQ类接口</param>
-        public void LogCollectPush(string QueueKey, Exception ex, IRabbitMQPushService RabbitMQPushService);
+        public void LogCollectPush(string QueueKey, Exception Ex, string Url, string Token, IRabbitMQPushService RabbitMQPushService);
 
         /// <summary>
         /// 日志收集

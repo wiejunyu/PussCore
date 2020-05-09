@@ -58,5 +58,29 @@ namespace Puss.Data.Models
         {
             get { return "GetGuidBody"; }
         }
+
+        /// <summary>
+        /// 开始获取结果
+        /// </summary>
+        public static string AttendanceStart
+        {
+            get { return "AttendanceStart"; }
+        }
+
+        /// <summary>
+        /// 结束获取结果
+        /// </summary>
+        public static string AttendanceEnd
+        {
+            get { return "AttendanceEnd"; }
+        }
+
+        /// <summary>
+        /// 结束获取错误
+        /// </summary>
+        public static string AttendanceError
+        {
+            get { return "AttendanceError"; }
+        }
     }
 }

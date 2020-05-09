@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Text;
 using App.Metrics;
 using Autofac;
+using Hangfire;
+using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -181,7 +183,7 @@ namespace Puss.Api
                 options.Filters.Add<HttpGlobalExceptionFilter>();
                 //身份验证
                 options.Filters.Add<RequestAuthorizeAttribute>();
-                
+
             }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             #region 跨域
@@ -198,6 +200,26 @@ namespace Puss.Api
 
             #region Autofac
             services.AddControllersWithViews().AddControllersAsServices();
+            #endregion
+
+            #region Hangfire
+            // Add Hangfire services.
+            services.AddHangfire(configuration => configuration
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage(GlobalsConfig.Configuration[ConfigurationKeys.Sql_HangfireConnectionString], new SqlServerStorageOptions
+                {
+                    CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+                    SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+                    QueuePollInterval = TimeSpan.Zero,
+                    UseRecommendedIsolationLevel = true,
+                    UsePageLocksOnDequeue = true,
+                    DisableGlobalLocks = true
+                }));
+
+            // Add the processing server as IHostedService
+            services.AddHangfireServer();
             #endregion
         }
 
@@ -268,6 +290,14 @@ namespace Puss.Api
             #region 跨域
             // 允许所有跨域，cors是在ConfigureServices方法中配置的跨域策略名称
             app.UseCors("CorsPolicy");
+            #endregion
+
+            #region Hangfire
+            app.UseStaticFiles();
+            app.UseHangfireDashboard();
+
+            //日志消费后台作业
+            //LogManager.Log();
             #endregion
 
             app.UseEndpoints(endpoints =>

@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 
 namespace Puss.BusinessCore
 {
+
     public class DbContext
     {
         public DbContext()
@@ -44,22 +45,9 @@ namespace Puss.BusinessCore
             return Db;
         }
 
-        /// <summary>
-        /// 获取读写分离从数据库配置
-        /// </summary>
-        /// <returns></returns>
         protected List<SlaveConnectionConfig> GetSonConnection()
         {
-            try
-            {
-                string SonConnection = GlobalsConfig.Configuration[ConfigurationKeys.Sql_ConnectionSon];
-                if (string.IsNullOrWhiteSpace(SonConnection)) return null;
-                return JsonConvert.DeserializeObject<List<SlaveConnectionConfig>>(SonConnection);
-            }
-            catch 
-            {
-                return null;
-            }
+            return JsonConvert.DeserializeObject<List<SlaveConnectionConfig>>(GlobalsConfig.Configuration[ConfigurationKeys.Sql_ConnectionSon]); ;
         }
     }
 
@@ -73,36 +61,17 @@ namespace Puss.BusinessCore
                 DbType = DbType.SqlServer,
                 InitKeyType = InitKeyType.Attribute,//从特性读取主键和自增列信息
                 IsAutoCloseConnection = true,//开启自动释放模式和EF原理一样我就不多解释了
-                SlaveConnectionConfigs = GetSonConnection(),//读写分离
+
             });
             //调式代码 用来打印SQL 
             Db.Aop.OnLogExecuting = (sql, pars) =>
             {
-                //Console.WriteLine(sql + "\r\n" +
-                //    Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value)));
-                //Console.WriteLine();
+                Console.WriteLine(sql + "\r\n" +
+                    Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value)));
+                Console.WriteLine();
             };
 
         }
-
-        /// <summary>
-        /// 获取读写分离从数据库配置
-        /// </summary>
-        /// <returns></returns>
-        protected List<SlaveConnectionConfig> GetSonConnection()
-        {
-            try
-            {
-                string SonConnection = GlobalsConfig.Configuration[ConfigurationKeys.Sql_ConnectionSon];
-                if (string.IsNullOrWhiteSpace(SonConnection)) return null;
-                return JsonConvert.DeserializeObject<List<SlaveConnectionConfig>>(SonConnection);
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
         //注意：不能写成静态的
         public SqlSugarClient Db;//用来处理事务多表查询和复杂的操作
 	    public SimpleClient<T> CurrentDb { get { return new SimpleClient<T>(Db); } }//用来操作当前表的数据
@@ -124,8 +93,9 @@ namespace Puss.BusinessCore
        public SimpleClient<UserDetails> UserDetailsDb { get { return new SimpleClient<UserDetails>(Db); } }//用来处理UserDetails表的常用操作
        public SimpleClient<Cms_Sysconfig> Cms_SysconfigDb { get { return new SimpleClient<Cms_Sysconfig>(Db); } }//用来处理Cms_Sysconfig表的常用操作
        public SimpleClient<Code> CodeDb { get { return new SimpleClient<Code>(Db); } }//用来处理Code表的常用操作
-       public SimpleClient<LogDetails> LogDetailsDb { get { return new SimpleClient<LogDetails>(Db); } }//用来处理LogDetails表的常用操作
+       public SimpleClient<LogErrorDetails> LogErrorDetailsDb { get { return new SimpleClient<LogErrorDetails>(Db); } }//用来处理LogErrorDetails表的常用操作
        public SimpleClient<Cms_RoleMenu> Cms_RoleMenuDb { get { return new SimpleClient<Cms_RoleMenu>(Db); } }//用来处理Cms_RoleMenu表的常用操作
+       public SimpleClient<LogJobDetails> LogJobDetailsDb { get { return new SimpleClient<LogJobDetails>(Db); } }//用来处理LogJobDetails表的常用操作
 
 
        /// <summary>

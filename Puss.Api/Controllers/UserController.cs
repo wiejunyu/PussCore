@@ -66,7 +66,7 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <param name="CodeKey">验证码缓存标记</param>
         /// <returns></returns>
-        [HttpPost("ShowValidateCode")]
+        [HttpPost]
         [AllowAnonymous]
         public FileResult ShowValidateCode(string CodeKey)
         {
@@ -78,7 +78,7 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <param name="CodeKey">验证码缓存标记</param>
         /// <returns></returns>
-        [HttpPost("ShowValidateCodeBase64")]
+        [HttpPost]
         [AllowAnonymous]
         public async Task<ReturnResult> ShowValidateCodeBase64(string CodeKey)
         {
@@ -91,7 +91,7 @@ namespace Puss.Api.Controllers
         /// <param name="CodeKey">验证码缓存标记</param>
         /// <param name="Email">邮箱</param>
         /// <returns></returns>
-        [HttpPost("EmailGetCode")]
+        [HttpPost]
         [AllowAnonymous]
         public async Task<ReturnResult> EmailGetCode(string CodeKey,string Email)
         {
@@ -104,7 +104,7 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [HttpPost("UserRegister")]
+        [HttpPost]
         [UserVerification]
         [CodeVerification]
         [AllowAnonymous]
@@ -124,7 +124,7 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <param name="request">登陆模型</param>
         /// <returns></returns>
-        [HttpPost("Login")]
+        [HttpPost]
         [CodeVerification]
         [UserVerification]
         [AllowAnonymous]
@@ -137,7 +137,7 @@ namespace Puss.Api.Controllers
         /// 登出
         /// </summary>
         /// <returns></returns>
-        [HttpPost("LoginOut")]
+        [HttpPost]
         public async Task<ReturnResult> LoginOut()
         {
             return await Task.Run(() =>

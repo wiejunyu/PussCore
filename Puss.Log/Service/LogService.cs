@@ -1,7 +1,7 @@
 ﻿using Puss.RabbitMQ;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using Newtonsoft.Json;
+using Puss.Enties;
 
 namespace Puss.Log
 {
@@ -13,29 +13,37 @@ namespace Puss.Log
         /// <param name="QueueKey">队列名称</param>
         /// <param name="ex">错误信息</param>
         /// <param name="RabbitMQPushService">MQ类接口</param>
-        public void LogCollectPush(string QueueKey, Exception ex, IRabbitMQPushService RabbitMQPushService)
+        public void LogCollectPush(string QueueKey, Exception Ex, string Url,string Token, IRabbitMQPushService RabbitMQPushService)
         {
-            string content = "类型：错误代码\r\n";
-            content += $"时间：{DateTime.Now}\r\n";
-            content += $"来源：{ex.TargetSite.ReflectedType}." + ex.TargetSite.Name + "\r\n";
-            content += $"内容：{ex.Message}\r\n";
-            RabbitMQPushService.PushMessage(QueueKey, content);
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            var LogErrorDetails = new LogErrorDetails()
+            {
+                CreateTime = DateTime.Now,
+                Url = Url,
+                Messsage = JsonConvert.SerializeObject(Ex, settings),
+                Token = Token,
+            };
+            RabbitMQPushService.PushMessage(QueueKey, JsonConvert.SerializeObject(LogErrorDetails));
         }
 
         /// <summary>
         /// 日志收集
         /// </summary>
         /// <param name="QueueKey">队列名称</param>
-        /// <param name="ex">错误信息</param>
+        /// <param name="Ex">错误信息</param>
         /// <param name="sDetails">详细信息</param>
         /// <param name="RabbitMQPushService">MQ类接口</param>
-        public void LogCollectPush(string QueueKey, Exception ex,string sDetails, IRabbitMQPushService RabbitMQPushService)
+        public void LogCollectPush(string QueueKey, Exception Ex,string sDetails, IRabbitMQPushService RabbitMQPushService)
         {
-            string content = $"类型：{sDetails}\r\n";
-            content += $"时间：{DateTime.Now}\r\n";
-            content += $"来源：{ex.TargetSite.ReflectedType}." + ex.TargetSite.Name + "\r\n";
-            content += $"内容：{ex.Message}\r\n";
-            RabbitMQPushService.PushMessage(QueueKey, content);
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            RabbitMQPushService.PushMessage(QueueKey, JsonConvert.SerializeObject(new LogJobDetails()
+            {
+                CreateTime = DateTime.Now,
+                Name = sDetails,
+                Messsage = JsonConvert.SerializeObject(Ex, settings),
+            }));
         }
 
         /// <summary>

@@ -5,7 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Puss.Enties\Puss.Enties.csproj" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Puss.Data\Puss.Data.csproj" />
     <ProjectReference Include="..\Puss.RabbitMQ\Puss.RabbitMQ.csproj" />
   </ItemGroup>
 

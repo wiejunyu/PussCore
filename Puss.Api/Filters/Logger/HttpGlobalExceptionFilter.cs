@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Log;
 using Puss.RabbitMQ;
+using Newtonsoft.Json;
 
 namespace Puss.Api.Filters
 {
@@ -14,16 +16,18 @@ namespace Puss.Api.Filters
     {
         private readonly ILogService LogService;
         private readonly IRabbitMQPushService RabbitMQPushService;
+        private readonly IHttpContextAccessor Accessor;
 
         /// <summary>
         /// 注入
         /// </summary>
         /// <param name="LogService">日志接口</param>
         /// <param name="RabbitMQPushService">MQ接口</param>
-        public HttpGlobalExceptionFilter(ILogService LogService, IRabbitMQPushService RabbitMQPushService)
+        public HttpGlobalExceptionFilter(ILogService LogService, IRabbitMQPushService RabbitMQPushService, IHttpContextAccessor Accessor)
         {
             this.LogService = LogService;
             this.RabbitMQPushService = RabbitMQPushService;
+            this.Accessor = Accessor;
         }
 
         /// <summary>
@@ -54,8 +58,9 @@ namespace Puss.Api.Filters
                     context.ExceptionHandled = true;
                 }
 
+                
                 //日志收集
-                LogService.LogCollectPush(QueueKey.LogError, context.Exception, RabbitMQPushService);
+                LogService.LogCollectPush(QueueKey.LogError, context.Exception, Accessor.HttpContext.Connection.RemoteIpAddress.ToString(), Accessor.HttpContext.Request.Headers["Authorization"].ToString(), RabbitMQPushService);
             }
         }
     }

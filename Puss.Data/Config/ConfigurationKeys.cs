@@ -20,6 +20,10 @@ namespace Puss.Data.Config
         /// 从数据库连接字符串json
         /// </summary>
         public static string Sql_ConnectionSon = "SqlConnection:ConnectionStringSon";
+        /// <summary>
+        /// Hangfire数据库连接字符串
+        /// </summary>
+        public static string Sql_HangfireConnectionString = "SqlConnection:HangfireConnectionString";
         #endregion
 
         #region Verification(验证统一管理)

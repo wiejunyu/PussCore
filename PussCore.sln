@@ -37,6 +37,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.BusinessCore", "Puss.B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.Enties", "Puss.Enties\Puss.Enties.csproj", "{30036A25-C180-4C60-9890-16328827BD59}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.Attendance", "Puss.Attendance\Puss.Attendance.csproj", "{E7ABE669-4C1E-45E6-A95F-5438FA0FFD02}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{30036A25-C180-4C60-9890-16328827BD59}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30036A25-C180-4C60-9890-16328827BD59}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30036A25-C180-4C60-9890-16328827BD59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7ABE669-4C1E-45E6-A95F-5438FA0FFD02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7ABE669-4C1E-45E6-A95F-5438FA0FFD02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7ABE669-4C1E-45E6-A95F-5438FA0FFD02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7ABE669-4C1E-45E6-A95F-5438FA0FFD02}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -118,6 +124,7 @@ Global
 		{11EF24B4-6AA1-4CC5-8653-B060130951FE} = {C7ECBA8F-ABBA-44B1-8225-77264F53B697}
 		{1842FE7F-78FD-420F-9EA6-F1A058066060} = {C7ECBA8F-ABBA-44B1-8225-77264F53B697}
 		{30036A25-C180-4C60-9890-16328827BD59} = {C7ECBA8F-ABBA-44B1-8225-77264F53B697}
+		{E7ABE669-4C1E-45E6-A95F-5438FA0FFD02} = {B60CB1B8-F0C4-4ECC-9BF4-E69960A5689C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59F6E3B6-A66D-4C21-9329-CF920749F1C2}
