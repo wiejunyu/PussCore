@@ -20,10 +20,9 @@ namespace Puss.Api.Filters
         /// <returns></returns>
         public bool Authorize([NotNull] DashboardContext context)
         {
-            if (context.Request.LocalIpAddress.Equals("127.0.0.1") || context.Request.LocalIpAddress.Equals("::1"))
-                return true;
-            else
-                return false;
+            //var httpcontext = context.GetHttpContext();
+            //return httpcontext.User.Identity.IsAuthenticated;
+            return true;
         }
     }
 }

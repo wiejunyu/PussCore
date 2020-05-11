@@ -170,5 +170,12 @@ namespace Puss.Data.Config
         /// </summary>
         public static string MDM_Certificate = "MDM:Certificate";
         #endregion
+
+        #region Hangfire
+        /// <summary>
+        /// 是否开启Hangfire作业
+        /// </summary>
+        public static string Hangfire_IsOpen = "Hangfire:IsOpen";
+        #endregion
     }
 }

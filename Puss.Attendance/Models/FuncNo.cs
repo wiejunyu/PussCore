@@ -25,5 +25,10 @@ namespace Puss.Attendance
         /// 学生进校离校记录
         /// </summary>
         public static string STDT_SCHOOL_RECS { get => "28"; }
+
+        /// <summary>
+        /// 获取公话状态
+        /// </summary>
+        public static string ABT_STATUS { get => "82"; }
     }
 }

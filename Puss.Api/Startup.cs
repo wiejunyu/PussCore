@@ -294,10 +294,16 @@ namespace Puss.Api
 
             #region Hangfire
             app.UseStaticFiles();
-            app.UseHangfireDashboard();
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions()
+            {
+                Authorization = new[] { new HangfireAuthorizationFilter() }
+            });
 
             //日志消费后台作业
-            LogManager.Log();
+            if (GlobalsConfig.Configuration[ConfigurationKeys.Hangfire_IsOpen].ToLower() == "true")
+            {
+                LogManager.Log();
+            }
             #endregion
 
             app.UseEndpoints(endpoints =>

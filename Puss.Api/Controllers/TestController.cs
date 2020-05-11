@@ -98,16 +98,15 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public async Task<ReturnResult> PullMessage()
         {
-            //return await Task.Run(() =>
-            //{
-            //    RabbitMQPushService.PullMessage(QueueKey.SendRegisterMessageIsEmail, (Message) =>
-            //    {
-            //        Cms_Sysconfig sys = Cms_SysconfigManager.GetById(1);
-            //        return EmailService.MailSending(Message, "欢迎你注册宇宙物流", "欢迎你注册宇宙物流", sys.Mail_From, sys.Mail_Code, sys.Mail_Host);
-            //    });
-            //    return new ReturnResult(ReturnResultStatus.Succeed);
-            //});
-            LogManager.Log();
+            return await Task.Run(() =>
+            {
+                RabbitMQPushService.PullMessage(QueueKey.SendRegisterMessageIsEmail, (Message) =>
+                {
+                    Cms_Sysconfig sys = Cms_SysconfigManager.GetById(1);
+                    return EmailService.MailSending(Message, "欢迎你注册宇宙物流", "欢迎你注册宇宙物流", sys.Mail_From, sys.Mail_Code, sys.Mail_Host);
+                });
+                return new ReturnResult(ReturnResultStatus.Succeed);
+            });
             return new ReturnResult(ReturnResultStatus.Succeed);
         }
 
@@ -133,7 +132,7 @@ namespace Puss.Api.Controllers
         {
             return await Task.Run(() =>
             {
-                BackgroundJob.Enqueue(() => RabbitMQPushService.PushMessage(QueueKey.AttendanceStart, "开始"));
+                LogManager.Log();
                 return new ReturnResult(ReturnResultStatus.Succeed);
             });
         }

@@ -25,5 +25,31 @@ namespace Puss.Attendance
         /// 学生卡号
         /// </summary>
         public static string Card_Id { get => "KQK001507"; }
+
+        /// <summary>
+        /// 版本信息
+        /// </summary>
+        public static string VersionInfo { get => "VER1.00 2020/05/11"; }
+
+        /// <summary>
+        /// 预留监控信息
+        /// </summary>
+        public static string MinitorInfo { get => "111"; }
+    }
+
+    /// <summary>
+    /// 进出校枚举
+    /// </summary>
+    public enum OptType
+    {
+        /// <summary>
+        /// 进校
+        /// </summary>
+        In,
+
+        /// <summary>
+        /// 出校
+        /// </summary>
+        Out,
     }
 }
