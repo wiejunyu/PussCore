@@ -218,7 +218,7 @@ namespace Puss.Attendance
         private static byte[] Send(Socket socket, byte[] data)
         {
             if (!socket.Connected) throw new AppException("没有连接上");
-            int i = socket.Send(data);
+            socket.Send(data);
             return Receive(socket, 1000 * 2); //1*2 seconds timeout.
         }
 
@@ -226,7 +226,7 @@ namespace Puss.Attendance
         /// 销毁Socket对象
         /// </summary>
         /// <param name="socket"></param>
-        private static void DestroySocket(Socket socket)
+        public static void DestroySocket(Socket socket)
         {
             if (socket.Connected)
             {
@@ -258,7 +258,7 @@ namespace Puss.Attendance
                 }
                 return body;
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
             }

@@ -29,8 +29,6 @@ namespace Puss.Api.Controllers
         private readonly IRabbitMQPushService RabbitMQPushService;
         private readonly IUserManager UserManager;
         private readonly ICms_SysconfigManager Cms_SysconfigManager;
-        private readonly ILogErrorDetailsManager LogErrorDetailsManager;
-        private readonly ILogJobDetailsManager LogJobDetailsManager;
 
         /// <summary>
         /// 测试
@@ -39,9 +37,7 @@ namespace Puss.Api.Controllers
         /// <param name="RabbitMQPushService"></param>
         /// <param name="UserManager"></param>
         /// <param name="Cms_SysconfigManager"></param>
-        /// <param name="LogErrorDetailsManager"></param>
-        /// <param name="LogJobDetailsManager"></param>
-        public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService, IUserManager UserManager, ICms_SysconfigManager Cms_SysconfigManager, ILogErrorDetailsManager LogErrorDetailsManager, ILogJobDetailsManager LogJobDetailsManager)
+        public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService, IUserManager UserManager, ICms_SysconfigManager Cms_SysconfigManager)
         {
             this.EmailService = EmailService;
             this.RabbitMQPushService = RabbitMQPushService;
@@ -107,7 +103,6 @@ namespace Puss.Api.Controllers
                 });
                 return new ReturnResult(ReturnResultStatus.Succeed);
             });
-            return new ReturnResult(ReturnResultStatus.Succeed);
         }
 
         /// <summary>

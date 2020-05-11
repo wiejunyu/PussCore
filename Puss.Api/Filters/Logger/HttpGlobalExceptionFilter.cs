@@ -23,6 +23,7 @@ namespace Puss.Api.Filters
         /// </summary>
         /// <param name="LogService">日志接口</param>
         /// <param name="RabbitMQPushService">MQ接口</param>
+        /// <param name="Accessor"></param>
         public HttpGlobalExceptionFilter(ILogService LogService, IRabbitMQPushService RabbitMQPushService, IHttpContextAccessor Accessor)
         {
             this.LogService = LogService;

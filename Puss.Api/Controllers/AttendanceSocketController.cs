@@ -18,16 +18,6 @@ namespace Puss.Api.Controllers
     [AllowAnonymous]
     public class AttendanceSocketController : ApiBaseController
     {
-        private readonly IRabbitMQPushService RabbitMQPushService;
-        /// <summary>
-        /// 考勤
-        /// </summary>
-        /// <param name="RabbitMQPushService"></param>
-        public AttendanceSocketController(IRabbitMQPushService RabbitMQPushService) 
-        {
-            this.RabbitMQPushService = RabbitMQPushService;
-        }
-
         /// <summary>
         /// 学生进校离校记录
         /// </summary>
@@ -49,6 +39,7 @@ namespace Puss.Api.Controllers
                 re = await AttendanceSocket.HeartbeatDetection(socket);
                 //发送学生进校离校记录
                 re = await AttendanceSocket.SendAttendance(socket, Basis.Card_Id, "37.3", (int)OptType.In);
+                AttendanceSocket.DestroySocket(socket);
             }
             return ReturnResult.ResultCalculation(() => re);
         }
