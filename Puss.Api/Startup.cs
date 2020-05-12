@@ -22,6 +22,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Puss.Api.Filters;
 using Puss.Api.Job;
+using Puss.BusinessCore;
 using Puss.Data.Config;
 using Puss.Redis;
 
@@ -328,6 +329,7 @@ namespace Puss.Api
             builder.RegisterTypes(Assembly.Load("Puss.Reptile").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
             builder.RegisterTypes(Assembly.Load("Puss.Log").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
             builder.RegisterTypes(Assembly.Load("Puss.BusinessCore").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
+            builder.RegisterType<DbContext>();
 
             var controllerBaseType = typeof(ControllerBase);
             builder.RegisterAssemblyTypes(typeof(Program).Assembly)

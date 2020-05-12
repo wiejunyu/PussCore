@@ -26,6 +26,7 @@ namespace Puss.Api.Controllers
         private readonly ICodeManager CodeManager;
         private readonly ICms_SysconfigManager Cms_SysconfigManager;
         private readonly IUserDetailsManager UserDetailsManager;
+        private readonly DbContext DbContext;
 
         /// <summary>
         /// 用户
@@ -38,6 +39,7 @@ namespace Puss.Api.Controllers
         /// <param name="CodeManager"></param>
         /// <param name="Cms_SysconfigManager"></param>
         /// <param name="UserDetailsManager"></param>
+        /// <param name="DbContext"></param>
         public UserController(
             IHttpContextAccessor accessor,
             IEmailService EmailService,
@@ -46,7 +48,8 @@ namespace Puss.Api.Controllers
             IUserManager UserManager,
             ICodeManager CodeManager,
             ICms_SysconfigManager Cms_SysconfigManager,
-            IUserDetailsManager UserDetailsManager
+            IUserDetailsManager UserDetailsManager,
+            DbContext DbContext
             )
         {
             _accessor = accessor;
@@ -57,6 +60,7 @@ namespace Puss.Api.Controllers
             this.CodeManager = CodeManager;
             this.Cms_SysconfigManager = Cms_SysconfigManager;
             this.UserDetailsManager = UserDetailsManager;
+            this.DbContext = DbContext;
         }
 
         #region 验证码
@@ -95,7 +99,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public async Task<ReturnResult> EmailGetCode(string CodeKey,string Email)
         {
-            return new ReturnResult(ReturnResultStatus.Succeed ,await LoginManager.EmailGetCode(CodeKey, Email, EmailService,RedisService, CodeManager, Cms_SysconfigManager));
+            return new ReturnResult(ReturnResultStatus.Succeed ,await LoginManager.EmailGetCode(CodeKey, Email, EmailService,RedisService, CodeManager, Cms_SysconfigManager,DbContext));
         }
         #endregion
 
@@ -114,7 +118,7 @@ namespace Puss.Api.Controllers
             {
                 return ReturnResult.ResultCalculation(() =>
                 {
-                    return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString(), RabbitMQPushService, UserManager, UserDetailsManager).Result;
+                    return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString(), RabbitMQPushService, UserManager, UserDetailsManager,DbContext).Result;
                 });
             });
         }

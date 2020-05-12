@@ -91,7 +91,7 @@ namespace Puss.Api.Manager
 
 
         /// <summary>
-        /// EmailGetCode
+        /// 邮箱获取验证码
         /// </summary>
         /// <param name="CodeKey">验证码</param>
         /// <param name="Email">邮箱</param>
@@ -99,15 +99,16 @@ namespace Puss.Api.Manager
         /// <param name="RedisService">Redis类接口</param>
         /// <param name="CodeManager"></param>
         /// <param name="Cms_SysconfigManager"></param>
+        /// <param name="DbContext"></param>
         /// <returns></returns>
-        public static async Task<string> EmailGetCode(string CodeKey, string Email, IEmailService EmailService, IRedisService RedisService, ICodeManager CodeManager, ICms_SysconfigManager Cms_SysconfigManager)
+        public static async Task<string> EmailGetCode(string CodeKey, string Email, IEmailService EmailService, IRedisService RedisService, ICodeManager CodeManager, ICms_SysconfigManager Cms_SysconfigManager, DbContext DbContext)
         {
             //读写分离强制走主库
-            CodeManager.GetDB().Db.Ado.IsDisableMasterSlaveSeparation = true;
+            DbContext.Db.Ado.IsDisableMasterSlaveSeparation = true;
 
             DateTime dt = DateTime.Now.Date;
             //批量删除今天之前的验证码
-            var t5 = CodeManager.GetDB().Db.Deleteable<Code>().Where(x => x.time < dt).ExecuteCommand();
+            var t5 = DbContext.Db.Deleteable<Code>().Where(x => x.time < dt).ExecuteCommand();
             Code cModel = await CodeManager.GetSingleAsync(x => x.email == Email && x.time > dt && x.type == (int)CodeType.Email);
             //判断验证码是否超出次数
             if (cModel != null ? cModel.count >= 6 : false) throw new AppException("发送超出次数");
@@ -138,7 +139,7 @@ namespace Puss.Api.Manager
             RedisService.Set(CommentConfig.MailCacheCode + CodeKey, cModel, 10);
 
             //读写分离取消强制走主库
-            CodeManager.GetDB().Db.Ado.IsDisableMasterSlaveSeparation = false;
+            DbContext.Db.Ado.IsDisableMasterSlaveSeparation = false;
             return "验证码发送成功";
         }
 
@@ -150,8 +151,9 @@ namespace Puss.Api.Manager
         /// <param name="RabbitMQPush">MQ接口</param>
         /// <param name="UserManager"></param>
         /// <param name="UserDetailsManager"></param>
+        /// <param name="DbContext"></param>
         /// <returns></returns>
-        public static async Task<bool> UserRegister(RegisterRequest request, string ip, IRabbitMQPushService RabbitMQPush, IUserManager UserManager, IUserDetailsManager UserDetailsManager)
+        public static async Task<bool> UserRegister(RegisterRequest request, string ip, IRabbitMQPushService RabbitMQPush, IUserManager UserManager, IUserDetailsManager UserDetailsManager, DbContext DbContext)
         {
             #region 验证
             if (UserManager.IsAny(x => x.UserName == request.UserName)) throw new AppException("该用户名已经注册过");
@@ -172,7 +174,7 @@ namespace Puss.Api.Manager
             user.Portrait = "/Image/user.png";
             user.Money = 0;
 
-            var result = UserManager.GetDB().Db.Ado.UseTran(() =>
+            var result = DbContext.Db.Ado.UseTran(() =>
             {
                 UserManager.Insert(user);
                 UserDetailsManager.Insert(new UserDetails() { UID = user.ID });
