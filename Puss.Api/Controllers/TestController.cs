@@ -7,15 +7,8 @@ using Puss.Data.Models;
 using Puss.Email;
 using Puss.RabbitMQ;
 using Puss.Enties;
-using System;
-using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using System.Text;
-using Microsoft.AspNetCore.Http.Features;
-using System.Xml;
-using Puss.Api.Aop;
-using Hangfire;
 using Puss.Api.Job;
 
 namespace Puss.Api.Controllers

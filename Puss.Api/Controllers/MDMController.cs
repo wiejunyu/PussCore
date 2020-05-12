@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using System.Xml;
 using Puss.Redis;
-using Microsoft.Net.Http.Headers;
 using Puss.Data.Config;
 
 namespace Puss.Api.Controllers

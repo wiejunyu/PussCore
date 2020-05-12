@@ -1,11 +1,7 @@
-﻿using Hangfire;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Puss.Attendance;
-using Puss.Data.Enum;
 using Puss.Data.Models;
-using Puss.RabbitMQ;
-using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;

@@ -18,7 +18,7 @@ namespace Puss.Api.Controllers
     /// </summary>
     public class UserController : ApiBaseController
     {
-        private readonly IHttpContextAccessor _accessor;
+        private readonly IHttpContextAccessor Accessor;
         private readonly IEmailService EmailService;
         private readonly IRabbitMQPushService RabbitMQPushService;
         private readonly IRedisService RedisService;
@@ -31,7 +31,7 @@ namespace Puss.Api.Controllers
         /// <summary>
         /// 用户
         /// </summary>
-        /// <param name="accessor"></param>
+        /// <param name="Accessor"></param>
         /// <param name="EmailService"></param>
         /// <param name="RabbitMQPushService"></param>
         /// <param name="RedisService"></param>
@@ -41,7 +41,7 @@ namespace Puss.Api.Controllers
         /// <param name="UserDetailsManager"></param>
         /// <param name="DbContext"></param>
         public UserController(
-            IHttpContextAccessor accessor,
+            IHttpContextAccessor Accessor,
             IEmailService EmailService,
             IRabbitMQPushService RabbitMQPushService,
             IRedisService RedisService,
@@ -52,7 +52,7 @@ namespace Puss.Api.Controllers
             DbContext DbContext
             )
         {
-            _accessor = accessor;
+            this.Accessor = this.Accessor;
             this.EmailService = EmailService;
             this.RabbitMQPushService = RabbitMQPushService;
             this.RedisService = RedisService;
@@ -118,7 +118,7 @@ namespace Puss.Api.Controllers
             {
                 return ReturnResult.ResultCalculation(() =>
                 {
-                    return LoginManager.UserRegister(request, _accessor.HttpContext.Connection.RemoteIpAddress.ToString(), RabbitMQPushService, UserManager, UserDetailsManager,DbContext).Result;
+                    return LoginManager.UserRegister(request, Accessor.HttpContext.Connection.RemoteIpAddress.ToString(), RabbitMQPushService, UserManager, UserDetailsManager,DbContext).Result;
                 });
             });
         }
@@ -148,7 +148,7 @@ namespace Puss.Api.Controllers
             {
                 return ReturnResult.ResultCalculation(() =>
                 {
-                    return LoginManager.LoginOut(_accessor, RedisService).Result;
+                    return LoginManager.LoginOut(Accessor, RedisService).Result;
                 });
             });
         }
