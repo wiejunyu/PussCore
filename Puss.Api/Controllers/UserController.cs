@@ -52,7 +52,7 @@ namespace Puss.Api.Controllers
             DbContext DbContext
             )
         {
-            this.Accessor = this.Accessor;
+            this.Accessor = Accessor;
             this.EmailService = EmailService;
             this.RabbitMQPushService = RabbitMQPushService;
             this.RedisService = RedisService;

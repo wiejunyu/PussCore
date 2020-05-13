@@ -79,7 +79,9 @@ namespace Puss.BusinessCore
        public SimpleClient<Shop> ShopDb { get { return new SimpleClient<Shop>(Db); } }//用来处理Shop表的常用操作
        public SimpleClient<Order> OrderDb { get { return new SimpleClient<Order>(Db); } }//用来处理Order表的常用操作
        public SimpleClient<Cms_Article> Cms_ArticleDb { get { return new SimpleClient<Cms_Article>(Db); } }//用来处理Cms_Article表的常用操作
+       public SimpleClient<KeyContent> KeyContentDb { get { return new SimpleClient<KeyContent>(Db); } }//用来处理KeyContent表的常用操作
        public SimpleClient<Cms_Category> Cms_CategoryDb { get { return new SimpleClient<Cms_Category>(Db); } }//用来处理Cms_Category表的常用操作
+       public SimpleClient<KeySection> KeySectionDb { get { return new SimpleClient<KeySection>(Db); } }//用来处理KeySection表的常用操作
        public SimpleClient<Cms_UserInfo> Cms_UserInfoDb { get { return new SimpleClient<Cms_UserInfo>(Db); } }//用来处理Cms_UserInfo表的常用操作
        public SimpleClient<Logger> LoggerDb { get { return new SimpleClient<Logger>(Db); } }//用来处理Logger表的常用操作
        public SimpleClient<Cms_Logger> Cms_LoggerDb { get { return new SimpleClient<Cms_Logger>(Db); } }//用来处理Cms_Logger表的常用操作
@@ -265,7 +267,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual bool Delete(dynamic id)
         {
-            return CurrentDb.Delete(id);
+            return CurrentDb.DeleteById(id);
         }
 
 

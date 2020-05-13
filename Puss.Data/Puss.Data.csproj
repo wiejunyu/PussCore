@@ -94,6 +94,7 @@
     <Compile Include="Enum\ExceptionTypeEnum.cs" />
     <Compile Include="Enum\ReturnResultStatus.cs" />
     <Compile Include="Models\Api\Price.cs" />
+    <Compile Include="Models\Api\Key.cs" />
     <Compile Include="Models\Exception\AppException.cs" />
     <Compile Include="Models\Comment\CommentConfig.cs" />
     <Compile Include="Models\Api\LoginRequest.cs" />
