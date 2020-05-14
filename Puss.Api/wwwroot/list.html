@@ -13,14 +13,7 @@
     <link rel="stylesheet" href="./css/amazeui.min.css">
     <link rel="stylesheet" href="./css/app.css">
 
-    <!--[if (gte IE 9)|!(IE)]><!-->
     <script src="./js/jquery.min.js"></script>
-    <!--<![endif]-->
-    <!--[if lte IE 8 ]>
-    <script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
-    <script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
-    <script src="assets/js/amazeui.ie8polyfill.min.js"></script>
-    <![endif]-->
     <script src="./js/amazeui.min.js"></script>
     <script src="./js/app.js"></script>
     <script src="./js/jquery.serializejson.min.js"></script>
@@ -50,7 +43,7 @@
             console.log(GetToken());
             $.ajax({
                 type: "POST",
-                url: "http://118.89.182.215:85/api/Key/GetKeySectionList",
+                url: "http://118.89.182.215:85/api/Key/GetKeyList?id=" + getUrlParam("id"),
                 contentType: 'application/json;charset=utf-8',
                 headers: {
                     Authorization: 'Bearer ' + GetToken(),
@@ -63,7 +56,7 @@
                     if (data.status == 200) {
                         var list = JSON.parse(data.message);
                         $.each(list, function (index, value) {
-                            $("#list").html($("#list").html() + '<div class="am-form-group"><a href="list.html?id=' + value.ID + '">' + value.Name + '</div>');
+                            $("#list").html($("#list").html() + '<div class="am-form-group"><a href="detailed.html?id=' + value.ID + '">' + value.Name + '</div>');
                         });
                     }
                     else {
@@ -78,6 +71,13 @@
         $("#btnOutLogin").click(function () {
             OutLogin();
         });
+
+        //获取url中的参数
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        }
     </script>
 </body>
 </html>

@@ -6,6 +6,7 @@ using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Enties;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -117,7 +118,7 @@ namespace Puss.Api.Controllers
 
         #region 密匙
         /// <summary>
-        /// 获取用户密匙
+        /// 获取用户密匙列表
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -128,8 +129,37 @@ namespace Puss.Api.Controllers
                 if (ID <= 0) throw new AppException("栏目不能为空");
                 int iUID = int.Parse((this.User.Identity as ClaimsIdentity).Name);
                 List<KeyContent> list = KeyContentManager.GetList(x => x.CreateUserID == iUID && x.SectionID == ID);
-                return new ReturnResult(ReturnResultStatus.Succeed, JsonConvert.SerializeObject(list));
+                return new ReturnResult(ReturnResultStatus.Succeed, JsonConvert.SerializeObject(list.Select(x => new
+                {
+                    x.ID,
+                    x.Name
+                })));
             });
+        }
+
+        /// <summary>
+        /// 获取用户密匙详细
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ReturnResult> GetKeyDetailed(int ID)
+        {
+            if (ID <= 0) throw new AppException("密匙不能为空");
+            int iUID = int.Parse((this.User.Identity as ClaimsIdentity).Name);
+            KeyContent keyContent = await KeyContentManager.GetSingleAsync(x => x.CreateUserID == iUID && x.ID == ID);
+            if(keyContent == null) throw new AppException((int)ReturnResultStatus.Illegal, "0", "非法操作");
+            return new ReturnResult(ReturnResultStatus.Succeed, JsonConvert.SerializeObject(new 
+            { 
+                keyContent.Name,
+                keyContent.UserText,
+                keyContent.PasswordText,
+                keyContent.UrlText,
+                keyContent.IphoneText,
+                keyContent.MailText,
+                keyContent.OtherText,
+                keyContent.Remarks,
+                IsStart = keyContent.IsStart ? "已启用" : "未启用",
+            }));
         }
 
         /// <summary>

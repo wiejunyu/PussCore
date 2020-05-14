@@ -7,6 +7,7 @@ function IsLogin() {
 
 function Login(id)
 {
+    $("#loading").show();
     var post_data = $("#from").serializeJSON();//表单序列化
     $.ajax({
         type: "POST",
@@ -26,6 +27,7 @@ function Login(id)
             else {
                 alert(data.message);
             }
+            $("#loading").hide();
         }
     });
 }
@@ -55,6 +57,7 @@ function GetToken() {
 
 function OutLogin()
 {
+    $("#loading").show();
 	$.ajax({
 		type: "POST",
 		url: "http://118.89.182.215:85/api/User/LoginOut",
@@ -66,9 +69,10 @@ function OutLogin()
 		beforeSend: function (xhr) {
 			xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
 		},
-		success: function (data) {
+        success: function (data) {
+            $("#loading").hide();
 			sessionStorage.removeItem('token');
 			window.location.href = "login.html"
 		}
-	});
+    });
 }

@@ -1,0 +1,116 @@
+﻿<!doctype html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="stylesheet" href="./css/amazeui.min.css">
+    <link rel="stylesheet" href="./css/app.css">
+
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/amazeui.min.js"></script>
+    <script src="./js/app.js"></script>
+    <script src="./js/jquery.serializejson.min.js"></script>
+    <script src="./js/GUID.js"></script>
+    <script src="./js/jquery.cookie.js"></script>
+    <script src="./js/login.js"></script>
+</head>
+<body>
+    <div class="am-g myapp-login">
+        <div class="myapp-login-bg">
+            <div class="am-u-sm-10 myapp-login-form">
+                <form class="am-form" id="from">
+                    <fieldset>
+                        <div class="am-form-group">
+                            <input type="text" name="Name" id="Name" placeholder="密匙名称">
+                        </div>
+                        <div class="am-form-group">
+                            <input type="text" name="UserText" id="UserText" placeholder="用户/账号本文">
+                        </div>
+                        <div class="am-form-group">
+                            <input type="text" name="PasswordText" Id="PasswordText" placeholder="密码本文">
+                        </div>
+                        <div class="am-form-group">
+                            <input type="text" name="UrlText" id="UrlText" placeholder="网址本文">
+                        </div>
+                        <div class="am-form-group">
+                            <input type="text" name="IphoneText" id="IphoneText" placeholder="手机本文">
+                        </div>
+                        <div class="am-form-group">
+                            <input type="text" name="MailText" id="MailText" placeholder="邮箱文本">
+                        </div>
+                        <div class="am-form-group">
+                            <input type="text" name="OtherText" id="OtherText" placeholder="其他本文">
+                        </div>
+                        <div class="am-form-group">
+                            <input type="text" name="Remarks" id="Remarks" placeholder="备注">
+                        </div>
+                        <div class="am-form-group">
+                            <input type="text" name="IsStart" id="IsStart" placeholder="是否启用">
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="head"><a href="javascript:history.back(-1)">返回</a></div>
+    <div class="loading" id="loading">
+        <img src="img/loading.gif" />
+    </div>
+    <script>
+        $(function () {
+            $("#loading").show();
+            IsLogin();
+            console.log(GetToken());
+            $.ajax({
+                type: "POST",
+                url: "http://118.89.182.215:85/api/Key/GetKeyDetailed?id=" + getUrlParam("id"),
+                contentType: 'application/json;charset=utf-8',
+                headers: {
+                    Authorization: 'Bearer ' + GetToken(),
+                    Accept: "text/plain"
+                },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
+                },
+                success: function (data) {
+                    if (data.status == 200) {
+                        var obj = JSON.parse(data.message);
+                        $("#Name").val(obj.Name);
+                        $("#UserText").val(obj.UserText);
+                        $("#PasswordText").val(obj.PasswordText);
+                        $("#UrlText").val(obj.UrlText);
+                        $("#IphoneText").val(obj.IphoneText);
+                        $("#MailText").val(obj.MailText);
+                        $("#OtherText").val(obj.OtherText);
+                        $("#Remarks").val(obj.Remarks);
+                        $("#IsStart").val(obj.IsStart);
+                    }
+                    else {
+                        alert(data.message);
+                    }
+                    $("#loading").hide();
+                }
+            });
+        })
+
+        //退出登录提交
+        $("#btnOutLogin").click(function () {
+            OutLogin();
+        });
+
+        //获取url中的参数
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        }
+    </script>
+</body>
+</html>
