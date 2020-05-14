@@ -6,6 +6,8 @@ using Puss.Data.Models;
 using Puss.Log;
 using Puss.RabbitMQ;
 using Newtonsoft.Json;
+using Hangfire;
+using Puss.Api.Job;
 
 namespace Puss.Api.Filters
 {

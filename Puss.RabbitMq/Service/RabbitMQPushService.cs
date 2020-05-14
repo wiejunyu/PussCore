@@ -9,13 +9,16 @@ namespace Puss.RabbitMQ
 {
     public class RabbitMQPushService: IRabbitMQPushService
     {
-        private IConnection connection;
-        private IModel channel;
+        private static IConnection connection;
+        private static IModel channel;
 
         public RabbitMQPushService() 
         {
             //创建信道
-            channel = GetConection().CreateModel();
+            if (channel == null)
+            {
+                channel = GetConection().CreateModel();
+            }
         }
 
         public IConnection GetConection()
@@ -95,24 +98,23 @@ namespace Puss.RabbitMQ
         /// <param name="args"></param>
         private void Consumer_Received(object sender, BasicDeliverEventArgs args)
         {
+            bool result = false;
             try
             {
                 var body = args.Body;
                 var message = Encoding.UTF8.GetString(body);
                 //将消息业务处理交给外部业务
-                bool result = ReceiveMessageCallback(message);
-                if (result == true)
-                {
-                    //发送消息确认信号（手动消息确认）
-                    channel.BasicAck(args.DeliveryTag, false);
-                    
-                }
-                channel.BasicReject(args.DeliveryTag, false);
+                result = ReceiveMessageCallback(message);
             }
             catch (Exception ex)
             {
-                channel.BasicReject(args.DeliveryTag, false);
                 throw ex;
+            }
+            if (result == true)
+            {
+                //发送消息确认信号（手动消息确认）
+                channel.BasicAck(args.DeliveryTag, false);
+
             }
         }
     }

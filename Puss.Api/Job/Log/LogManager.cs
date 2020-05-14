@@ -27,9 +27,9 @@ namespace Puss.Api.Job
         /// </summary>
         public static void ConsumptionLogError()
         {
+            RabbitMQPushService RabbitMQPushService = new RabbitMQPushService();
             while (true)
             {
-                RabbitMQPushService RabbitMQPushService = new RabbitMQPushService();
                 RabbitMQPushService.PullMessage(QueueKey.LogError, (Message) =>
                 {
                     LogErrorDetailsManager LogErrorDetailsManager = new LogErrorDetailsManager();
@@ -44,9 +44,9 @@ namespace Puss.Api.Job
         /// </summary>
         public static void ConsumptionLogTime()
         {
+            RabbitMQPushService RabbitMQPushService = new RabbitMQPushService();
             while (true)
             {
-                RabbitMQPushService RabbitMQPushService = new RabbitMQPushService();
                 RabbitMQPushService.PullMessage(QueueKey.LogTime, (Message) =>
                 {
                     return true;
@@ -59,9 +59,9 @@ namespace Puss.Api.Job
         /// </summary>
         public static void ConsumptionLogJob()
         {
+            RabbitMQPushService RabbitMQPushService = new RabbitMQPushService();
             while (true)
             {
-                RabbitMQPushService RabbitMQPushService = new RabbitMQPushService();
                 RabbitMQPushService.PullMessage(QueueKey.LogJob, (Message) =>
                 {
                     LogJobDetailsManager LogJobDetailsManager = new LogJobDetailsManager();

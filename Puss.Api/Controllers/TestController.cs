@@ -89,8 +89,7 @@ namespace Puss.Api.Controllers
             {
                 RabbitMQPushService.PullMessage(QueueKey.SendRegisterMessageIsEmail, (Message) =>
                 {
-                    Cms_Sysconfig sys = Cms_SysconfigManager.GetById(1);
-                    return EmailService.MailSending(Message, "欢迎你注册宇宙物流", "欢迎你注册宇宙物流", sys.Mail_From, sys.Mail_Code, sys.Mail_Host);
+                    return true;
                 });
                 return new ReturnResult(ReturnResultStatus.Succeed);
             });
