@@ -73,8 +73,6 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public async Task<ReturnResult> PushMessage()
         {
-            string str = null;
-            JsonConvert.DeserializeObject(str);
             await RabbitMQPushService.PushMessage(QueueKey.SendRegisterMessageIsEmail, "1013422066@qq.com");
             return new ReturnResult(ReturnResultStatus.Succeed);
         }

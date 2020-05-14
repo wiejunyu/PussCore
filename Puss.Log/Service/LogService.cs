@@ -11,12 +11,11 @@ namespace Puss.Log
         /// 日志收集
         /// </summary>
         /// <param name="QueueKey">队列名称</param>
-        /// <param name="ex">错误信息</param>
+        /// <param name="Ex">错误信息</param>
         /// <param name="RabbitMQPushService">MQ类接口</param>
         public void LogCollectPush(string QueueKey, Exception Ex, string Url,string Token, IRabbitMQPushService RabbitMQPushService)
         {
-            JsonSerializerSettings settings = new JsonSerializerSettings();
-            settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            JsonSerializerSettings settings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
             var LogErrorDetails = new LogErrorDetails()
             {
                 CreateTime = DateTime.Now,
@@ -36,8 +35,7 @@ namespace Puss.Log
         /// <param name="RabbitMQPushService">MQ类接口</param>
         public void LogCollectPush(string QueueKey, Exception Ex,string sDetails, IRabbitMQPushService RabbitMQPushService)
         {
-            JsonSerializerSettings settings = new JsonSerializerSettings();
-            settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            JsonSerializerSettings settings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
             RabbitMQPushService.PushMessage(QueueKey, JsonConvert.SerializeObject(new LogJobDetails()
             {
                 CreateTime = DateTime.Now,

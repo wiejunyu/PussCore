@@ -267,7 +267,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual bool Delete(dynamic id)
         {
-            return CurrentDb.DeleteById(id);
+            return CurrentDb.Delete(id);
         }
 
 

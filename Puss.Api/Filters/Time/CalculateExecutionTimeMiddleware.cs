@@ -48,9 +48,11 @@ namespace Puss.Api.Filters
                 ApiPath = context.Request.Path,
                 Time = stopwatch.ElapsedMilliseconds
             };
-
-            //日志收集
-            LogService.LogCollectPush(QueueKey.LogTime, JsonConvert.SerializeObject(tlog), RabbitMQPushService);
+            if (!"[/][/swagger/index.html]".Contains($"[{tlog.ApiPath}]") && !tlog.ApiPath.Contains("hangfire")) 
+            {
+                //日志收集
+                LogService.LogCollectPush(QueueKey.LogTime, JsonConvert.SerializeObject(tlog), RabbitMQPushService);
+            }
         }
     }
 }

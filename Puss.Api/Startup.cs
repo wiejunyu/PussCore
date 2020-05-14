@@ -299,12 +299,6 @@ namespace Puss.Api
             {
                 Authorization = new[] { new HangfireAuthorizationFilter() }
             });
-
-            //日志消费后台作业
-            if (GlobalsConfig.Configuration[ConfigurationKeys.Hangfire_IsOpen].ToLower() == "true")
-            {
-                LogManager.Log();
-            }
             #endregion
 
             app.UseEndpoints(endpoints =>
