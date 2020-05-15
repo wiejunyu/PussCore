@@ -53,7 +53,7 @@ namespace Puss.Data.Models
         /// <summary>
         /// 栏目ID
         /// </summary>
-        public int SectionID { get; set; }
+        public string SectionID { get; set; }
 
         /// <summary>
         /// 名称
@@ -98,7 +98,7 @@ namespace Puss.Data.Models
         /// <summary>
         /// 是否启用
         /// </summary>
-        public bool IsStart { get; set; }
+        public string IsStart { get; set; }
     }
 
     /// <summary>
@@ -109,12 +109,12 @@ namespace Puss.Data.Models
         /// <summary>
         /// ID
         /// </summary>
-        public int ID { get; set; }
+        public string ID { get; set; }
 
         /// <summary>
         /// 栏目ID
         /// </summary>
-        public int SectionID { get; set; }
+        public string SectionID { get; set; }
 
         /// <summary>
         /// 名称
@@ -159,7 +159,7 @@ namespace Puss.Data.Models
         /// <summary>
         /// 是否启用
         /// </summary>
-        public bool IsStart { get; set; }
+        public string IsStart { get; set; }
     }
     #endregion
 }
