@@ -1,8 +1,22 @@
 function IsLogin() {
-	if(GetToken() == null)
-	{
-		window.location.href = "login.html"
-	}
+    if (GetToken() == null) {
+        window.location.href = "login.html"
+    }
+    else {
+        $.ajax({
+            type: "POST",
+            url: GetAjaxUrl() + "/api/User/IsToken?sToken=" + GetToken(),
+            contentType: 'application/json;charset=utf-8',
+            headers: {
+                Accept: "text/plain"
+            },
+            success: function (data) {
+                if (data.status != 200) {
+                    window.location.href = "login.html"
+                }
+            }
+        });
+    }
 }
 
 function Login(id)
@@ -11,7 +25,7 @@ function Login(id)
     var post_data = $("#from").serializeJSON();//表单序列化
     $.ajax({
         type: "POST",
-        url: "http://118.89.182.215:85/api/User/Login",
+        url: GetAjaxUrl() + "/api/User/Login",
         contentType: 'application/json;charset=utf-8',
         data: JSON.stringify(post_data),
         headers: {
@@ -39,7 +53,7 @@ function CodeKey()
     $("#CodeKey").val(Guid);
     $.ajax({
         type: "POST",
-        url: "http://118.89.182.215:85/api/User/ShowValidateCodeBase64?CodeKey=" + Guid,
+        url: GetAjaxUrl() + "/api/User/ShowValidateCodeBase64?CodeKey=" + Guid,
         success: function (data) {
             if (data.status == 200) {
                 $("#imgCode").attr("src", data.message);
@@ -60,7 +74,7 @@ function OutLogin()
     $("#loading").show();
 	$.ajax({
 		type: "POST",
-		url: "http://118.89.182.215:85/api/User/LoginOut",
+        url: GetAjaxUrl() + "/api/User/LoginOut",
 		contentType: 'application/json;charset=utf-8',
 		headers: {
 			Authorization: 'Bearer ' + GetToken(),
@@ -75,4 +89,9 @@ function OutLogin()
 			window.location.href = "login.html"
 		}
     });
+}
+
+
+function GetAjaxUrl() {
+    return "https://118.89.182.215";
 }

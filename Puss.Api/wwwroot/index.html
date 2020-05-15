@@ -35,6 +35,11 @@
                 <form class="am-form" id="from">
                     <fieldset id="list">
                     </fieldset>
+
+                    <fieldset>
+                        <div class="am-form-group"><a href="addKeySection.html">添加栏目</a></div>
+                        <div class="am-form-group"><a href="addKey.html">添加密匙</a></div>
+                    </fieldset>
                 </form>
             </div>
         </div>
@@ -49,8 +54,8 @@
             IsLogin();
             console.log(GetToken());
             $.ajax({
-                type: "POST",
-                url: "http://118.89.182.215:85/api/Key/GetKeySectionList",
+                type: "GET",
+                url: GetAjaxUrl() + "/api/Key/GetKeySectionList",
                 contentType: 'application/json;charset=utf-8',
                 headers: {
                     Authorization: 'Bearer ' + GetToken(),

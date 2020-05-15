@@ -21,6 +21,7 @@ namespace Puss.Api.Controllers
         private readonly IKeySectionManager KeySectionManager;
         private readonly IKeyContentManager KeyContentManager;
 
+
         /// <summary>
         /// 密匙
         /// </summary>
@@ -43,7 +44,7 @@ namespace Puss.Api.Controllers
         /// 获取用户密匙栏目
         /// </summary>
         /// <returns></returns>
-        [HttpPost]
+        [HttpGet]
         public async Task<ReturnResult> GetKeySectionList()
         {
             return await Task.Run(() =>
@@ -121,7 +122,7 @@ namespace Puss.Api.Controllers
         /// 获取用户密匙列表
         /// </summary>
         /// <returns></returns>
-        [HttpPost]
+        [HttpGet]
         public async Task<ReturnResult> GetKeyList(int ID)
         {
             return await Task.Run(() =>
@@ -141,7 +142,7 @@ namespace Puss.Api.Controllers
         /// 获取用户密匙详细
         /// </summary>
         /// <returns></returns>
-        [HttpPost]
+        [HttpGet]
         public async Task<ReturnResult> GetKeyDetailed(int ID)
         {
             if (ID <= 0) throw new AppException("密匙不能为空");
@@ -149,7 +150,9 @@ namespace Puss.Api.Controllers
             KeyContent keyContent = await KeyContentManager.GetSingleAsync(x => x.CreateUserID == iUID && x.ID == ID);
             if(keyContent == null) throw new AppException((int)ReturnResultStatus.Illegal, "0", "非法操作");
             return new ReturnResult(ReturnResultStatus.Succeed, JsonConvert.SerializeObject(new 
-            { 
+            {
+                keyContent.ID,
+                keyContent.SectionID,
                 keyContent.Name,
                 keyContent.UserText,
                 keyContent.PasswordText,
@@ -158,7 +161,7 @@ namespace Puss.Api.Controllers
                 keyContent.MailText,
                 keyContent.OtherText,
                 keyContent.Remarks,
-                IsStart = keyContent.IsStart ? "已启用" : "未启用",
+                keyContent.IsStart,
             }));
         }
 
@@ -172,7 +175,7 @@ namespace Puss.Api.Controllers
         {
             return await Task.Run(() =>
             {
-                if (request.SectionID <= 0) throw new AppException("栏目不能为空");
+                if (int.Parse(request.SectionID) <= 0) throw new AppException("栏目不能为空");
                 if (string.IsNullOrWhiteSpace(request.Name)) throw new AppException("名称不能为空");
 
                 int iUID = int.Parse((this.User.Identity as ClaimsIdentity).Name);
@@ -191,14 +194,13 @@ namespace Puss.Api.Controllers
         [HttpPost]
         public async Task<ReturnResult> EditKey([FromBody]EditKey request)
         {
-            if (request.SectionID <= 0) throw new AppException("栏目不能为空");
+            if (int.Parse(request.SectionID) <= 0) throw new AppException("栏目不能为空");
             if (string.IsNullOrWhiteSpace(request.Name)) throw new AppException("名称不能为空");
-            KeyContent keyContent = await KeyContentManager.GetByIdAsync(request.ID);
+            KeyContent keyContent = await KeyContentManager.GetByIdAsync(int.Parse(request.ID));
             int iUID = int.Parse((this.User.Identity as ClaimsIdentity).Name);
             if (keyContent.CreateUserID != iUID) throw new AppException((int)ReturnResultStatus.Illegal, "0", "非法操作");
-
             var mapper = new MapperConfiguration(x => x.CreateMap<EditKey, KeyContent>()).CreateMapper();
-            keyContent = mapper.Map<KeyContent>(request);
+            mapper.Map(request, keyContent);
             keyContent.CreateUserID = iUID;
             return ReturnResult.ResultCalculation(() => KeyContentManager.Update(keyContent));
         }

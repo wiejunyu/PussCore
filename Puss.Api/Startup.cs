@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using App.Metrics;
 using Autofac;
+using AutoMapper;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -41,8 +42,9 @@ namespace Puss.Api
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
-            //配置文件
+            #region 配置文件
             GlobalsConfig.SetBaseConfig(Configuration, env.ContentRootPath, env.WebRootPath);
+            #endregion
         }
 
         /// <summary>

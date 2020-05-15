@@ -20,6 +20,7 @@
     <script src="./js/GUID.js"></script>
     <script src="./js/jquery.cookie.js"></script>
     <script src="./js/login.js"></script>
+    <script src="./js/configuration.js"></script>
 </head>
 <body>
     <div class="am-g myapp-login">
@@ -27,7 +28,6 @@
             <div class="am-u-sm-10 myapp-login-form">
                 <form class="am-form" id="from">
                     <fieldset>
-                        <input type="hidden" name="ID" id="ID">
                         <div class="am-form-group">
                             <select name="SectionID" id="SectionID">
                             </select>
@@ -58,8 +58,8 @@
                         </div>
                         <div class="am-form-group">
                             <select name="IsStart" id="IsStart">
-                                <option value="true">已启用</option>
-                                <option value="false">未启用</option>
+                                <option value="true">启用</option>
+                                <option value="false">不启用</option>
                             </select>
                         </div>
                         <p><button type="button" class="am-btn am-btn-default" id="btnSubmit">提交</button></p>
@@ -79,7 +79,7 @@
             console.log(GetToken());
             $.ajax({
                 type: "GET",
-                url: GetAjaxUrl() + "/api/Key/GetKeyDetailed?id=" + getUrlParam("id"),
+                url: GetAjaxUrl() + "/api/Key/GetKeySectionList",
                 contentType: 'application/json;charset=utf-8',
                 headers: {
                     Authorization: 'Bearer ' + GetToken(),
@@ -90,41 +90,9 @@
                 },
                 success: function (data) {
                     if (data.status == 200) {
-                        var obj = JSON.parse(data.message);
-                        $("#ID").val(obj.ID);
-                        $("#Name").val(obj.Name);
-                        $("#UserText").val(obj.UserText);
-                        $("#PasswordText").val(obj.PasswordText);
-                        $("#UrlText").val(obj.UrlText);
-                        $("#IphoneText").val(obj.IphoneText);
-                        $("#MailText").val(obj.MailText);
-                        $("#OtherText").val(obj.OtherText);
-                        $("#Remarks").val(obj.Remarks);
-                        $("#IsStart option[value='" + obj.IsStart + "']").attr("selected", "selected");  
-
-                        $.ajax({
-                            type: "GET",
-                            url: GetAjaxUrl() + "/api/Key/GetKeySectionList",
-                            contentType: 'application/json;charset=utf-8',
-                            headers: {
-                                Authorization: 'Bearer ' + GetToken(),
-                                Accept: "text/plain"
-                            },
-                            beforeSend: function (xhr) {
-                                xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
-                            },
-                            success: function (data) {
-                                if (data.status == 200) {
-                                    var list = JSON.parse(data.message);
-                                    $.each(list, function (index, value) {
-                                        $("#SectionID").html($("#SectionID").html() + '<option value="' + value.ID + '" ' + (value.ID == obj.SectionID ? 'selected="selected"' : '') + '>' + value.Name + '</option>' + + '">');
-                                    });
-                                }
-                                else {
-                                    alert(data.message);
-                                }
-                                $("#loading").hide();
-                            }
+                        var list = JSON.parse(data.message);
+                        $.each(list, function (index, value) {
+                            $("#SectionID").html($("#SectionID").html() + '<option value="' + value.ID + '" ' + (value.ID == getUrlParam("id") ? 'selected="selected"' : '') + '>' + value.Name + '</option>' +  + '">');
                         });
                     }
                     else {
@@ -141,7 +109,7 @@
             var post_data = $("#from").serializeJSON();//表单序列化
             $.ajax({
                 type: "POST",
-                url: GetAjaxUrl() + "/api/Key/EditKey",
+                url: GetAjaxUrl() + "/api/Key/AddKey",
                 contentType: 'application/json;charset=utf-8',
                 headers: {
                     Authorization: 'Bearer ' + GetToken(),
@@ -153,7 +121,7 @@
                 data: JSON.stringify(post_data),
                 success: function (data) {
                     if (data.status == 200) {
-                        alert("编辑成功");
+                        alert("添加成功");
                     }
                     else {
                         alert(data.message);
@@ -161,11 +129,6 @@
                     $("#loading").hide();
                 }
             });
-        });
-
-        //退出登录提交
-        $("#btnOutLogin").click(function () {
-            OutLogin();
         });
     </script>
 </body>

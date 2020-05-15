@@ -11,6 +11,7 @@ using Puss.Redis;
 using Puss.Enties;
 using System;
 using System.Threading.Tasks;
+using Puss.Data.Config;
 
 namespace Puss.Api.Manager
 {
@@ -182,5 +183,28 @@ namespace Puss.Api.Manager
             await RabbitMQPush.PushMessage(QueueKey.SendRegisterMessageIsEmail, request.Email);
             return true;
         }
+
+        /// <summary>
+        /// 判断token是否有效
+        /// </summary>
+        /// <param name="RedisService">Redis类接口</param>
+        /// <param name="sToken">token</param>
+        /// <returns></returns>
+        public static async Task<bool> IsToken(IRedisService RedisService, string sToken)
+        {
+            return await Task.Run(() =>
+            {
+                User user = Token.TokenGetUser(sToken);
+                if (user == null) return false;
+                string sRedisToken = RedisService.Get<string>(CommentConfig.UserToken + user.ID, () => null);
+                if (string.IsNullOrWhiteSpace(sRedisToken)) return false;
+                if (GlobalsConfig.Configuration[ConfigurationKeys.Token_IsSignIn].ToLower() == "true")
+                {
+                    if (sRedisToken != sToken) return false;
+                }
+                return true;
+            });
+        }
+
     }
 }

@@ -20,17 +20,21 @@
     <script src="./js/GUID.js"></script>
     <script src="./js/jquery.cookie.js"></script>
     <script src="./js/login.js"></script>
+    <script src="./js/configuration.js"></script>
 </head>
 <body>
     <div class="am-g myapp-login">
         <div class="myapp-login-bg">
             <div class="am-u-sm-10 myapp-login-form">
                 <form class="am-form" id="from">
-                    <fieldset id="list">
-                    </fieldset>
-
                     <fieldset>
-                        <div class="am-form-group"><a href="" id="addKey">添加密匙</a></div>
+                        <div class="am-form-group">
+                            <input type="text" name="Name" id="Name" placeholder="栏目名称">
+                        </div>
+                        <div class="am-form-group">
+                            <input type="text" name="Remarks" id="Remarks" placeholder="栏目备注">
+                        </div>
+                        <p><button type="button" class="am-btn am-btn-default" id="btnSubmit">提交</button></p>
                     </fieldset>
                 </form>
             </div>
@@ -42,13 +46,17 @@
     </div>
     <script>
         $(function () {
-            $("#loading").show();
             IsLogin();
             console.log(GetToken());
-            $("#addKey").attr("href", "addKey.html?id=" + getUrlParam('id'));
+        })
+
+        //栏目提交
+        $("#btnSubmit").click(function () {
+            $("#loading").show();
+            var post_data = $("#from").serializeJSON();//表单序列化
             $.ajax({
-                type: "GET",
-                url: GetAjaxUrl() + "/api/Key/GetKeyList?id=" + getUrlParam("id"),
+                type: "POST",
+                url: GetAjaxUrl() + "/api/Key/AddKeySection",
                 contentType: 'application/json;charset=utf-8',
                 headers: {
                     Authorization: 'Bearer ' + GetToken(),
@@ -57,12 +65,10 @@
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
                 },
+                data: JSON.stringify(post_data),
                 success: function (data) {
                     if (data.status == 200) {
-                        var list = JSON.parse(data.message);
-                        $.each(list, function (index, value) {
-                            $("#list").html($("#list").html() + '<div class="am-form-group"><a href="detailed.html?id=' + value.ID + '">' + value.Name + '</div>');
-                        });
+                        alert("添加成功");
                     }
                     else {
                         alert(data.message);
@@ -70,11 +76,6 @@
                     $("#loading").hide();
                 }
             });
-        })
-
-        //退出登录提交
-        $("#btnOutLogin").click(function () {
-            OutLogin();
         });
     </script>
 </body>

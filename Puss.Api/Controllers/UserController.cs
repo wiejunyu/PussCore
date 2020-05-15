@@ -152,5 +152,18 @@ namespace Puss.Api.Controllers
                 });
             });
         }
+
+        /// <summary>
+        /// 判断token是否有效
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ReturnResult> IsToken(string sToken)
+        {
+            if (string.IsNullOrWhiteSpace(sToken)) throw new AppException("Token不能为空");
+            bool bToken = await LoginManager.IsToken(RedisService, sToken);
+            return ReturnResult.ResultCalculation(() => bToken);
+        }
     }
 }
