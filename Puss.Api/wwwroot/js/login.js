@@ -12,15 +12,8 @@ function Login()
         },
         success: function (data) {
             if (data.status == 200) {
-                if(!window.localStorage){
-                    alert("ä¯ÀÀÆ÷Ö§³Ölocalstorage");
-                    return false;
-                }else{
-                    window.localStorage.setItem('token', null);
-                    window.localStorage.setItem('token', data.message);
-                }
-				//sessionStorage.setItem('token', null);
-                //sessionStorage.setItem('token', data.message);
+                window.localStorage.setItem('token', null);
+                window.localStorage.setItem('token', data.message);
 				window.location.href = "index.html"
             }
             else {
@@ -78,7 +71,6 @@ function OutLogin()
         success: function (data) {
             $("#loading").hide();
             window.localStorage.clear();
-			//sessionStorage.removeItem('token');
 			window.location.href = "login.html"
 		}
     });
