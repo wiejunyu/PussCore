@@ -12,8 +12,15 @@ function Login()
         },
         success: function (data) {
             if (data.status == 200) {
-				sessionStorage.setItem('token', null);
-                sessionStorage.setItem('token', data.message);
+                if(!window.localStorage){
+                    alert("ä¯ÀÀÆ÷Ö§³Ölocalstorage");
+                    return false;
+                }else{
+                    window.localStorage.setItem('token', null);
+                    window.localStorage.setItem('token', data.message);
+                }
+				//sessionStorage.setItem('token', null);
+                //sessionStorage.setItem('token', data.message);
 				window.location.href = "index.html"
             }
             else {
@@ -70,7 +77,8 @@ function OutLogin()
 		},
         success: function (data) {
             $("#loading").hide();
-			sessionStorage.removeItem('token');
+            window.localStorage.clear();
+			//sessionStorage.removeItem('token');
 			window.location.href = "login.html"
 		}
     });
@@ -98,5 +106,5 @@ function IsLogin() {
 }
 
 function GetToken() {
-    return sessionStorage.getItem('token');
+    return window.localStorage.getItem('token', null);
 }
