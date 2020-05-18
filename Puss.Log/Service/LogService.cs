@@ -48,11 +48,19 @@ namespace Puss.Log
         /// 日志收集
         /// </summary>
         /// <param name="QueueKey">队列名称</param>
+        /// <param name="sUrl">Url</param>
+        /// <param name="sIP">IP</param>
         /// <param name="sMessage">错误消息</param>
         /// <param name="RabbitMQPushService">MQ类接口</param>
-        public void LogCollectPush(string QueueKey, string sMessage, IRabbitMQPushService RabbitMQPushService)
+        public void LogCollectPush(string QueueKey, string sUrl,string sIP,string sMessage, IRabbitMQPushService RabbitMQPushService)
         {
-            RabbitMQPushService.PushMessage(QueueKey, sMessage);
+            RabbitMQPushService.PushMessage(QueueKey, JsonConvert.SerializeObject(new
+            {
+                CreateTime = DateTime.Now,
+                Url = sUrl,
+                IP = sIP,
+                Message = sMessage
+            }));
         }
     }
 }

@@ -63,7 +63,7 @@ namespace Puss.Api.Filters
 
                 
                 //日志收集
-                LogService.LogCollectPush(QueueKey.LogError, context.Exception, Accessor.HttpContext.Connection.RemoteIpAddress.ToString(), Accessor.HttpContext.Request.Headers["Authorization"].ToString(), RabbitMQPushService);
+                LogService.LogCollectPush(QueueKey.LogError, context.Exception, Accessor.HttpContext.Request.Path.ToString(), Accessor.HttpContext.Request.Headers["Authorization"].ToString(), RabbitMQPushService);
             }
         }
     }
