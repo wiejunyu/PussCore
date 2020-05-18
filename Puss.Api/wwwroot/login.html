@@ -44,7 +44,7 @@
                             <input type="hidden" name="CodeKey" id="CodeKey">
                         </div>
                         <div class="am-form-group" style="text-align: center;">
-                            <img id="imgCode"/>
+                            <img id="imgCode" />
                             <i class="layui-icon layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop" style="color: #ffffff;" id="iCode"></i>
                         </div>
                         <p><button type="button" class="am-btn am-btn-default" id="btnSubmit">登录</button></p>
@@ -60,6 +60,7 @@
         <i class="layui-icon layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop" style="font-size: 120px;color: #ffffff;"></i>
     </div>
     <script>
+        //回车提交
         $(document).keyup(function (event) {
             if (event.keyCode == 13) {
                 $("#btnSubmit").trigger("click");
@@ -76,6 +77,40 @@
         //登陆提交
         $("#btnSubmit").click(function () {
             Login();
+        });
+    </script>
+
+    <script>
+        //返回键处理
+        document.addEventListener('plusready', function () {
+            var webview = plus.webview.currentWebview();
+            plus.key.addEventListener('backbutton', function () {
+                webview.canBack(function (e) {
+                    if (e.canBack) {
+                        webview.back();
+                    } else {
+                        //webview.close(); //hide,quit
+                        //plus.runtime.quit();
+                        //首页返回键处理
+                        //处理逻辑：1秒内，连续两次按返回键，则退出应用；
+                        var first = null;
+                        plus.key.addEventListener('backbutton', function () {
+                            //首次按键，提示‘再按一次退出应用’
+                            if (!first) {
+                                first = new Date().getTime();
+                                console.log('再按一次退出应用');
+                                setTimeout(function () {
+                                    first = null;
+                                }, 1000);
+                            } else {
+                                if (new Date().getTime() - first < 1500) {
+                                    plus.runtime.quit();
+                                }
+                            }
+                        }, false);
+                    }
+                })
+            });
         });
     </script>
 </body>
