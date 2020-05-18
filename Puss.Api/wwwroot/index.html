@@ -12,77 +12,143 @@
     <meta http-equiv="Cache-Control" content="no-siteapp" />
     <link rel="stylesheet" href="./css/amazeui.min.css">
     <link rel="stylesheet" href="./css/app.css">
+    <link href="./Plugin/layui/css/layui.css" rel="stylesheet" />
 
-    <!--[if (gte IE 9)|!(IE)]><!-->
     <script src="./js/jquery.min.js"></script>
-    <!--<![endif]-->
-    <!--[if lte IE 8 ]>
-    <script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
-    <script src="http://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
-    <script src="assets/js/amazeui.ie8polyfill.min.js"></script>
-    <![endif]-->
     <script src="./js/amazeui.min.js"></script>
-    <script src="./js/app.js"></script>
     <script src="./js/jquery.serializejson.min.js"></script>
-    <script src="./js/GUID.js"></script>
     <script src="./js/jquery.cookie.js"></script>
+    <script src="./Plugin/layui/layui.js"></script>
+
+    <script src="./js/app.js"></script>
+    <script src="./js/configuration.js"></script>
     <script src="./js/login.js"></script>
 </head>
 <body>
-    <div class="am-g myapp-login">
+    <div class="am-g myapp-login-1">
         <div class="myapp-login-bg">
-            <div class="am-u-sm-10 myapp-login-form">
+            <div class="am-u-sm-12 myapp-login-form">
                 <form class="am-form" id="from">
-                    <fieldset id="list">
-                    </fieldset>
-
-                    <fieldset>
-                        <div class="am-form-group"><a href="addKeySection.html">添加栏目</a></div>
-                        <div class="am-form-group"><a href="addKey.html">添加密匙</a></div>
+                    <fieldset id="data0">
                     </fieldset>
                 </form>
             </div>
         </div>
     </div>
-    <div class="head"><a href="javascript:history.back(-1)">返回</a></div>
+    <div class="head"><a href="addKeySection.html"><i class="layui-icon layui-icon-addition" style="font-size: 30px;color: #ffffff;float:right;"></i></a></div>
     <div class="loading" id="loading">
-        <img src="img/loading.gif" />
+        <i class="layui-icon layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop" style="font-size: 120px;"></i>
     </div>
+    <script id="data0_templet" type="text/html">
+        <div class="am-form-li">
+            <a href="list.html?id={{d.id}}">{{d.name}}</a>
+            <a href="javascript:void(0);" onclick="delKeySection({{d.id}})"><i class="layui-icon layui-icon-close" style="float:right"></i></a>
+        </div>
+    </script>
     <script>
         $(function () {
-            $("#loading").show();
             IsLogin();
             console.log(GetToken());
-            $.ajax({
-                type: "GET",
-                url: GetAjaxUrl() + "/api/Key/GetKeySectionList",
-                contentType: 'application/json;charset=utf-8',
-                headers: {
-                    Authorization: 'Bearer ' + GetToken(),
-                    Accept: "text/plain"
-                },
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
-                },
-                success: function (data) {
-                    if (data.status == 200) {
-                        var list = JSON.parse(data.message);
-                        $.each(list, function (index, value) {
-                            $("#list").html($("#list").html() + '<div class="am-form-group"><a href="list.html?id=' + value.ID + '">' + value.Name + '</div>');
-                        });
-                    }
-                    else {
-                        alert(data.message);
-                    }
-                    $("#loading").hide();
-                }
-            });
+            getlist();
         })
 
         //退出登录提交
         $("#btnOutLogin").click(function () {
             OutLogin();
         });
+    </script>
+
+    <script type="text/javascript">
+        function getlist() {
+            var type = 0;
+            $("#data" + type).html('')
+            layui.use(['flow', 'laytpl'], function () {
+                var $ = layui.jquery; //不用额外加载jQuery，flow模块本身是有依赖jQuery的，直接用即可。
+                var flow = layui.flow;
+                var laytpl = layui.laytpl;
+                flow.load({
+                    elem: '#data' + type //指定列表容器
+                    , end: '没有更多了'
+                    , more: '点击加载更多'
+                    , isAuto: true //是否自动加载
+                    , done: function (page, next) { //到达临界点（默认滚动触发），触发下一页
+                        var lis = [];
+                        $.ajax({
+                            url: GetAjaxUrl() + "/api/Key/GetKeySectionList",
+                            data: { iPageIndex: page },
+                            dataType: 'json',
+                            type: "GET",
+                            contentType: 'application/json;charset=utf-8',
+                            headers: {
+                                Authorization: 'Bearer ' + GetToken(),
+                                Accept: "text/plain"
+                            },
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
+                            },
+                            success: function (data) {
+                                if (data.status == 200) {
+                                    var rdata = data.data;
+                                    if (rdata) {
+                                        if (!rdata.count) {
+                                            $('#data' + type).html($("#nocontent_templet").html())
+                                        }
+                                        //假设你的列表返回在data集合中
+                                        layui.each(rdata.list, function (index, item) {
+                                            laytpl($("#data" + type + "_templet").html()).render(item, function (html) {
+                                                lis.push(html);
+                                            });
+                                        });
+                                        //执行下一页渲染，第二参数为：满足“加载更多”的条件，即后面仍有分页
+                                        //pages为Ajax返回的总页数，只有当前页小于总页数的情况下，才会继续出现加载更多
+                                        next(lis.join(''), page < rdata.pages);
+                                    }
+                                }
+                            }
+                        })
+                    }
+                });
+            });
+        }
+
+        function delKeySection(id) {
+            layui.use('layer', function () {
+                layer.confirm('删除密匙栏目之后底下的密匙都会丢失，是否确定删除？', {
+                    btn: ['确定', '取消'] //可以无限个按钮
+                },
+                    function (index, layero) {
+                        $.ajax({
+                            url: GetAjaxUrl() + "/api/Key/DeleteKeySection?id=" + id,
+                            type: "POST",
+                            contentType: 'application/json;charset=utf-8',
+                            headers: {
+                                Authorization: 'Bearer ' + GetToken(),
+                                Accept: "text/plain"
+                            },
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
+                            },
+                            success: function (data) {
+                                if (data.status == 200) {
+                                    layui.use('layer', function () {
+                                        var layer = layui.layer;
+                                        layer.msg("删除成功", { icon: 1 });
+                                        getlist();
+                                    });
+                                }
+                                else {
+                                    layui.use('layer', function () {
+                                        var layer = layui.layer;
+                                        layer.msg(data.message, { icon: 2 });
+                                    });
+                                }
+                            }
+                        })
+                    },
+                    function (index) {
+                    });
+            });
+        }
     </script>
 </body>
 </html>

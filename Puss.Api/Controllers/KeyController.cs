@@ -45,13 +45,18 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ReturnResult> GetKeySectionList()
+        public async Task<ReturnResult> GetKeySectionList(int? iPageIndex)
         {
-            return await Task.Run(() =>
+            int iUID = int.Parse((this.User.Identity as ClaimsIdentity).Name);
+            int iPageSize = 10;//每页多少条数据
+            int iPageCount = await DbContext.Db.Queryable<KeySection>().Where(x => x.CreateUserID == iUID).CountAsync();
+            List<KeySection> list = await KeySectionManager.GetPageListAsync(x => x.CreateUserID == iUID,new SqlSugar.PageModel { PageIndex = iPageIndex ?? 1, PageSize = iPageSize, PageCount = iPageCount });
+            return new ReturnResult<object>(ReturnResultStatus.Succeed,
+            new
             {
-                int iUID = int.Parse((this.User.Identity as ClaimsIdentity).Name);
-                List<KeySection> list =  KeySectionManager.GetList(x => x.CreateUserID == iUID);
-                return new ReturnResult(ReturnResultStatus.Succeed,JsonConvert.SerializeObject(list));
+                list,
+                pages = (int)System.Math.Ceiling((double)iPageCount / (double)iPageSize),
+                count = iPageCount,
             });
         }
 
@@ -123,18 +128,19 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ReturnResult> GetKeyList(int ID)
+        public async Task<ReturnResult> GetKeyList(int ID,int? iPageIndex)
         {
-            return await Task.Run(() =>
+            if (ID <= 0) throw new AppException("栏目不能为空");
+            int iUID = int.Parse((this.User.Identity as ClaimsIdentity).Name);
+            int iPageSize = 10;//每页多少条数据
+            int iPageCount = await DbContext.Db.Queryable<KeyContent>().Where(x => x.CreateUserID == iUID && x.SectionID == ID).CountAsync();
+            List<KeyContent> list = await KeyContentManager.GetPageListAsync(x => x.CreateUserID == iUID && x.SectionID == ID, new SqlSugar.PageModel { PageIndex = iPageIndex ?? 1, PageSize = iPageSize, PageCount = iPageCount });
+            return new ReturnResult<object>(ReturnResultStatus.Succeed,
+            new
             {
-                if (ID <= 0) throw new AppException("栏目不能为空");
-                int iUID = int.Parse((this.User.Identity as ClaimsIdentity).Name);
-                List<KeyContent> list = KeyContentManager.GetList(x => x.CreateUserID == iUID && x.SectionID == ID);
-                return new ReturnResult(ReturnResultStatus.Succeed, JsonConvert.SerializeObject(list.Select(x => new
-                {
-                    x.ID,
-                    x.Name
-                })));
+                list,
+                pages = (int)System.Math.Ceiling((double)iPageCount / (double)iPageSize),
+                count = iPageCount,
             });
         }
 

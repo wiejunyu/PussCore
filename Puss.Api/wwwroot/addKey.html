@@ -10,27 +10,22 @@
     <title></title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="stylesheet" href="./css/amazeui.min.css">
+    <link rel="stylesheet" href="./css/app.css">
+    <link href="./Plugin/layui/css/layui.css" rel="stylesheet" />
+
     <script src="./js/jquery.min.js"></script>
+    <script src="./js/amazeui.min.js"></script>
+    <script src="./js/jquery.serializejson.min.js"></script>
+    <script src="./js/jquery.cookie.js"></script>
+    <script src="./Plugin/layui/layui.js"></script>
+
     <script src="./js/app.js"></script>
-    <script src="./js/config.js"></script>
-    <script>
-        window.onload = function () {
-            var sc = new sourceController();
-            sc.setRoot(".");
-            sc.css = [sourcePath.css_amazeui, sourcePath.css_app, sourcePath.css_layui];
-            sc.script = [sourcePath.js_layui, sourcePath.js_amazeui, sourcePath.js_serializejson, sourcePath.js_cookie, sourcePath.js_login, sourcePath.js_configuration];
-            //sc.addScript("javaScript/index.js"); // 额外添加的js文件，必须在加载资源之前加入
-            sc.setCallBack(function () {
-                document.body.style.display = "block"; // 显示body
-            });
-            sc.addSource(); // 加载常用的js和css文件
-            IsLogin();
-            console.log(GetToken());
-        }
-    </script>
+    <script src="./js/configuration.js"></script>
+    <script src="./js/login.js"></script>
 </head>
 <body>
-    <div class="am-g myapp-login">
+    <div class="am-g myapp-login-1">
         <div class="myapp-login-bg">
             <div class="am-u-sm-10 myapp-login-form">
                 <form class="am-form" id="from">
@@ -75,47 +70,61 @@
                                 <option value="false">不启用</option>
                             </select>
                         </div>
-                        <p><button type="button" class="am-btn am-btn-default" id="btnSubmit">提交</button></p>
+                        <p><button type="button" class="layui-btn" id="btnSubmit">提交</button></p>
                     </fieldset>
                 </form>
             </div>
         </div>
     </div>
-    <div class="head"><a href="javascript:history.back(-1)">返回</a></div>
+    <div class="head"><a href="javascript:history.back(-1)"><i class="layui-icon layui-icon-return" style="font-size: 30px;color: #ffffff;"></i></a></div>
     <div class="loading" id="loading">
-        <img src="img/loading.gif" />
+        <i class="layui-icon layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop" style="font-size: 120px;"></i>
     </div>
+    <script id="SectionID_templet" type="text/html">
+        <option value="{{d.id}}" 
+                {{#if(d.id==getUrlParam("id")){}}
+                    selected='selected'
+                {{#}}}>{{d.name}}</option>
+    </script>
     <script>
         $(function () {
             $("#loading").show();
-            $.ajax({
-                type: "GET",
-                url: GetAjaxUrl() + "/api/Key/GetKeySectionList",
-                contentType: 'application/json;charset=utf-8',
-                headers: {
-                    Authorization: 'Bearer ' + GetToken(),
-                    Accept: "text/plain"
-                },
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
-                },
-                success: function (data) {
-                    if (data.status == 200) {
-                        var list = JSON.parse(data.message);
-                        $.each(list, function (index, value) {
-                            $("#SectionID").html($("#SectionID").html() + '<option value="' + value.ID + '" ' + (value.ID == getUrlParam("id") ? 'selected="selected"' : '') + '>' + value.Name + '</option>' + + '">');
-                        });
+            layui.use('laytpl', function () {
+                $.ajax({
+                    type: "GET",
+                    url: GetAjaxUrl() + "/api/Key/GetKeySectionList",
+                    contentType: 'application/json;charset=utf-8',
+                    headers: {
+                        Authorization: 'Bearer ' + GetToken(),
+                        Accept: "text/plain"
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
+                    },
+                    success: function (data) {
+                        if (data.status == 200) {
+                            //假设你的列表返回在data集合中
+                            layui.each(data.data.list, function (index, item) {
+                                layui.laytpl($("#SectionID_templet").html()).render(item, function (html) {
+                                    $("#SectionID").html($("#SectionID").html() + html);
+                                });
+                            });
+                        }
+                        else {
+                            layui.use('layer', function () {
+                                var layer = layui.layer;
+                                layer.msg(data.message, { icon: 2 });
+                            });
+                        }
+                        $("#loading").hide();
                     }
-                    else {
-                        alert(data.message);
-                    }
-                    $("#loading").hide();
-                }
+                });
             });
         })
 
         //栏目提交
         $("#btnSubmit").click(function () {
+            $("#btnSubmit").attr("disabled", true);
             $("#loading").show();
             var post_data = $("#from").serializeJSON();//表单序列化
             $.ajax({
@@ -132,12 +141,19 @@
                 data: JSON.stringify(post_data),
                 success: function (data) {
                     if (data.status == 200) {
-                        alert("添加成功");
+                        layui.use('layer', function () {
+                            var layer = layui.layer;
+                            layer.msg("添加成功", { icon: 1 });
+                        });
                     }
                     else {
-                        alert(data.message);
+                        layui.use('layer', function () {
+                            var layer = layui.layer;
+                            layer.msg(data.message, { icon: 2 });
+                        });
                     }
                     $("#loading").hide();
+                    $("#btnSubmit").attr("disabled", false);
                 }
             });
         });

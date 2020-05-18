@@ -1,47 +1,29 @@
-function IsLogin() {
-    if (GetToken() == null) {
-        window.location.href = "login.html"
-    }
-    else {
-        $.ajax({
-            type: "POST",
-            url: GetAjaxUrl() + "/api/User/IsToken?sToken=" + GetToken(),
-            contentType: 'application/json;charset=utf-8',
-            headers: {
-                Accept: "text/plain"
-            },
-            success: function (data) {
-                if (data.status != 200) {
-                    window.location.href = "login.html"
-                }
-            }
-        });
-    }
-}
-
-function Login(id)
+function Login()
 {
+    $("#btnSubmit").attr("disabled", true);
     $("#loading").show();
-    var post_data = $("#from").serializeJSON();//表单序列化
     $.ajax({
         type: "POST",
         url: GetAjaxUrl() + "/api/User/Login",
         contentType: 'application/json;charset=utf-8',
-        data: JSON.stringify(post_data),
+        data: JSON.stringify($("#from").serializeJSON()),
         headers: {
             Accept: "text/plain"
         },
         success: function (data) {
             if (data.status == 200) {
 				sessionStorage.setItem('token', null);
-				sessionStorage.setItem('token', data.message);
-                alert("登陆成功！");
+                sessionStorage.setItem('token', data.message);
 				window.location.href = "index.html"
             }
             else {
-                alert(data.message);
+                layui.use('layer', function () {
+                    var layer = layui.layer;
+                    layer.msg(data.message, { icon: 2 }); 
+                });
             }
             $("#loading").hide();
+            $("#btnSubmit").attr("disabled", false);
         }
     });
 }
@@ -51,6 +33,8 @@ function CodeKey()
 {
     Guid = new GUID().newGUID();
     $("#CodeKey").val(Guid);
+    $("#iCode").show();
+    $("#imgCode").hide();
     $.ajax({
         type: "POST",
         url: GetAjaxUrl() + "/api/User/ShowValidateCodeBase64?CodeKey=" + Guid,
@@ -59,14 +43,15 @@ function CodeKey()
                 $("#imgCode").attr("src", data.message);
             }
             else {
-                alert(data.message);
+                layui.use('layer', function () {
+                    var layer = layui.layer;
+                    layer.msg(data.message, { icon: 2 });
+                });
             }
+            $("#iCode").hide();
+            $("#imgCode").show();
         }
     });
-}
-
-function GetToken() {
-    return sessionStorage.getItem('token');
 }
 
 function OutLogin()
@@ -91,7 +76,27 @@ function OutLogin()
     });
 }
 
+function IsLogin() {
+    if (GetToken() == null) {
+        window.location.href = "login.html"
+    }
+    else {
+        $.ajax({
+            type: "POST",
+            url: GetAjaxUrl() + "/api/User/IsToken?sToken=" + GetToken(),
+            contentType: 'application/json;charset=utf-8',
+            headers: {
+                Accept: "text/plain"
+            },
+            success: function (data) {
+                if (data.status != 200) {
+                    window.location.href = "login.html"
+                }
+            }
+        });
+    }
+}
 
-function GetAjaxUrl() {
-    return "https://118.89.182.215";
+function GetToken() {
+    return sessionStorage.getItem('token');
 }

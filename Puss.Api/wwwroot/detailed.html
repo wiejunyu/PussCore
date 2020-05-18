@@ -12,17 +12,20 @@
     <meta http-equiv="Cache-Control" content="no-siteapp" />
     <link rel="stylesheet" href="./css/amazeui.min.css">
     <link rel="stylesheet" href="./css/app.css">
+    <link href="./Plugin/layui/css/layui.css" rel="stylesheet" />
 
     <script src="./js/jquery.min.js"></script>
     <script src="./js/amazeui.min.js"></script>
-    <script src="./js/app.js"></script>
     <script src="./js/jquery.serializejson.min.js"></script>
-    <script src="./js/GUID.js"></script>
     <script src="./js/jquery.cookie.js"></script>
+    <script src="./Plugin/layui/layui.js"></script>
+
+    <script src="./js/app.js"></script>
+    <script src="./js/configuration.js"></script>
     <script src="./js/login.js"></script>
 </head>
 <body>
-    <div class="am-g myapp-login">
+    <div class="am-g myapp-login-1">
         <div class="myapp-login-bg">
             <div class="am-u-sm-10 myapp-login-form">
                 <form class="am-form" id="from">
@@ -72,17 +75,26 @@
                                 <option value="false">未启用</option>
                             </select>
                         </div>
-                        <p><button type="button" class="am-btn am-btn-default" id="btnSubmit">提交</button></p>
+                        <p><button type="button" class="layui-btn" id="btnSubmit">提交</button></p>
                     </fieldset>
                 </form>
             </div>
         </div>
     </div>
-    <div class="head"><a href="javascript:history.back(-1)">返回</a></div>
+    <div class="head"><a href="javascript:history.back(-1)"><i class="layui-icon layui-icon-return" style="font-size: 30px;color: #ffffff;"></i></a></div>
     <div class="loading" id="loading">
-        <img src="img/loading.gif" />
+        <i class="layui-icon layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop" style="font-size: 120px;"></i>
     </div>
+    <script id="SectionID_templet" type="text/html">
+        <option value="{{d.id}}"
+                {{#if(d.id==obj.SectionID){}}
+                selected='selected'
+                {{#}}}>
+            {{d.name}}
+        </option>
+    </script>
     <script>
+        var obj = null;
         $(function () {
             $("#loading").show();
             IsLogin();
@@ -100,7 +112,7 @@
                 },
                 success: function (data) {
                     if (data.status == 200) {
-                        var obj = JSON.parse(data.message);
+                        obj = JSON.parse(data.message);
                         $("#ID").val(obj.ID);
                         $("#Name").val(obj.Name);
                         $("#UserText").val(obj.UserText);
@@ -110,43 +122,54 @@
                         $("#MailText").val(obj.MailText);
                         $("#OtherText").val(obj.OtherText);
                         $("#Remarks").val(obj.Remarks);
-                        $("#IsStart option[value='" + obj.IsStart + "']").attr("selected", "selected");  
+                        $("#IsStart option[value='" + obj.IsStart + "']").attr("selected", "selected");
 
-                        $.ajax({
-                            type: "GET",
-                            url: GetAjaxUrl() + "/api/Key/GetKeySectionList",
-                            contentType: 'application/json;charset=utf-8',
-                            headers: {
-                                Authorization: 'Bearer ' + GetToken(),
-                                Accept: "text/plain"
-                            },
-                            beforeSend: function (xhr) {
-                                xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
-                            },
-                            success: function (data) {
-                                if (data.status == 200) {
-                                    var list = JSON.parse(data.message);
-                                    $.each(list, function (index, value) {
-                                        $("#SectionID").html($("#SectionID").html() + '<option value="' + value.ID + '" ' + (value.ID == obj.SectionID ? 'selected="selected"' : '') + '>' + value.Name + '</option>' + + '">');
-                                    });
+                        layui.use('laytpl', function () {
+                            $.ajax({
+                                type: "GET",
+                                url: GetAjaxUrl() + "/api/Key/GetKeySectionList",
+                                contentType: 'application/json;charset=utf-8',
+                                headers: {
+                                    Authorization: 'Bearer ' + GetToken(),
+                                    Accept: "text/plain"
+                                },
+                                beforeSend: function (xhr) {
+                                    xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
+                                },
+                                success: function (data) {
+                                    if (data.status == 200) {
+                                        //假设你的列表返回在data集合中
+                                        layui.each(data.data.list, function (index, item) {
+                                            layui.laytpl($("#SectionID_templet").html()).render(item, function (html) {
+                                                $("#SectionID").html($("#SectionID").html() + html);
+                                            });
+                                        });
+                                    }
+                                    else {
+                                        layui.use('layer', function () {
+                                            var layer = layui.layer;
+                                            layer.msg(data.message, { icon: 2 });
+                                        });
+                                    }
+                                    $("#loading").hide();
                                 }
-                                else {
-                                    alert(data.message);
-                                }
-                                $("#loading").hide();
-                            }
+                            });
                         });
                     }
                     else {
-                        alert(data.message);
+                        layui.use('layer', function () {
+                            var layer = layui.layer;
+                            layer.msg(data.message, { icon: 2 });
+                        });
+                        $("#loading").hide();
                     }
-                    $("#loading").hide();
                 }
             });
         })
 
         //栏目提交
         $("#btnSubmit").click(function () {
+            $("#btnSubmit").attr("disabled", true);
             $("#loading").show();
             var post_data = $("#from").serializeJSON();//表单序列化
             $.ajax({
@@ -163,12 +186,19 @@
                 data: JSON.stringify(post_data),
                 success: function (data) {
                     if (data.status == 200) {
-                        alert("编辑成功");
+                        layui.use('layer', function () {
+                            var layer = layui.layer;
+                            layer.msg("编辑成功", { icon: 1 });
+                        });
                     }
                     else {
-                        alert(data.message);
+                        layui.use('layer', function () {
+                            var layer = layui.layer;
+                            layer.msg(data.message, { icon: 2 });
+                        });
                     }
                     $("#loading").hide();
+                    $("#btnSubmit").attr("disabled", false);
                 }
             });
         });

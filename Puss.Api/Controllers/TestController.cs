@@ -18,24 +18,18 @@ namespace Puss.Api.Controllers
     /// </summary>
     public class TestController : ApiBaseController
     {
-        private readonly IEmailService EmailService;
         private readonly IRabbitMQPushService RabbitMQPushService;
         private readonly IUserManager UserManager;
-        private readonly ICms_SysconfigManager Cms_SysconfigManager;
 
         /// <summary>
         /// 测试
         /// </summary>
-        /// <param name="EmailService"></param>
         /// <param name="RabbitMQPushService"></param>
         /// <param name="UserManager"></param>
-        /// <param name="Cms_SysconfigManager"></param>
-        public TestController(IEmailService EmailService, IRabbitMQPushService RabbitMQPushService, IUserManager UserManager, ICms_SysconfigManager Cms_SysconfigManager)
+        public TestController(IRabbitMQPushService RabbitMQPushService, IUserManager UserManager)
         {
-            this.EmailService = EmailService;
             this.RabbitMQPushService = RabbitMQPushService;
             this.UserManager = UserManager;
-            this.Cms_SysconfigManager = Cms_SysconfigManager;
         }
 
         /// <summary>
