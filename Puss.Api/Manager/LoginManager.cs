@@ -12,6 +12,8 @@ using Puss.Enties;
 using System;
 using System.Threading.Tasks;
 using Puss.Data.Config;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Puss.Api.Manager
 {
@@ -206,5 +208,26 @@ namespace Puss.Api.Manager
             });
         }
 
+        /// <summary>
+        /// 获取用户ID
+        /// </summary>
+        /// <param name="Accessor"></param>
+        /// <returns></returns>
+        public static int GetUserID(IHttpContextAccessor Accessor)
+        {
+            int id = int.Parse((Accessor.HttpContext.User.Identity as ClaimsIdentity).Name ?? "0");
+            if (id <= 0)
+            {
+                string sToken = null;
+                if (Accessor != null && Accessor.HttpContext.Request.Headers.ContainsKey("Authorization"))
+                {
+                    sToken = Accessor.HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("Bearer", "");
+                }
+                // 将字符串Token解码成Token对象;
+                JwtSecurityToken _token = new JwtSecurityToken(sToken);
+                return int.Parse(_token.Payload[ClaimTypes.Name].ToString());
+            }
+            return id;
+        }
     }
 }

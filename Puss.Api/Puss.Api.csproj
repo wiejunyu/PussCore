@@ -45,6 +45,7 @@
     <ProjectReference Include="..\Puss.BusinessCore\Puss.BusinessCore.csproj" />
     <ProjectReference Include="..\Puss.Data\Puss.Data.csproj" />
     <ProjectReference Include="..\Puss.Email\Puss.Email.csproj" />
+    <ProjectReference Include="..\Puss.Encrypt\Puss.Encrypt.csproj" />
     <ProjectReference Include="..\Puss.Iphone\Puss.Iphone.csproj" />
     <ProjectReference Include="..\Puss.Log\Puss.Log.csproj" />
     <ProjectReference Include="..\Puss.OAuth1\Puss.OAuth1.csproj" />

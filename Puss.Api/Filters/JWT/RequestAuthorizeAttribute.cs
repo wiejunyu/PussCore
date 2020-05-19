@@ -72,7 +72,6 @@ namespace Puss.Api.Filters
                     });
                     return;
                 }
-
                 string sRedisToken = RedisService.Get<string>(CommentConfig.UserToken + user.ID, () => null);
                 if (string.IsNullOrWhiteSpace(sRedisToken))
                 {

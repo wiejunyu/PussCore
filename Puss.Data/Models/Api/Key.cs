@@ -31,7 +31,7 @@ namespace Puss.Data.Models
         /// <summary>
         /// ID
         /// </summary>
-        public int ID { get; set; }
+        public string ID { get; set; }
 
         /// <summary>
         /// 栏目名称

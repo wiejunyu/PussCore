@@ -29,7 +29,7 @@ namespace Puss.Api.Filters
             var claims = new[]
                 {
                 new Claim(JwtRegisteredClaimNames.Nbf,$"{new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds()}") ,
-                new Claim (JwtRegisteredClaimNames.Exp,$"{new DateTimeOffset(DateTime.Now.AddMinutes(30)).ToUnixTimeSeconds()}"),
+                new Claim (JwtRegisteredClaimNames.Exp,$"{new DateTimeOffset(DateTime.Now.AddDays(30)).ToUnixTimeSeconds()}"),
                 new Claim(ClaimTypes.Name, user.ID.ToString())
                 };
             //获取Token对象
