@@ -30,12 +30,19 @@ namespace Puss.Api.Job
             RabbitMQPushService RabbitMQPushService = new RabbitMQPushService();
             while (true)
             {
-                RabbitMQPushService.PullMessage(QueueKey.LogError, (Message) =>
+                try
                 {
-                    LogErrorDetailsManager LogErrorDetailsManager = new LogErrorDetailsManager();
-                    LogErrorDetailsManager.Insert(JsonConvert.DeserializeObject<LogErrorDetails>(Message));
-                    return true;
-                });
+                    RabbitMQPushService.PullMessage(QueueKey.LogError, (Message) =>
+                    {
+                        LogErrorDetailsManager LogErrorDetailsManager = new LogErrorDetailsManager();
+                        LogErrorDetailsManager.Insert(JsonConvert.DeserializeObject<LogErrorDetails>(Message));
+                        return true;
+                    });
+                }
+                catch 
+                {
+                    RabbitMQPushService = new RabbitMQPushService();
+                }
             }
         }
 
@@ -47,10 +54,17 @@ namespace Puss.Api.Job
             RabbitMQPushService RabbitMQPushService = new RabbitMQPushService();
             while (true)
             {
-                RabbitMQPushService.PullMessage(QueueKey.LogTime, (Message) =>
+                try
                 {
-                    return true;
-                });
+                    RabbitMQPushService.PullMessage(QueueKey.LogTime, (Message) =>
+                    {
+                        return true;
+                    });
+                }
+                catch
+                {
+                    RabbitMQPushService = new RabbitMQPushService();
+                }
             }
         }
 
@@ -62,12 +76,19 @@ namespace Puss.Api.Job
             RabbitMQPushService RabbitMQPushService = new RabbitMQPushService();
             while (true)
             {
-                RabbitMQPushService.PullMessage(QueueKey.LogJob, (Message) =>
+                try
                 {
-                    LogJobDetailsManager LogJobDetailsManager = new LogJobDetailsManager();
-                    LogJobDetailsManager.Insert(JsonConvert.DeserializeObject<LogJobDetails>(Message));
-                    return true;
-                });
+                    RabbitMQPushService.PullMessage(QueueKey.LogJob, (Message) =>
+                    {
+                        LogJobDetailsManager LogJobDetailsManager = new LogJobDetailsManager();
+                        LogJobDetailsManager.Insert(JsonConvert.DeserializeObject<LogJobDetails>(Message));
+                        return true;
+                    });
+                }
+                catch
+                {
+                    RabbitMQPushService = new RabbitMQPushService();
+                }
             }
         }
     }
