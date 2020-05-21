@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.11" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Puss.BusinessCore\Puss.BusinessCore.csproj" />
+    <ProjectReference Include="..\Puss.Data\Puss.Data.csproj" />
+    <ProjectReference Include="..\Puss.Enties\Puss.Enties.csproj" />
+    <ProjectReference Include="..\Puss.Log\Puss.Log.csproj" />
+    <ProjectReference Include="..\Puss.RabbitMQ\Puss.RabbitMQ.csproj" />
+    <ProjectReference Include="..\Puss.Redis\Puss.Redis.csproj" />
+    <ProjectReference Include="..\Puss.Reptile\Puss.Reptile.csproj" />
+  </ItemGroup>
+
+</Project>

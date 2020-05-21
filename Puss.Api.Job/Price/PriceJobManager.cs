@@ -13,7 +13,7 @@ namespace Puss.Api.Job
     /// <summary>
     /// 定时计划价格业务
     /// </summary>
-    public class PriceManager
+    public class PriceJobManager
     {
         /// <summary>
         /// 获取价格

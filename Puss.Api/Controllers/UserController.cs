@@ -27,6 +27,7 @@ namespace Puss.Api.Controllers
         private readonly ICms_SysconfigManager Cms_SysconfigManager;
         private readonly IUserDetailsManager UserDetailsManager;
         private readonly DbContext DbContext;
+        private readonly ILoginManager LoginManager;
 
         /// <summary>
         /// 用户
@@ -40,6 +41,7 @@ namespace Puss.Api.Controllers
         /// <param name="Cms_SysconfigManager"></param>
         /// <param name="UserDetailsManager"></param>
         /// <param name="DbContext"></param>
+        /// <param name="LoginManager"></param>
         public UserController(
             IHttpContextAccessor Accessor,
             IEmailService EmailService,
@@ -49,7 +51,8 @@ namespace Puss.Api.Controllers
             ICodeManager CodeManager,
             ICms_SysconfigManager Cms_SysconfigManager,
             IUserDetailsManager UserDetailsManager,
-            DbContext DbContext
+            DbContext DbContext,
+            ILoginManager LoginManager
             )
         {
             this.Accessor = Accessor;
@@ -61,6 +64,7 @@ namespace Puss.Api.Controllers
             this.Cms_SysconfigManager = Cms_SysconfigManager;
             this.UserDetailsManager = UserDetailsManager;
             this.DbContext = DbContext;
+            this.LoginManager = LoginManager;
         }
 
         #region 验证码

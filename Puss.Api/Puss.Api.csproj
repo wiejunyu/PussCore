@@ -24,8 +24,6 @@
     <PackageReference Include="Autofac" Version="5.1.2" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="AutoMapper" Version="9.0.0" />
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.11" />
-    <PackageReference Include="Hangfire.Core" Version="1.7.11" />
     <PackageReference Include="Hangfire.SqlServer" Version="1.7.11" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0-preview.1.20120.4" />
@@ -40,6 +38,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Puss.Api.Job\Puss.Api.Job.csproj" />
+    <ProjectReference Include="..\Puss.Api.Manager\Puss.Api.Manager.csproj" />
     <ProjectReference Include="..\Puss.Application\Puss.Application.csproj" />
     <ProjectReference Include="..\Puss.Attendance\Puss.Attendance.csproj" />
     <ProjectReference Include="..\Puss.BusinessCore\Puss.BusinessCore.csproj" />

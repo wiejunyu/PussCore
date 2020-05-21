@@ -25,7 +25,8 @@ namespace Puss.Api.Controllers
         private readonly IKeySectionManager KeySectionManager;
         private readonly IKeyContentManager KeyContentManager;
         private readonly IEncryptService EncryptService;
-        private readonly IHttpContextAccessor Accessor;
+        private readonly ILoginManager LoginManager;
+        private readonly IKeyManager KeyManager;
 
         /// <summary>
         /// 密匙
@@ -34,20 +35,23 @@ namespace Puss.Api.Controllers
         /// <param name="KeySectionManager"></param>
         /// <param name="KeyContentManager"></param>
         /// <param name="EncryptService"></param>
-        /// <param name="Accessor"></param>
+        /// <param name="LoginManager"></param>
+        /// <param name="KeyManager"></param>
         public KeyController(
             DbContext DbContext,
             IKeySectionManager KeySectionManager,
             IKeyContentManager KeyContentManager,
             IEncryptService EncryptService,
-            IHttpContextAccessor Accessor
+            ILoginManager LoginManager,
+            IKeyManager KeyManager
             )
         {
             this.DbContext = DbContext;
             this.KeySectionManager = KeySectionManager;
             this.KeyContentManager = KeyContentManager;
             this.EncryptService = EncryptService;
-            this.Accessor = Accessor;
+            this.LoginManager = LoginManager;
+            this.KeyManager = KeyManager;
         }
 
         #region 密匙栏目
@@ -58,7 +62,7 @@ namespace Puss.Api.Controllers
         [HttpGet]
         public async Task<ReturnResult> GetKeySectionList(int? iPageIndex)
         {
-            int iUID = LoginManager.GetUserID(Accessor);
+            int iUID = LoginManager.GetUserID();
             int iPageSize = 10;//每页多少条数据
             int iPageCount = await DbContext.Db.Queryable<KeySection>().Where(x => x.CreateUserID == iUID).CountAsync();
             List<KeySection> list = await KeySectionManager.GetPageListAsync(x => x.CreateUserID == iUID,new SqlSugar.PageModel { PageIndex = iPageIndex ?? 1, PageSize = iPageSize, PageCount = iPageCount });
@@ -82,7 +86,7 @@ namespace Puss.Api.Controllers
             return await Task.Run(() =>
             {
                 if (string.IsNullOrWhiteSpace(request.Name)) throw new AppException("栏目名称不能为空");
-                int iUID = LoginManager.GetUserID(Accessor);
+                int iUID = LoginManager.GetUserID();
                 var mapper = new MapperConfiguration(x => x.CreateMap<CreateKeySection, KeySection>()).CreateMapper();
                 KeySection keySection = mapper.Map<KeySection>(request);
                 keySection.CreateUserID = iUID;
@@ -101,7 +105,7 @@ namespace Puss.Api.Controllers
             if (int.Parse(request.ID) <= 0) throw new AppException("栏目ID不能为空");
             if (string.IsNullOrWhiteSpace(request.Name)) throw new AppException("栏目名称不能为空");
             KeySection keySection = await KeySectionManager.GetByIdAsync(int.Parse(request.ID));
-            int iUID = LoginManager.GetUserID(Accessor);
+            int iUID = LoginManager.GetUserID();
             if (keySection.CreateUserID != iUID) throw new AppException((int)ReturnResultStatus.Illegal,"0", "非法操作");
 
             var mapper = new MapperConfiguration(x => x.CreateMap<EditKeySection, KeySection>()).CreateMapper();
@@ -121,7 +125,7 @@ namespace Puss.Api.Controllers
             return await Task.Run(() =>
             {
                 if (id <= 0) throw new AppException("栏目ID不能为空");
-                int iUID = LoginManager.GetUserID(Accessor);
+                int iUID = LoginManager.GetUserID();
                 if(!KeySectionManager.IsAny(x => x.CreateUserID == iUID && x.ID == id)) throw new AppException((int)ReturnResultStatus.Illegal, "0", "非法操作");
                 DbContext.Db.Ado.UseTran(() =>
                 {
@@ -140,7 +144,7 @@ namespace Puss.Api.Controllers
         public async Task<ReturnResult> GetKeyKeySectionDetailed(int ID)
         {
             if (ID <= 0) throw new AppException("密匙栏目不能为空");
-            int iUID = LoginManager.GetUserID(Accessor);
+            int iUID = LoginManager.GetUserID();
             KeySection keySection = await KeySectionManager.GetSingleAsync(x => x.CreateUserID == iUID && x.ID == ID);
             if (keySection == null) throw new AppException((int)ReturnResultStatus.Illegal, "0", "非法操作");
             return new ReturnResult(ReturnResultStatus.Succeed, JsonConvert.SerializeObject(new
@@ -161,7 +165,7 @@ namespace Puss.Api.Controllers
         public async Task<ReturnResult> GetKeyList(int ID,int? iPageIndex)
         {
             if (ID <= 0) throw new AppException("栏目不能为空");
-            int iUID = LoginManager.GetUserID(Accessor);
+            int iUID = LoginManager.GetUserID();
             int iPageSize = 10;//每页多少条数据
             int iPageCount = await DbContext.Db.Queryable<KeyContent>().Where(x => x.CreateUserID == iUID && x.SectionID == ID).CountAsync();
             List<KeyContent> list = await KeyContentManager.GetPageListAsync(x => x.CreateUserID == iUID && x.SectionID == ID, new SqlSugar.PageModel { PageIndex = iPageIndex ?? 1, PageSize = iPageSize, PageCount = iPageCount });
@@ -182,7 +186,7 @@ namespace Puss.Api.Controllers
         public async Task<ReturnResult> GetKeyDetailed(int ID)
         {
             if (ID <= 0) throw new AppException("密匙不能为空");
-            int iUID = LoginManager.GetUserID(Accessor);
+            int iUID = LoginManager.GetUserID();
             KeyContent keyContent = await KeyContentManager.GetSingleAsync(x => x.CreateUserID == iUID && x.ID == ID);
             if(keyContent == null) throw new AppException((int)ReturnResultStatus.Illegal, "0", "非法操作");
             keyContent = await KeyManager.DecryptKey(keyContent, EncryptService);
@@ -213,7 +217,7 @@ namespace Puss.Api.Controllers
             if (int.Parse(request.SectionID) <= 0) throw new AppException("栏目不能为空");
             if (string.IsNullOrWhiteSpace(request.Name)) throw new AppException("名称不能为空");
 
-            int iUID = LoginManager.GetUserID(Accessor);
+            int iUID = LoginManager.GetUserID();
             var mapper = new MapperConfiguration(x => x.CreateMap<CreateKey, KeyContent>()).CreateMapper();
             KeyContent keyContent = mapper.Map<KeyContent>(request);
             keyContent.CreateUserID = iUID;
@@ -232,7 +236,7 @@ namespace Puss.Api.Controllers
             if (int.Parse(request.SectionID) <= 0) throw new AppException("栏目不能为空");
             if (string.IsNullOrWhiteSpace(request.Name)) throw new AppException("名称不能为空");
             KeyContent keyContent = await KeyContentManager.GetByIdAsync(int.Parse(request.ID));
-            int iUID = LoginManager.GetUserID(Accessor);
+            int iUID = LoginManager.GetUserID();
             if (keyContent.CreateUserID != iUID) throw new AppException((int)ReturnResultStatus.Illegal, "0", "非法操作");
             var mapper = new MapperConfiguration(x => x.CreateMap<EditKey, KeyContent>()).CreateMapper();
             mapper.Map(request, keyContent);
@@ -252,7 +256,7 @@ namespace Puss.Api.Controllers
             return await Task.Run(() =>
             {
                 if (id <= 0) throw new AppException("栏目ID不能为空");
-                int iUID = LoginManager.GetUserID(Accessor);
+                int iUID = LoginManager.GetUserID();
                 if (!KeyContentManager.IsAny(x => x.CreateUserID == iUID && x.ID == id)) throw new AppException((int)ReturnResultStatus.Illegal, "0", "非法操作");  
                 return ReturnResult.ResultCalculation(() => KeyContentManager.Delete(id));
             });

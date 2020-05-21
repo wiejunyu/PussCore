@@ -20,16 +20,19 @@ namespace Puss.Api.Controllers
     {
         private readonly IRabbitMQPushService RabbitMQPushService;
         private readonly IUserManager UserManager;
+        private readonly ILogJobManager LogJobManager;
 
         /// <summary>
         /// 测试
         /// </summary>
         /// <param name="RabbitMQPushService"></param>
         /// <param name="UserManager"></param>
-        public TestController(IRabbitMQPushService RabbitMQPushService, IUserManager UserManager)
+        /// <param name="LogJobManager"></param>
+        public TestController(IRabbitMQPushService RabbitMQPushService, IUserManager UserManager, ILogJobManager LogJobManager)
         {
             this.RabbitMQPushService = RabbitMQPushService;
             this.UserManager = UserManager;
+            this.LogJobManager = LogJobManager;
         }
 
         /// <summary>
@@ -111,7 +114,7 @@ namespace Puss.Api.Controllers
         {
             return await Task.Run(() =>
             {
-                LogManager.Log();
+                LogJobManager.Log();
                 return new ReturnResult(ReturnResultStatus.Succeed);
             });
         }

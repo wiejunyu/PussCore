@@ -326,6 +326,9 @@ namespace Puss.Api
             builder.RegisterTypes(Assembly.Load("Puss.Log").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
             builder.RegisterTypes(Assembly.Load("Puss.BusinessCore").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
             builder.RegisterTypes(Assembly.Load("Puss.Encrypt").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
+            builder.RegisterTypes(Assembly.Load("Puss.Api.Manager").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
+            builder.RegisterTypes(Assembly.Load("Puss.Api.Filters").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
+            builder.RegisterTypes(Assembly.Load("Puss.Api.Job").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
             builder.RegisterType<DbContext>();
 
             var controllerBaseType = typeof(ControllerBase);
