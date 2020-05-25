@@ -19,13 +19,23 @@ namespace Puss.Api.Manager
     /// </summary>
     public class KeyManager : IKeyManager
     {
+        private readonly IEncryptService EncryptService;
+
+        /// <summary>
+        /// 密匙
+        /// </summary>
+        /// <param name="EncryptService"></param>
+        public KeyManager(IEncryptService EncryptService) 
+        {
+            this.EncryptService = EncryptService;
+        }
+
         /// <summary>
         /// 密匙加密
         /// </summary>
         /// <param name="request">密匙模型</param>
-        /// <param name="EncryptService">加密类接口</param>
         /// <returns></returns>
-        public async Task<KeyContent> EncryptKey(KeyContent request, IEncryptService EncryptService)
+        public async Task<KeyContent> EncryptKey(KeyContent request)
         {
             return await Task.Run(() =>
             {
@@ -44,9 +54,8 @@ namespace Puss.Api.Manager
         /// 密匙解密
         /// </summary>
         /// <param name="request">密匙模型</param>
-        /// <param name="EncryptService">加密类接口</param>
         /// <returns></returns>
-        public async Task<KeyContent> DecryptKey(KeyContent request, IEncryptService EncryptService)
+        public async Task<KeyContent> DecryptKey(KeyContent request)
         {
             return await Task.Run(() =>
             {

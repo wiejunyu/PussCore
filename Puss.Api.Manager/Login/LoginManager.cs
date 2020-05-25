@@ -23,24 +23,54 @@ namespace Puss.Api.Manager
     public class LoginManager : ILoginManager
     {
         private readonly IHttpContextAccessor Accessor;
+        private readonly IRedisService RedisService; 
+        private readonly IUserManager UserManager;
+        private readonly IEmailService EmailService;
+        private readonly ICodeManager CodeManager;
+        private readonly ICms_SysconfigManager Cms_SysconfigManager;
+        private readonly DbContext DbContext;
+        private readonly IRabbitMQPushService RabbitMQPushService;
+        private readonly IUserDetailsManager UserDetailsManager;
 
         /// <summary>
         /// 登录
         /// </summary>
         /// <param name="Accessor"></param>
-        public LoginManager(IHttpContextAccessor Accessor) 
+        /// <param name="RedisService"></param>
+        /// <param name="UserManager"></param>
+        /// <param name="EmailService"></param>
+        /// <param name="CodeManager"></param>
+        /// <param name="Cms_SysconfigManager"></param>
+        /// <param name="DbContext"></param>
+        /// <param name="RabbitMQPushService"></param>
+        /// <param name="UserDetailsManager"></param>
+        public LoginManager(IHttpContextAccessor Accessor, 
+            IRedisService RedisService, 
+            IUserManager UserManager,
+            IEmailService EmailService,
+            ICodeManager CodeManager,
+            ICms_SysconfigManager Cms_SysconfigManager,
+            DbContext DbContext,
+            IRabbitMQPushService RabbitMQPushService,
+            IUserDetailsManager UserDetailsManager) 
         {
             this.Accessor = Accessor;
+            this.RedisService = RedisService;
+            this.UserManager = UserManager;
+            this.EmailService = EmailService;
+            this.CodeManager = CodeManager;
+            this.Cms_SysconfigManager = Cms_SysconfigManager;
+            this.DbContext = DbContext;
+            this.RabbitMQPushService = RabbitMQPushService;
+            this.UserDetailsManager = UserDetailsManager;
         }
 
         /// <summary>
         /// 登录接口
         /// </summary>
         /// <param name="request">登陆模型</param>
-        /// <param name="RedisService">Redis类接口</param>
-        /// <param name="UserManager"></param>
         /// <returns></returns>
-        public async Task<string> Login(LoginRequest request, IRedisService RedisService, IUserManager UserManager)
+        public async Task<string> Login(LoginRequest request)
         {
             request.PassWord = MD5.Md5(request.PassWord);
             User account = await UserManager.GetSingleAsync(a => (a.UserName == request.UserName.Trim() || a.Phone == request.UserName.Trim() || a.Email == request.UserName.Trim()) && a.PassWord == request.PassWord);
@@ -51,21 +81,18 @@ namespace Puss.Api.Manager
         /// <summary>
         /// 登出接口
         /// </summary>
-        /// <param name="accessor">accessor</param>
-        /// <param name="RedisService">Redis类接口</param>
         /// <returns></returns>
-        public async Task<bool> LoginOut(IHttpContextAccessor accessor, IRedisService RedisService)
+        public async Task<bool> LoginOut()
         {
-            return await Task.Run(() => { return Token.RemoveToken(accessor, RedisService); });
+            return await Task.Run(() => { return Token.RemoveToken(Accessor, RedisService); });
         }
 
         /// <summary>
         /// 生成验证码图片并返回图片字节
         /// </summary>
         /// <param name="CodeKey">验证码缓存标记</param>
-        /// <param name="RedisService">Redis接口</param>
         /// <returns></returns>
-        public byte[] ShowValidateCode(string CodeKey, IRedisService RedisService)
+        public byte[] ShowValidateCode(string CodeKey)
         {
             if (string.IsNullOrWhiteSpace(CodeKey)) throw new AppException("验证码缓存标记错误");
 
@@ -83,9 +110,8 @@ namespace Puss.Api.Manager
         /// 生成验证码图片并返回图片Base64
         /// </summary>
         /// <param name="CodeKey">验证码缓存标记</param>
-        /// <param name="RedisService">Redis接口</param>
         /// <returns></returns>
-        public async Task<string> ShowValidateCodeBase64(string CodeKey, IRedisService RedisService)
+        public async Task<string> ShowValidateCodeBase64(string CodeKey)
         {
             return await Task.Run(() =>
             {
@@ -109,13 +135,8 @@ namespace Puss.Api.Manager
         /// </summary>
         /// <param name="CodeKey">验证码</param>
         /// <param name="Email">邮箱</param>
-        /// <param name="EmailService">邮箱类接口</param>
-        /// <param name="RedisService">Redis类接口</param>
-        /// <param name="CodeManager"></param>
-        /// <param name="Cms_SysconfigManager"></param>
-        /// <param name="DbContext"></param>
         /// <returns></returns>
-        public async Task<string> EmailGetCode(string CodeKey, string Email, IEmailService EmailService, IRedisService RedisService, ICodeManager CodeManager, ICms_SysconfigManager Cms_SysconfigManager, DbContext DbContext)
+        public async Task<string> EmailGetCode(string CodeKey, string Email)
         {
             //读写分离强制走主库
             DbContext.Db.Ado.IsDisableMasterSlaveSeparation = true;
@@ -161,13 +182,8 @@ namespace Puss.Api.Manager
         /// 用户注册
         /// </summary>
         /// <param name="request">注册模型</param>
-        /// <param name="ip">IP</param>
-        /// <param name="RabbitMQPush">MQ接口</param>
-        /// <param name="UserManager"></param>
-        /// <param name="UserDetailsManager"></param>
-        /// <param name="DbContext"></param>
         /// <returns></returns>
-        public async Task<bool> UserRegister(RegisterRequest request, string ip, IRabbitMQPushService RabbitMQPush, IUserManager UserManager, IUserDetailsManager UserDetailsManager, DbContext DbContext)
+        public async Task<bool> UserRegister(RegisterRequest request)
         {
             #region 验证
             if (UserManager.IsAny(x => x.UserName == request.UserName)) throw new AppException("该用户名已经注册过");
@@ -184,7 +200,7 @@ namespace Puss.Api.Manager
             user.PassWord = MD5.Md5(user.PassWord).ToLower();
             user.CreateTime = DateTime.Now;
             user.LoginTime = DateTime.Now;
-            user.IP = ip;
+            user.IP = Accessor.HttpContext.Connection.RemoteIpAddress.ToString();
             user.Portrait = "/Image/user.png";
             user.Money = 0;
 
@@ -193,17 +209,16 @@ namespace Puss.Api.Manager
                 UserManager.Insert(user);
                 UserDetailsManager.Insert(new UserDetails() { UID = user.ID });
             });
-            await RabbitMQPush.PushMessage(QueueKey.SendRegisterMessageIsEmail, request.Email);
+            await RabbitMQPushService.PushMessage(QueueKey.SendRegisterMessageIsEmail, request.Email);
             return true;
         }
 
         /// <summary>
         /// 判断token是否有效
         /// </summary>
-        /// <param name="RedisService">Redis类接口</param>
         /// <param name="sToken">token</param>
         /// <returns></returns>
-        public async Task<bool> IsToken(IRedisService RedisService, string sToken)
+        public async Task<bool> IsToken(string sToken)
         {
             return await Task.Run(() =>
             {

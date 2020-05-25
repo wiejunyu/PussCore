@@ -1,5 +1,6 @@
 ﻿using Puss.Data.Enum;
 using System;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Puss.Data.Models
@@ -62,6 +63,16 @@ namespace Puss.Data.Models
         public static ReturnResult ResultCalculation(Func<bool> func)
         {
             bool result = func();
+            return (result ? new ReturnResult(ReturnResultStatus.Succeed) : new ReturnResult());
+        }
+
+        /// <summary>
+        /// 传入异步委托实现返回不同结果
+        /// </summary>
+        /// <param name="func"></param>
+        public static async Task<ReturnResult> ResultCalculation(Func<Task<bool>> func)
+        {
+            bool result = await func();
             return (result ? new ReturnResult(ReturnResultStatus.Succeed) : new ReturnResult());
         }
     }

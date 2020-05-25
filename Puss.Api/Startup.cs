@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using App.Metrics;
+using AspNetCoreRateLimit;
 using Autofac;
 using AutoMapper;
 using Hangfire;
@@ -48,7 +49,7 @@ namespace Puss.Api
         }
 
         /// <summary>
-        /// Configuration
+        /// Configuration   
         /// </summary>
         public IConfiguration Configuration { get; }
 
@@ -58,6 +59,22 @@ namespace Puss.Api
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
+            #region RateLimit
+            // needed to load configuration from appsettings.json
+            services.AddOptions();
+            // needed to store rate limit counters and ip rules
+            services.AddMemoryCache();
+            //load general configuration from appsettings.json
+            services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
+            //load ip rules from appsettings.json
+            services.Configure<IpRateLimitPolicies>(Configuration.GetSection("IpRateLimitPolicies"));
+            // inject counter and rules stores
+            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
+            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+            // https://github.com/aspnet/Hosting/issues/793
+            // configuration (resolvers, counter key builders)
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+            #endregion
             #region Swagger
             services.AddSwaggerGen(c =>
             {

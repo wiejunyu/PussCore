@@ -24,7 +24,6 @@ namespace Puss.Api.Controllers
         private readonly DbContext DbContext;
         private readonly IKeySectionManager KeySectionManager;
         private readonly IKeyContentManager KeyContentManager;
-        private readonly IEncryptService EncryptService;
         private readonly ILoginManager LoginManager;
         private readonly IKeyManager KeyManager;
 
@@ -34,14 +33,12 @@ namespace Puss.Api.Controllers
         /// <param name="DbContext"></param>
         /// <param name="KeySectionManager"></param>
         /// <param name="KeyContentManager"></param>
-        /// <param name="EncryptService"></param>
         /// <param name="LoginManager"></param>
         /// <param name="KeyManager"></param>
         public KeyController(
             DbContext DbContext,
             IKeySectionManager KeySectionManager,
             IKeyContentManager KeyContentManager,
-            IEncryptService EncryptService,
             ILoginManager LoginManager,
             IKeyManager KeyManager
             )
@@ -49,7 +46,6 @@ namespace Puss.Api.Controllers
             this.DbContext = DbContext;
             this.KeySectionManager = KeySectionManager;
             this.KeyContentManager = KeyContentManager;
-            this.EncryptService = EncryptService;
             this.LoginManager = LoginManager;
             this.KeyManager = KeyManager;
         }
@@ -189,7 +185,7 @@ namespace Puss.Api.Controllers
             int iUID = LoginManager.GetUserID();
             KeyContent keyContent = await KeyContentManager.GetSingleAsync(x => x.CreateUserID == iUID && x.ID == ID);
             if(keyContent == null) throw new AppException((int)ReturnResultStatus.Illegal, "0", "非法操作");
-            keyContent = await KeyManager.DecryptKey(keyContent, EncryptService);
+            keyContent = await KeyManager.DecryptKey(keyContent);
             return new ReturnResult(ReturnResultStatus.Succeed, JsonConvert.SerializeObject(new 
             {
                 keyContent.ID,
@@ -221,7 +217,7 @@ namespace Puss.Api.Controllers
             var mapper = new MapperConfiguration(x => x.CreateMap<CreateKey, KeyContent>()).CreateMapper();
             KeyContent keyContent = mapper.Map<KeyContent>(request);
             keyContent.CreateUserID = iUID;
-            keyContent = await KeyManager.EncryptKey(keyContent, EncryptService);
+            keyContent = await KeyManager.EncryptKey(keyContent);
             return ReturnResult.ResultCalculation(() => KeyContentManager.Insert(keyContent));
         }
 
@@ -241,7 +237,7 @@ namespace Puss.Api.Controllers
             var mapper = new MapperConfiguration(x => x.CreateMap<EditKey, KeyContent>()).CreateMapper();
             mapper.Map(request, keyContent);
             keyContent.CreateUserID = iUID;
-            keyContent = await KeyManager.EncryptKey(keyContent, EncryptService);
+            keyContent = await KeyManager.EncryptKey(keyContent);
             return ReturnResult.ResultCalculation(() => KeyContentManager.Update(keyContent));
         }
 

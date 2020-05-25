@@ -23,16 +23,14 @@ namespace Puss.Api.Manager
         /// 密匙加密
         /// </summary>
         /// <param name="request">密匙模型</param>
-        /// <param name="EncryptService">加密类接口</param>
         /// <returns></returns>
-        Task<KeyContent> EncryptKey(KeyContent request, IEncryptService EncryptService);
+        Task<KeyContent> EncryptKey(KeyContent request);
 
         /// <summary>
         /// 密匙解密
         /// </summary>
         /// <param name="request">密匙模型</param>
-        /// <param name="EncryptService">加密类接口</param>
         /// <returns></returns>
-        Task<KeyContent> DecryptKey(KeyContent request, IEncryptService EncryptService);
+        Task<KeyContent> DecryptKey(KeyContent request);
     }
 }
