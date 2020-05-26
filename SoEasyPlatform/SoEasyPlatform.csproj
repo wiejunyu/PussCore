@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="RazorEngine.NetCore" Version="2.2.2" />
-    <PackageReference Include="sqlSugarCore" Version="5.0.0.14" />
+    <PackageReference Include="sqlSugarCore" Version="5.0.0.15" />
   </ItemGroup>
 
 </Project>

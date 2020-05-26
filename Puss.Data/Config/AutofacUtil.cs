@@ -14,6 +14,9 @@ namespace Puss.Data.Config
     /// </summary>
     public class AutofacUtil
     {
+        /// <summary>
+        /// Autofac依赖注入静态服务
+        /// </summary>
         public static ILifetimeScope Container { get; set; }
 
         /// <summary>
