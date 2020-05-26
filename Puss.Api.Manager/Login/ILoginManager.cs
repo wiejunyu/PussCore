@@ -40,7 +40,7 @@ namespace Puss.Api.Manager
         /// </summary>
         /// <param name="CodeKey">验证码缓存标记</param>
         /// <returns></returns>
-        byte[] ShowValidateCode(string CodeKey);
+        Task<byte[]> ShowValidateCode(string CodeKey);
 
         /// <summary>
         /// 生成验证码图片并返回图片Base64

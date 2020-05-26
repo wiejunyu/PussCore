@@ -31,7 +31,7 @@ namespace Puss.Api.Job
                     symbol = x.symbol,
                     price = x.price
                 };
-                RedisService.Set(CommentConfig.Price + x.symbol.ToLowerInvariant(), price, 2);
+                RedisService.SetAsync(CommentConfig.Price + x.symbol.ToLowerInvariant(), price, 2);
             });
         }
     }

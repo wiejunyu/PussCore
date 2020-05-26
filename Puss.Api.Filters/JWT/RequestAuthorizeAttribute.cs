@@ -35,67 +35,64 @@ namespace Puss.Api.Filters
         /// <returns></returns>
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
-            await Task.Run(() =>
+            //不允许匿名访问逻辑
+            if (context.ActionDescriptor.EndpointMetadata.Any(item => item is AllowAnonymousAttribute)) return;
+            //判断是否开启权限验证
+            if (GlobalsConfig.Configuration[ConfigurationKeys.Verification_Token].ToLower() == "false") return;
+            //从http请求的头里面获取身份验证信息，验证Jwt
+            string sAuthorization = context.HttpContext.Request.Headers["Authorization"].ToString();
+            if (string.IsNullOrWhiteSpace(sAuthorization))
             {
-                //不允许匿名访问逻辑
-                if (context.ActionDescriptor.EndpointMetadata.Any(item => item is AllowAnonymousAttribute)) return;
-                //判断是否开启权限验证
-                if (GlobalsConfig.Configuration[ConfigurationKeys.Verification_Token].ToLower() == "false") return;
-                //从http请求的头里面获取身份验证信息，验证Jwt
-                string sAuthorization = context.HttpContext.Request.Headers["Authorization"].ToString();
-                if (string.IsNullOrWhiteSpace(sAuthorization))
+                context.Result = new ObjectResult(new ReturnResult()
                 {
-                    context.Result = new ObjectResult(new ReturnResult()
-                    {
-                        Status = (int)ReturnResultStatus.UnLogin,
-                        Message = "获取不到token"
-                    });
-                    return;
-                }
-                string sToken = sAuthorization.Substring("Bearer ".Length).Trim();
-                if (string.IsNullOrWhiteSpace(sToken))
+                    Status = (int)ReturnResultStatus.UnLogin,
+                    Message = "获取不到token"
+                });
+                return;
+            }
+            string sToken = sAuthorization.Substring("Bearer ".Length).Trim();
+            if (string.IsNullOrWhiteSpace(sToken))
+            {
+                context.Result = new ObjectResult(new ReturnResult()
                 {
-                    context.Result = new ObjectResult(new ReturnResult()
-                    {
-                        Status = (int)ReturnResultStatus.UnLogin,
-                        Message = "获取不到token"
-                    });
-                    return;
-                }
-                User user = Token.TokenGetUser(sToken);
-                if (user == null)
+                    Status = (int)ReturnResultStatus.UnLogin,
+                    Message = "获取不到token"
+                });
+                return;
+            }
+            User user = Token.TokenGetUser(sToken);
+            if (user == null)
+            {
+                context.Result = new ObjectResult(new ReturnResult()
                 {
-                    context.Result = new ObjectResult(new ReturnResult()
-                    {
-                        Status = (int)ReturnResultStatus.UnLogin,
-                        Message = "获取不到token"
-                    });
-                    return;
-                }
-                string sRedisToken = RedisService.Get<string>(CommentConfig.UserToken + user.ID, () => null);
-                if (string.IsNullOrWhiteSpace(sRedisToken))
+                    Status = (int)ReturnResultStatus.UnLogin,
+                    Message = "获取不到token"
+                });
+                return;
+            }
+            string sRedisToken = await RedisService.GetAsync<string>(CommentConfig.UserToken + user.ID, () => null);
+            if (string.IsNullOrWhiteSpace(sRedisToken))
+            {
+                context.Result = new ObjectResult(new ReturnResult()
                 {
-                    context.Result = new ObjectResult(new ReturnResult()
-                    {
-                        Status = (int)ReturnResultStatus.UnLogin,
-                        Message = "获取不到token"
-                    });
-                    return;
-                }
+                    Status = (int)ReturnResultStatus.UnLogin,
+                    Message = "获取不到token"
+                });
+                return;
+            }
 
-                if (GlobalsConfig.Configuration[ConfigurationKeys.Token_IsSignIn].ToLower() == "true") 
+            if (GlobalsConfig.Configuration[ConfigurationKeys.Token_IsSignIn].ToLower() == "true") 
+            {
+                if (sRedisToken != sToken)
                 {
-                    if (sRedisToken != sToken)
+                    context.Result = new ObjectResult(new ReturnResult()
                     {
-                        context.Result = new ObjectResult(new ReturnResult()
-                        {
-                            Status = (int)ReturnResultStatus.UnLogin,
-                            Message = "获取不到token"
-                        });
-                        return;
-                    }
+                        Status = (int)ReturnResultStatus.UnLogin,
+                        Message = "获取不到token"
+                    });
+                    return;
                 }
-            });
+            }
         }
     }
 }

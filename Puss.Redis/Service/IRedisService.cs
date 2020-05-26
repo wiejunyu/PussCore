@@ -24,6 +24,14 @@ namespace Puss.Redis
         T Get<T>(string key, Func<T> func);
 
         /// <summary>
+        /// 异步根据key获取缓存对象
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task<T> GetAsync<T>(string key, Func<T> func);
+
+        /// <summary>
         /// 设置缓存对象
         /// </summary>
         /// <param name="key"></param>
@@ -31,6 +39,29 @@ namespace Puss.Redis
         /// <param name="expireMinutes"></param>
         void Set(string key, object value, int expireMinutes = 0);
 
+        /// <summary>
+        /// 异步设置缓存对象
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expireMinutes"></param>
+        Task SetAsync(string key, object value, int expireMinutes = 0);
+
+        /// <summary>
+        /// 设置缓存对象
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expireMinutes"></param>
+        void Set(string key, string value, int expireMinutes = 0);
+
+        /// <summary>
+        /// 异步设置缓存对象
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expireMinutes"></param>
+        Task SetAsync(string key, string value, int expireMinutes = 0);
 
         /// <summary>
         /// 判断在缓存中是否存在该key的缓存数据
@@ -40,6 +71,13 @@ namespace Puss.Redis
         bool Exists(string key);
 
         /// <summary>
+        /// 异步判断在缓存中是否存在该key的缓存数据
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task<bool> ExistsAsync(string key);
+
+        /// <summary>
         /// 移除指定key的缓存
         /// </summary>
         /// <param name="key"></param>
@@ -47,27 +85,11 @@ namespace Puss.Redis
         bool Remove(string key);
 
         /// <summary>
-        /// 异步设置
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="expireMinutes"></param>
-        Task SetAsync(string key, object value, int expireMinutes = 0);
-
-        /// <summary>
-        /// 根据key获取缓存对象
+        /// 异步移除指定key的缓存
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        Task<object> GetAsync(string key);
-
-        /// <summary>
-        /// 根据key获取异步缓存对象
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        Task<T> GetAsync<T>(string key, Func<T> func);
+        Task<bool> RemoveAsync(string key);
 
         /// <summary>
         /// 实现递增
@@ -77,12 +99,27 @@ namespace Puss.Redis
         long Increment(string key);
 
         /// <summary>
+        /// 异步实现递增
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task<long> IncrementAsync(string key);
+
+        /// <summary>
         /// 实现递减
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
         /// <returns></returns>
         long Decrement(string key, string value);
+
+        /// <summary>
+        /// 异步实现递减
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        Task<long> DecrementAsync(string key, string value);
 
         #region  当作消息代理中间件使用 一般使用更专业的消息队列来处理这种业务场景
 

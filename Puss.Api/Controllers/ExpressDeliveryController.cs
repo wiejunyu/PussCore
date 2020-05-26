@@ -57,10 +57,8 @@ namespace Puss.Api.Controllers
         [HttpPost("GetPrice")]
         public async Task<ReturnResult> GetPrice(string symbol)
         {
-            return await Task.Run(() =>
-            {
-                return new ReturnResult(ReturnResultStatus.Succeed, RedisService.Get<Price>(CommentConfig.Price + symbol, () => new Price()).price);
-            });
+            Price price = await RedisService.GetAsync(CommentConfig.Price + symbol, () => new Price());
+            return new ReturnResult(ReturnResultStatus.Succeed, price.price);
         }
     }
 }

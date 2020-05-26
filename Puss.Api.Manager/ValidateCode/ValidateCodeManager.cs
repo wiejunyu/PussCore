@@ -28,10 +28,7 @@ namespace Puss.Api.Manager
         /// <returns></returns>
         public async Task<bool> ExistsImage(string sCodeKey)
         {
-            return await Task.Run(() =>
-            {
-                return RedisService.Exists(CommentConfig.ImageCacheCode + sCodeKey);
-            });
+            return await RedisService.ExistsAsync(CommentConfig.ImageCacheCode + sCodeKey);
         }
 
         /// <summary>
@@ -51,10 +48,7 @@ namespace Puss.Api.Manager
         /// <returns></returns>
         public async Task<bool> ExistsMail(string sCodeKey)
         {
-            return await Task.Run(() =>
-            {
-                return RedisService.Exists(CommentConfig.MailCacheCode + sCodeKey);
-            });
+            return await RedisService.ExistsAsync(CommentConfig.MailCacheCode + sCodeKey);
         }
 
         /// <summary>

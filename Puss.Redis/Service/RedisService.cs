@@ -90,6 +90,21 @@ namespace Puss.Redis
         }
 
         /// <summary>
+        /// 异步根据key获取缓存对象
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public async Task<T> GetAsync<T>(string key, Func<T> func)
+        {
+            key = MergeKey(key);
+            if (await ExistsAsync(key))
+                return JsonConvert.DeserializeObject<T>(await GetDatabase().StringGetAsync(key));
+            else
+                return func();
+        }
+
+        /// <summary>
         /// 设置缓存对象
         /// </summary>
         /// <param name="key"></param>
@@ -100,14 +115,69 @@ namespace Puss.Redis
             key = MergeKey(key);
             if (expireMinutes > 0)
             {
-                //GetDatabase().StringSet(key, Serialize(value), TimeSpan.FromMinutes(expireMinutes));
                 GetDatabase().StringSet(key, JsonConvert.SerializeObject(value), TimeSpan.FromMinutes(expireMinutes));
             }
             else
             {
                 GetDatabase().StringSet(key, JsonConvert.SerializeObject(value));
             }
+        }
 
+        /// <summary>
+        /// 异步设置缓存对象
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expireMinutes"></param>
+        public async Task SetAsync(string key, object value, int expireMinutes = 0)
+        {
+            key = MergeKey(key);
+            if (expireMinutes > 0)
+            {
+                await GetDatabase().StringSetAsync(key, JsonConvert.SerializeObject(value), TimeSpan.FromMinutes(expireMinutes));
+            }
+            else
+            {
+                await GetDatabase().StringSetAsync(key, JsonConvert.SerializeObject(value));
+            }
+        }
+
+        /// <summary>
+        /// 设置缓存对象
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expireMinutes"></param>
+        public void Set(string key, string value, int expireMinutes = 0)
+        {
+            key = MergeKey(key);
+            if (expireMinutes > 0)
+            {
+                GetDatabase().StringSet(key, value, TimeSpan.FromMinutes(expireMinutes));
+            }
+            else
+            {
+                GetDatabase().StringSet(key, value);
+            }
+        }
+
+        /// <summary>
+        /// 异步设置缓存对象
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="expireMinutes"></param>
+        public async Task SetAsync(string key, string value, int expireMinutes = 0)
+        {
+            key = MergeKey(key);
+            if (expireMinutes > 0)
+            {
+                await GetDatabase().StringSetAsync(key, value, TimeSpan.FromMinutes(expireMinutes));
+            }
+            else
+            {
+                await GetDatabase().StringSetAsync(key, value);
+            }
         }
 
         /// <summary>
@@ -122,6 +192,17 @@ namespace Puss.Redis
         }
 
         /// <summary>
+        /// 异步判断在缓存中是否存在该key的缓存数据
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public async Task<bool> ExistsAsync(string key)
+        {
+            key = MergeKey(key);
+            return await GetDatabase().KeyExistsAsync(key); //可直接调用
+        }
+
+        /// <summary>
         /// 移除指定key的缓存
         /// </summary>
         /// <param name="key"></param>
@@ -133,45 +214,14 @@ namespace Puss.Redis
         }
 
         /// <summary>
-        /// 异步设置
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="expireMinutes"></param>
-        public async Task SetAsync(string key, object value, int expireMinutes = 0)
-        {
-            key = MergeKey(key);
-            await GetDatabase().StringSetAsync(key, JsonConvert.SerializeObject(value), TimeSpan.FromMinutes(expireMinutes));
-        }
-
-        /// <summary>
-        /// 根据key获取缓存对象
+        /// 异步移除指定key的缓存
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public async Task<object> GetAsync(string key)
+        public async Task<bool> RemoveAsync(string key)
         {
             key = MergeKey(key);
-            object value = await GetDatabase().StringGetAsync(key);
-            return value;
-        }
-
-        /// <summary>
-        /// 根据key获取异步缓存对象
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public async Task<T> GetAsync<T>(string key, Func<T> func)
-        {
-            key = MergeKey(key);
-            if (Exists(key))
-            {
-                var str = await GetDatabase().StringGetAsync(key);
-                return JsonConvert.DeserializeObject<T>(str);
-            }
-            else
-                return func();
+            return await GetDatabase().KeyDeleteAsync(key);
         }
 
         /// <summary>
@@ -191,6 +241,22 @@ namespace Puss.Redis
         }
 
         /// <summary>
+        /// 异步实现递增
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public async Task<long> IncrementAsync(string key)
+        {
+            key = MergeKey(key);
+            //三种命令模式
+            //Sync,同步模式会直接阻塞调用者，但是显然不会阻塞其他线程。
+            //Async,异步模式直接走的是Task模型。
+            //Fire - and - Forget,就是发送命令，然后完全不关心最终什么时候完成命令操作。
+            //即发即弃：通过配置 CommandFlags 来实现即发即弃功能，在该实例中该方法会立即返回，如果是string则返回null 如果是int则返回0.这个操作将会继续在后台运行，一个典型的用法页面计数器的实现：
+            return await GetDatabase().StringIncrementAsync(key, flags: CommandFlags.FireAndForget);
+        }
+
+        /// <summary>
         /// 实现递减
         /// </summary>
         /// <param name="key"></param>
@@ -200,6 +266,18 @@ namespace Puss.Redis
         {
             key = MergeKey(key);
             return GetDatabase().HashDecrement(key, value, flags: CommandFlags.FireAndForget);
+        }
+
+        /// <summary>
+        /// 异步实现递减
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public async Task<long> DecrementAsync(string key, string value)
+        {
+            key = MergeKey(key);
+            return await GetDatabase().HashDecrementAsync(key, value, flags: CommandFlags.FireAndForget);
         }
 
         /// <summary>

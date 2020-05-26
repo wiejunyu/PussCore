@@ -40,9 +40,9 @@ namespace Puss.Api.Controllers
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public FileResult ShowValidateCode(string CodeKey)
+        public async Task<FileResult> ShowValidateCode(string CodeKey)
         {
-            return File(LoginManager.ShowValidateCode(CodeKey), @"image/jpeg");
+            return File(await LoginManager.ShowValidateCode(CodeKey), @"image/jpeg");
         }
 
         /// <summary>

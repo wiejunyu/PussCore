@@ -26,7 +26,7 @@ namespace Puss.Api.Manager
         private readonly IRedisService RedisService; 
         private readonly IUserManager UserManager;
         private readonly IEmailService EmailService;
-        private readonly BusinessCore.ICodeManager CodeManager;
+        private readonly ICodeManager CodeManager;
         private readonly ICms_SysconfigManager Cms_SysconfigManager;
         private readonly DbContext DbContext;
         private readonly IRabbitMQPushService RabbitMQPushService;
@@ -48,7 +48,7 @@ namespace Puss.Api.Manager
             IRedisService RedisService, 
             IUserManager UserManager,
             IEmailService EmailService,
-            BusinessCore.ICodeManager CodeManager,
+            ICodeManager CodeManager,
             ICms_SysconfigManager Cms_SysconfigManager,
             DbContext DbContext,
             IRabbitMQPushService RabbitMQPushService,
@@ -92,7 +92,7 @@ namespace Puss.Api.Manager
         /// </summary>
         /// <param name="CodeKey">验证码缓存标记</param>
         /// <returns></returns>
-        public byte[] ShowValidateCode(string CodeKey)
+        public async Task<byte[]> ShowValidateCode(string CodeKey)
         {
             if (string.IsNullOrWhiteSpace(CodeKey)) throw new AppException("验证码缓存标记错误");
 
@@ -100,7 +100,7 @@ namespace Puss.Api.Manager
             //生成验证码，传几就是几位验证码
             string code = ValidateCode.CreateValidateCode(4);
             //保存验证码
-            RedisService.Set(CommentConfig.ImageCacheCode + CodeKey, code, 10);
+            await RedisService.SetAsync(CommentConfig.ImageCacheCode + CodeKey, code, 10);
             //把验证码转成字节
             byte[] buffer = ValidateCode.CreateValidateGraphic(code);
             return buffer;
@@ -113,20 +113,17 @@ namespace Puss.Api.Manager
         /// <returns></returns>
         public async Task<string> ShowValidateCodeBase64(string CodeKey)
         {
-            return await Task.Run(() =>
-            {
-                if (string.IsNullOrWhiteSpace(CodeKey)) throw new AppException("验证码缓存标记错误");
+            if (string.IsNullOrWhiteSpace(CodeKey)) throw new AppException("验证码缓存标记错误");
 
-                ValidateCode ValidateCode = new ValidateCode();
-                //生成验证码，传几就是几位验证码
-                string code = ValidateCode.CreateValidateCode(4);
-                //保存验证码
-                RedisService.Set(CommentConfig.ImageCacheCode + CodeKey, code, 10);
-                //把验证码转成字节
-                byte[] buffer = ValidateCode.CreateValidateGraphic(code);
-                //把验证码转成Base64
-                return $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
-            });
+            ValidateCode ValidateCode = new ValidateCode();
+            //生成验证码，传几就是几位验证码
+            string code = ValidateCode.CreateValidateCode(4);
+            //保存验证码
+            await RedisService.SetAsync(CommentConfig.ImageCacheCode + CodeKey, code, 10);
+            //把验证码转成字节
+            byte[] buffer = ValidateCode.CreateValidateGraphic(code);
+            //把验证码转成Base64
+            return $"data:image/png;base64,{Convert.ToBase64String(buffer)}";
         }
 
 
@@ -171,7 +168,7 @@ namespace Puss.Api.Manager
             #endregion
             cModel.code = code;
             //保存验证码进缓存
-            RedisService.Set(CommentConfig.MailCacheCode + CodeKey, cModel, 10);
+            await RedisService.SetAsync(CommentConfig.MailCacheCode + CodeKey, cModel, 10);
 
             //读写分离取消强制走主库
             DbContext.Db.Ado.IsDisableMasterSlaveSeparation = false;
@@ -220,18 +217,15 @@ namespace Puss.Api.Manager
         /// <returns></returns>
         public async Task<bool> IsToken(string sToken)
         {
-            return await Task.Run(() =>
+            User user = Token.TokenGetUser(sToken);
+            if (user == null) return false;
+            string sRedisToken = await RedisService.GetAsync<string>(CommentConfig.UserToken + user.ID, () => null);
+            if (string.IsNullOrWhiteSpace(sRedisToken)) return false;
+            if (GlobalsConfig.Configuration[ConfigurationKeys.Token_IsSignIn].ToLower() == "true")
             {
-                User user = Token.TokenGetUser(sToken);
-                if (user == null) return false;
-                string sRedisToken = RedisService.Get<string>(CommentConfig.UserToken + user.ID, () => null);
-                if (string.IsNullOrWhiteSpace(sRedisToken)) return false;
-                if (GlobalsConfig.Configuration[ConfigurationKeys.Token_IsSignIn].ToLower() == "true")
-                {
-                    if (sRedisToken != sToken) return false;
-                }
-                return true;
-            });
+                if (sRedisToken != sToken) return false;
+            }
+            return true;
         }
 
         /// <summary>
