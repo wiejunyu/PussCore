@@ -29,7 +29,7 @@ namespace Puss.Api.Aop
         [Argument(Source.Name)] string name,
         [Argument(Source.Arguments)] object[] arguments)
         {
-            #region 属性注入
+            #region 注入
             IValidateCodeManager ValidateCodeManager = AutofacUtil.GetScopeService<IValidateCodeManager>();
             #endregion
 
