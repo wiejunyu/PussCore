@@ -41,11 +41,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.Attendance", "Puss.Att
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.Encrypt", "Puss.Encrypt\Puss.Encrypt.csproj", "{61728B20-7FEC-4ABB-9D67-6F87E03F5659}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.Api.Manager", "Puss.Api.Manager\Puss.Api.Manager.csproj", "{BED03A05-61B3-4E76-8314-DA64418EA626}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.Api.Manager", "Puss.Api.Manager\Puss.Api.Manager.csproj", "{BED03A05-61B3-4E76-8314-DA64418EA626}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.Api.Filters", "Puss.Api.Filters\Puss.Api.Filters.csproj", "{950E1C6B-8994-4BFB-8E7D-8F28F472ECFD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.Api.Filters", "Puss.Api.Filters\Puss.Api.Filters.csproj", "{950E1C6B-8994-4BFB-8E7D-8F28F472ECFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.Api.Job", "Puss.Api.Job\Puss.Api.Job.csproj", "{2A8F322E-FB01-472D-952A-E50D5357AED5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.Api.Job", "Puss.Api.Job\Puss.Api.Job.csproj", "{2A8F322E-FB01-472D-952A-E50D5357AED5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

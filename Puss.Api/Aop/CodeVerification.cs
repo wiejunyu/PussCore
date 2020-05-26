@@ -7,6 +7,8 @@ using Puss.Enties;
 using System.Linq;
 using System.Collections.Generic;
 using Puss.Data.Config;
+using Autofac;
+using Puss.Api.Manager;
 
 namespace Puss.Api.Aop
 {
@@ -27,6 +29,10 @@ namespace Puss.Api.Aop
         [Argument(Source.Name)] string name,
         [Argument(Source.Arguments)] object[] arguments)
         {
+            #region 属性注入
+            IValidateCodeManager ValidateCodeManager = AutofacUtil.GetScopeService<IValidateCodeManager>();
+            #endregion
+
             if (GlobalsConfig.Configuration[ConfigurationKeys.Verification_Code].ToLower() == "false") return;
             Type t = arguments[0].GetType();
             List<PropertyInfo> lPropertyInfo = t.GetProperties().ToList();
@@ -44,17 +50,17 @@ namespace Puss.Api.Aop
             string Phone = p == null ? "" : ((p.GetValue(arguments[0], null)) ?? "").ToString();
 
             if (string.IsNullOrWhiteSpace(CodeKey)) throw new AppException("验证码Key不能为空");
-            if (new RedisService().Exists(CommentConfig.ImageCacheCode + CodeKey))
+            if (ValidateCodeManager.ExistsImage(CodeKey).Result)
             {
                 if (string.IsNullOrWhiteSpace(Code)) throw new AppException("验证码不能为空");
-                string code = new RedisService().Get<string>(CommentConfig.ImageCacheCode + CodeKey,()=> null);
+                string code = ValidateCodeManager.GetImage(CodeKey).Result;
                 if (string.IsNullOrWhiteSpace(code)) throw new AppException("验证码错误或已过期");
                 if (code.ToLower() != Code.ToLower()) throw new AppException("验证码错误或已过期");
             }
-            else if (new RedisService().Exists(CommentConfig.MailCacheCode + CodeKey))
+            else if (ValidateCodeManager.ExistsMail(CodeKey).Result)
             {
                 if (string.IsNullOrWhiteSpace(Email)) throw new AppException("邮箱不能为空");
-                Code code = new RedisService().Get<Code>(CommentConfig.MailCacheCode + CodeKey,() => null);
+                Code code = ValidateCodeManager.GetMail(CodeKey).Result;
                 if (code == null) throw new AppException("验证码错误或已过期");
                 if (string.IsNullOrWhiteSpace(code.email) || string.IsNullOrWhiteSpace(code.code)) throw new AppException("验证码错误或已过期");
                 if (code.email.ToLower() != Email.ToLower()) throw new AppException("验证码错误或已过期");

@@ -26,7 +26,7 @@ namespace Puss.Api.Manager
         private readonly IRedisService RedisService; 
         private readonly IUserManager UserManager;
         private readonly IEmailService EmailService;
-        private readonly ICodeManager CodeManager;
+        private readonly BusinessCore.ICodeManager CodeManager;
         private readonly ICms_SysconfigManager Cms_SysconfigManager;
         private readonly DbContext DbContext;
         private readonly IRabbitMQPushService RabbitMQPushService;
@@ -48,7 +48,7 @@ namespace Puss.Api.Manager
             IRedisService RedisService, 
             IUserManager UserManager,
             IEmailService EmailService,
-            ICodeManager CodeManager,
+            BusinessCore.ICodeManager CodeManager,
             ICms_SysconfigManager Cms_SysconfigManager,
             DbContext DbContext,
             IRabbitMQPushService RabbitMQPushService,

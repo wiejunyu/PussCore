@@ -7,7 +7,7 @@ using System.Text;
 using App.Metrics;
 using AspNetCoreRateLimit;
 using Autofac;
-using AutoMapper;
+using Autofac.Extensions.DependencyInjection;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -22,6 +22,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Puss.Api.Aop;
 using Puss.Api.Filters;
 using Puss.Api.Job;
 using Puss.BusinessCore;
@@ -75,6 +76,7 @@ namespace Puss.Api
             // configuration (resolvers, counter key builders)
             services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
             #endregion
+
             #region Swagger
             services.AddSwaggerGen(c =>
             {
@@ -318,6 +320,10 @@ namespace Puss.Api
             {
                 Authorization = new[] { new HangfireAuthorizationFilter() }
             });
+            #endregion
+
+            #region AutofacÒÀÀµ×¢Èë·þÎñ
+            AutofacUtil.Container = app.ApplicationServices.GetAutofacRoot();
             #endregion
 
             app.UseEndpoints(endpoints =>

@@ -157,6 +157,24 @@ namespace Puss.Redis
         }
 
         /// <summary>
+        /// 根据key获取异步缓存对象
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public async Task<T> GetAsync<T>(string key, Func<T> func)
+        {
+            key = MergeKey(key);
+            if (Exists(key))
+            {
+                var str = await GetDatabase().StringGetAsync(key);
+                return JsonConvert.DeserializeObject<T>(str);
+            }
+            else
+                return func();
+        }
+
+        /// <summary>
         /// 实现递增
         /// </summary>
         /// <param name="key"></param>

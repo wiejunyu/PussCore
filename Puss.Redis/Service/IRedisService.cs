@@ -62,6 +62,14 @@ namespace Puss.Redis
         Task<object> GetAsync(string key);
 
         /// <summary>
+        /// 根据key获取异步缓存对象
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task<T> GetAsync<T>(string key, Func<T> func);
+
+        /// <summary>
         /// 实现递增
         /// </summary>
         /// <param name="key"></param>
