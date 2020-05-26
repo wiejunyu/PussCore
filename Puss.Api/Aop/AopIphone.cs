@@ -3,6 +3,7 @@ using System;
 using Newtonsoft.Json;
 using Puss.Data.Models;
 using Puss.RabbitMQ;
+using Puss.Data.Config;
 
 namespace Puss.Api.Aop
 {
@@ -21,7 +22,11 @@ namespace Puss.Api.Aop
         public void IphoneEnter(
         [Argument(Source.Arguments)] object[] arguments)
         {
-            new RabbitMQPushService().PushMessage(QueueKey.GetGuidBody, JsonConvert.SerializeObject(arguments));
+            #region 注入
+            IRabbitMQPushService RabbitMQPushService = AutofacUtil.GetScopeService<IRabbitMQPushService>();
+            #endregion
+
+            RabbitMQPushService.PushMessage(QueueKey.GetGuidBody, JsonConvert.SerializeObject(arguments));
         }
     }
 }
