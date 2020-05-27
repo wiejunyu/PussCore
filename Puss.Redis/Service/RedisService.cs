@@ -143,44 +143,6 @@ namespace Puss.Redis
         }
 
         /// <summary>
-        /// 设置缓存对象
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="expireMinutes"></param>
-        public void Set(string key, string value, int expireMinutes = 0)
-        {
-            key = MergeKey(key);
-            if (expireMinutes > 0)
-            {
-                GetDatabase().StringSet(key, value, TimeSpan.FromMinutes(expireMinutes));
-            }
-            else
-            {
-                GetDatabase().StringSet(key, value);
-            }
-        }
-
-        /// <summary>
-        /// 异步设置缓存对象
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="expireMinutes"></param>
-        public async Task SetAsync(string key, string value, int expireMinutes = 0)
-        {
-            key = MergeKey(key);
-            if (expireMinutes > 0)
-            {
-                await GetDatabase().StringSetAsync(key, value, TimeSpan.FromMinutes(expireMinutes));
-            }
-            else
-            {
-                await GetDatabase().StringSetAsync(key, value);
-            }
-        }
-
-        /// <summary>
         /// 判断在缓存中是否存在该key的缓存数据
         /// </summary>
         /// <param name="key"></param>

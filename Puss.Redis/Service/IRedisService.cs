@@ -48,22 +48,6 @@ namespace Puss.Redis
         Task SetAsync(string key, object value, int expireMinutes = 0);
 
         /// <summary>
-        /// 设置缓存对象
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="expireMinutes"></param>
-        void Set(string key, string value, int expireMinutes = 0);
-
-        /// <summary>
-        /// 异步设置缓存对象
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="expireMinutes"></param>
-        Task SetAsync(string key, string value, int expireMinutes = 0);
-
-        /// <summary>
         /// 判断在缓存中是否存在该key的缓存数据
         /// </summary>
         /// <param name="key"></param>

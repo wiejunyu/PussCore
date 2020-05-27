@@ -84,7 +84,7 @@ namespace Puss.Api.Manager
         /// <returns></returns>
         public async Task<bool> LoginOut()
         {
-            return await Task.Run(() => { return Token.RemoveToken(Accessor, RedisService); });
+            return await Task.Run(() => { return Token.RemoveToken(Accessor, RedisService, UserManager); });
         }
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace Puss.Api.Manager
         /// <returns></returns>
         public async Task<bool> IsToken(string sToken)
         {
-            User user = Token.TokenGetUser(sToken);
+            User user = Token.TokenGetUser(sToken, UserManager);
             if (user == null) return false;
             string sRedisToken = await RedisService.GetAsync<string>(CommentConfig.UserToken + user.ID, () => null);
             if (string.IsNullOrWhiteSpace(sRedisToken)) return false;

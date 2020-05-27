@@ -52,7 +52,7 @@ namespace Puss.Api.Filters
         /// </summary>
         /// <param name="sToken">Token</param>
         /// <returns></returns>
-        public static User TokenGetUser(string sToken)
+        public static User TokenGetUser(string sToken, IUserManager UserManager)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace Puss.Api.Filters
                 //用户ID
                 int sUid = int.Parse(_token.Payload[ClaimTypes.Name].ToString());
                 //使用Token从获取用户ID
-                return new UserManager().GetSingle(x => x.ID == sUid);
+                return UserManager.GetSingle(x => x.ID == sUid);
             }
             catch 
             {
@@ -75,7 +75,7 @@ namespace Puss.Api.Filters
         /// <param name="accessor">accessor</param>
         /// <param name="RedisService">Redis类接口</param>
         /// <returns></returns>
-        public static bool RemoveToken(IHttpContextAccessor accessor, IRedisService RedisService)
+        public static bool RemoveToken(IHttpContextAccessor accessor, IRedisService RedisService, IUserManager UserManager)
         {
             try
             {
@@ -86,7 +86,7 @@ namespace Puss.Api.Filters
                 }
                 if (string.IsNullOrWhiteSpace(sToken)) return false;
                 // 将字符串Token解码成Token对象;
-                User user = TokenGetUser(sToken);
+                User user = TokenGetUser(sToken, UserManager);
                 UserGetToken(user,RedisService);
                 return true;
             }

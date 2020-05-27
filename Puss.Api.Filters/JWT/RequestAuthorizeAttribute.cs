@@ -9,6 +9,7 @@ using Puss.Enties;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Puss.BusinessCore;
 
 namespace Puss.Api.Filters
 {
@@ -18,14 +19,16 @@ namespace Puss.Api.Filters
     public class RequestAuthorizeAttribute : Attribute, IAsyncAuthorizationFilter
     {
         private readonly IRedisService RedisService;
+        private readonly IUserManager UserManager;
 
         /// <summary>
         /// 自定义验证
         /// </summary>
         /// <param name="RedisService"></param>
-        public RequestAuthorizeAttribute(IRedisService RedisService) 
+        public RequestAuthorizeAttribute(IRedisService RedisService, IUserManager UserManager) 
         {
             this.RedisService = RedisService;
+            this.UserManager = UserManager;
         }
 
         /// <summary>
@@ -60,7 +63,7 @@ namespace Puss.Api.Filters
                 });
                 return;
             }
-            User user = Token.TokenGetUser(sToken);
+            User user = Token.TokenGetUser(sToken, UserManager);
             if (user == null)
             {
                 context.Result = new ObjectResult(new ReturnResult()
