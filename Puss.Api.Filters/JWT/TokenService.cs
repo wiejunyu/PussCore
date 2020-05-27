@@ -15,15 +15,28 @@ namespace Puss.Api.Filters
     /// <summary>
     /// Token
     /// </summary>
-    public class Token
+    public class TokenService
     {
+        private readonly IRedisService RedisService;
+        private readonly IUserManager UserManager;
+        private readonly IHttpContextAccessor Accessor;
+
+        /// <summary>
+        /// Token
+        /// </summary>
+        public TokenService(IRedisService RedisService, IUserManager UserManager, IHttpContextAccessor Accessor) 
+        {
+            this.RedisService = RedisService;
+            this.UserManager = UserManager;
+            this.Accessor = Accessor;
+        }
+
         /// <summary>
         /// JWT身份验证用户获取Token
         /// </summary>
         /// <param name="user">用户</param>
-        /// <param name="RedisService">Redis类接口</param>
         /// <returns></returns>
-        public static string UserGetToken(User user, IRedisService RedisService)
+        public string UserGetToken(User user)
         {
             //Token信息
             var claims = new[]
@@ -52,7 +65,7 @@ namespace Puss.Api.Filters
         /// </summary>
         /// <param name="sToken">Token</param>
         /// <returns></returns>
-        public static User TokenGetUser(string sToken, IUserManager UserManager)
+        public User TokenGetUser(string sToken)
         {
             try
             {
@@ -72,22 +85,20 @@ namespace Puss.Api.Filters
         /// <summary>
         /// 废除token
         /// </summary>
-        /// <param name="accessor">accessor</param>
-        /// <param name="RedisService">Redis类接口</param>
         /// <returns></returns>
-        public static bool RemoveToken(IHttpContextAccessor accessor, IRedisService RedisService, IUserManager UserManager)
+        public bool RemoveToken()
         {
             try
             {
                 string sToken = null;
-                if (accessor != null && accessor.HttpContext.Request.Headers.ContainsKey("Authorization"))
+                if (Accessor != null && Accessor.HttpContext.Request.Headers.ContainsKey("Authorization"))
                 {
-                    sToken = accessor.HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("Bearer", "");
+                    sToken = Accessor.HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "").Replace("Bearer", "");
                 }
                 if (string.IsNullOrWhiteSpace(sToken)) return false;
                 // 将字符串Token解码成Token对象;
-                User user = TokenGetUser(sToken, UserManager);
-                UserGetToken(user,RedisService);
+                User user = TokenGetUser(sToken);
+                UserGetToken(user);
                 return true;
             }
             catch

@@ -19,16 +19,17 @@ namespace Puss.Api.Filters
     public class RequestAuthorizeAttribute : Attribute, IAsyncAuthorizationFilter
     {
         private readonly IRedisService RedisService;
-        private readonly IUserManager UserManager;
+        private readonly ITokenService TokenService;
 
         /// <summary>
         /// 自定义验证
         /// </summary>
         /// <param name="RedisService"></param>
-        public RequestAuthorizeAttribute(IRedisService RedisService, IUserManager UserManager) 
+        /// <param name="TokenService"></param>
+        public RequestAuthorizeAttribute(IRedisService RedisService, ITokenService TokenService) 
         {
             this.RedisService = RedisService;
-            this.UserManager = UserManager;
+            this.TokenService = TokenService;
         }
 
         /// <summary>
@@ -63,7 +64,7 @@ namespace Puss.Api.Filters
                 });
                 return;
             }
-            User user = Token.TokenGetUser(sToken, UserManager);
+            User user = TokenService.TokenGetUser(sToken);
             if (user == null)
             {
                 context.Result = new ObjectResult(new ReturnResult()

@@ -31,6 +31,7 @@ namespace Puss.Api.Manager
         private readonly DbContext DbContext;
         private readonly IRabbitMQPushService RabbitMQPushService;
         private readonly IUserDetailsManager UserDetailsManager;
+        private readonly ITokenService TokenService;
 
         /// <summary>
         /// 登录
@@ -44,6 +45,7 @@ namespace Puss.Api.Manager
         /// <param name="DbContext"></param>
         /// <param name="RabbitMQPushService"></param>
         /// <param name="UserDetailsManager"></param>
+        /// <param name="TokenService"></param>
         public LoginManager(IHttpContextAccessor Accessor, 
             IRedisService RedisService, 
             IUserManager UserManager,
@@ -52,7 +54,8 @@ namespace Puss.Api.Manager
             ICms_SysconfigManager Cms_SysconfigManager,
             DbContext DbContext,
             IRabbitMQPushService RabbitMQPushService,
-            IUserDetailsManager UserDetailsManager) 
+            IUserDetailsManager UserDetailsManager,
+            ITokenService TokenService) 
         {
             this.Accessor = Accessor;
             this.RedisService = RedisService;
@@ -63,6 +66,7 @@ namespace Puss.Api.Manager
             this.DbContext = DbContext;
             this.RabbitMQPushService = RabbitMQPushService;
             this.UserDetailsManager = UserDetailsManager;
+            this.TokenService = TokenService;
         }
 
         /// <summary>
@@ -75,7 +79,7 @@ namespace Puss.Api.Manager
             request.PassWord = MD5.Md5(request.PassWord);
             User account = await UserManager.GetSingleAsync(a => (a.UserName == request.UserName.Trim() || a.Phone == request.UserName.Trim() || a.Email == request.UserName.Trim()) && a.PassWord == request.PassWord);
             if (account == null) throw new AppException("账号密码错误");
-            return Token.UserGetToken(account, RedisService);
+            return TokenService.UserGetToken(account);
         }
 
         /// <summary>
@@ -84,7 +88,7 @@ namespace Puss.Api.Manager
         /// <returns></returns>
         public async Task<bool> LoginOut()
         {
-            return await Task.Run(() => { return Token.RemoveToken(Accessor, RedisService, UserManager); });
+            return await Task.Run(() => { return TokenService.RemoveToken(); });
         }
 
         /// <summary>
@@ -217,7 +221,7 @@ namespace Puss.Api.Manager
         /// <returns></returns>
         public async Task<bool> IsToken(string sToken)
         {
-            User user = Token.TokenGetUser(sToken, UserManager);
+            User user = TokenService.TokenGetUser(sToken);
             if (user == null) return false;
             string sRedisToken = await RedisService.GetAsync<string>(CommentConfig.UserToken + user.ID, () => null);
             if (string.IsNullOrWhiteSpace(sRedisToken)) return false;
