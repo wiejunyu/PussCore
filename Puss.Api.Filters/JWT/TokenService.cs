@@ -15,7 +15,7 @@ namespace Puss.Api.Filters
     /// <summary>
     /// Token
     /// </summary>
-    public class TokenService
+    public class TokenService : ITokenService
     {
         private readonly IRedisService RedisService;
         private readonly IUserManager UserManager;

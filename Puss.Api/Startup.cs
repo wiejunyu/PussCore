@@ -22,7 +22,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Puss.Api.Aop;
 using Puss.Api.Filters;
 using Puss.Api.Job;
 using Puss.BusinessCore;
