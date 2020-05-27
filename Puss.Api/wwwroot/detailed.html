@@ -160,7 +160,7 @@
                     else {
                         layui.use('layer', function () {
                             var layer = layui.layer;
-                            layer.msg(data.message, { icon: 2 });
+                            layer.open({ content: data.message, icon: 2, yes: null });
                         });
                         $("#loading").hide();
                     }
@@ -189,13 +189,13 @@
                     if (data.status == 200) {
                         layui.use('layer', function () {
                             var layer = layui.layer;
-                            layer.msg("编辑成功", { icon: 1 });
+                            layer.open({ content: "编辑成功", icon: 1, yes: null });
                         });
                     }
                     else {
                         layui.use('layer', function () {
                             var layer = layui.layer;
-                            layer.msg(data.message, { icon: 2 });
+                            layer.open({ content: data.message, icon: 2, yes: null });
                         });
                     }
                     $("#loading").hide();

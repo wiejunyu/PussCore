@@ -19,7 +19,7 @@ function Login()
             else {
                 layui.use('layer', function () {
                     var layer = layui.layer;
-                    layer.msg(data.message, { icon: 2 }); 
+                    layer.open({ content: data.message, icon: 2, yes: null });
                 });
             }
             $("#loading").hide();
@@ -45,7 +45,7 @@ function CodeKey()
             else {
                 layui.use('layer', function () {
                     var layer = layui.layer;
-                    layer.msg(data.message, { icon: 2 });
+                    layer.open({ content: data.message, icon: 2, yes: null });
                 });
             }
             $("#iCode").hide();

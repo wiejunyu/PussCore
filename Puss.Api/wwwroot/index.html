@@ -135,14 +135,14 @@
                                 if (data.status == 200) {
                                     layui.use('layer', function () {
                                         var layer = layui.layer;
-                                        layer.msg("删除成功", { icon: 1 });
+                                        layer.open({ content: "删除成功", icon: 1, yes: null });
                                         getlist();
                                     });
                                 }
                                 else {
                                     layui.use('layer', function () {
                                         var layer = layui.layer;
-                                        layer.msg(data.message, { icon: 2 });
+                                        layer.open({ content: data.message, icon: 2, yes: null });
                                     });
                                 }
                             }
