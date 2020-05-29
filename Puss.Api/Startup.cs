@@ -42,8 +42,17 @@ namespace Puss.Api
         /// <param name="env"></param>
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            Configuration = configuration;
             #region 配置文件
+            //修改配置文件路径
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("config/appsettings.json", optional: true, reloadOnChange: true)
+                //.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)//增加环境配置文件，新建项目默认有
+                .AddEnvironmentVariables();
+            configuration = builder.Build();
+            this.Configuration = builder.Build();
+            //保存配置文件
+            Configuration = configuration;
             GlobalsConfig.SetBaseConfig(Configuration, env.ContentRootPath, env.WebRootPath);
             #endregion
         }
@@ -204,6 +213,8 @@ namespace Puss.Api
                 options.Filters.Add<HttpGlobalExceptionFilter>();
                 //身份验证
                 options.Filters.Add<RequestAuthorizeAttribute>();
+                //记录结果日志中间件
+                options.Filters.Add<WebApiResultMiddleware>();
 
             }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
@@ -211,11 +222,10 @@ namespace Puss.Api
             services.AddCors(options => options.AddPolicy("CorsPolicy",
             builder =>
             {
+                //AllowAnyOrigin:允许任何来源
+                //AllowAnyMethod:允许跨域策略允许所有的方法,如Get、Post
+                //AllowAnyHeader:允许任何的Header头部标题 有关头部标题如果不设置就不会进行限制
                 builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-                //.SetIsOriginAllowed(_ => true)
-                //.AllowAnyOrigin()
-                //.AllowAnyHeader()
-                //.AllowCredentials();
             }));
             #endregion
 
@@ -262,7 +272,7 @@ namespace Puss.Api
             app.UseRouting();
 
             #region Log4Net
-            loggerFactory.AddLog4Net();
+            loggerFactory.AddLog4Net("config/Log4Net.config");
             #endregion
 
             #region JWT身份验证，必须在UseAuthorization之前，否者会返回401

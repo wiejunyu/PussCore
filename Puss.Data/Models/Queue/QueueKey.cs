@@ -36,6 +36,14 @@ namespace Puss.Data.Models
         }
 
         /// <summary>
+        /// 请求结果日志收集
+        /// </summary>
+        public static string LogResult
+        {
+            get { return "LogResult"; }
+        }
+
+        /// <summary>
         /// 定时计划日志收集
         /// </summary>
         public static string LogJob

@@ -7,6 +7,7 @@ using Puss.Log;
 using Puss.RabbitMQ;
 using Newtonsoft.Json;
 using Hangfire;
+using Microsoft.Extensions.Logging;
 
 namespace Puss.Api.Filters
 {
@@ -16,7 +17,7 @@ namespace Puss.Api.Filters
     public class HttpGlobalExceptionFilter : ExceptionFilterAttribute
     {
         private readonly ILogService LogService;
-        private readonly IRabbitMQPushService RabbitMQPushService;
+        private readonly ILogger<HttpGlobalExceptionFilter> Logger;
         private readonly IHttpContextAccessor Accessor;
 
         /// <summary>
@@ -25,10 +26,10 @@ namespace Puss.Api.Filters
         /// <param name="LogService">日志接口</param>
         /// <param name="RabbitMQPushService">MQ接口</param>
         /// <param name="Accessor"></param>
-        public HttpGlobalExceptionFilter(ILogService LogService, IRabbitMQPushService RabbitMQPushService, IHttpContextAccessor Accessor)
+        public HttpGlobalExceptionFilter(ILogService LogService, ILogger<HttpGlobalExceptionFilter> Logger, IHttpContextAccessor Accessor)
         {
             this.LogService = LogService;
-            this.RabbitMQPushService = RabbitMQPushService;
+            this.Logger = Logger;
             this.Accessor = Accessor;
         }
 
@@ -62,7 +63,8 @@ namespace Puss.Api.Filters
 
                 
                 //日志收集
-                LogService.LogCollectPush(QueueKey.LogError, context.Exception, Accessor.HttpContext.Request.Path.ToString(), Accessor.HttpContext.Request.Headers["Authorization"].ToString(), RabbitMQPushService);
+
+                LogService.LogCollectPush(context.Exception, Accessor.HttpContext.Request.Path.ToString(), Accessor.HttpContext.Request.Headers["Authorization"].ToString(), LogService.GetLoggerRepository());
             }
         }
     }
