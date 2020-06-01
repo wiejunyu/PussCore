@@ -57,7 +57,7 @@ namespace Puss.Api.Filters
             catch
             {
             }
-            LogService.LogCollectPush(context.HttpContext.Request.Path,JsonConvert.SerializeObject(Headers),ActionArguments ,resultStr , LogService.GetLoggerRepository());
+            LogService.LogCollectPush(QueueKey.LogResult, context.HttpContext.Request.Path,JsonConvert.SerializeObject(Headers),ActionArguments ,resultStr , LogService.GetLoggerRepository());
         }
     }
 }

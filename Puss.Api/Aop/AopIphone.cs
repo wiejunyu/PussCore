@@ -1,9 +1,8 @@
 ﻿using AspectInjector.Broker;
 using System;
 using Newtonsoft.Json;
-using Puss.Data.Models;
-using Puss.RabbitMQ;
 using Puss.Data.Config;
+using Puss.Log;
 
 namespace Puss.Api.Aop
 {
@@ -23,10 +22,10 @@ namespace Puss.Api.Aop
         [Argument(Source.Arguments)] object[] arguments)
         {
             #region 注入
-            IRabbitMQPushService RabbitMQPushService = AutofacUtil.GetScopeService<IRabbitMQPushService>();
+            ILogService LogService = AutofacUtil.GetScopeService<ILogService>();
             #endregion
 
-            RabbitMQPushService.PushMessage(QueueKey.GetGuidBody, JsonConvert.SerializeObject(arguments));
+            LogService.LogCollectPushApple("LogIphone", JsonConvert.SerializeObject(arguments),LogService.GetLoggerRepository());
         }
     }
 }

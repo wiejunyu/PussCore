@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using log4net.Repository;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Puss.Data.Models;
 using Puss.Log;
@@ -19,7 +20,6 @@ namespace Puss.Api.Job
         private readonly TimeSpan _dueTime;
         private readonly TimeSpan _periodTime;
         private readonly IJobExecutor _jobExcutor;
-        private readonly IRabbitMQPushService RabbitMQPushService;
         private readonly ILogService LogService;
 
         /// <summary>
@@ -28,18 +28,15 @@ namespace Puss.Api.Job
         /// <param name="dueTime">到期执行时间</param>
         /// <param name="periodTime">间隔时间</param>
         /// <param name="jobExcutor">任务执行者</param>
-        /// <param name="RabbitMQPushService">MQ类接口</param>
         /// <param name="LogService">日志类接口</param>
         protected BaseJobTrigger(TimeSpan dueTime,
              TimeSpan periodTime,
              IJobExecutor jobExcutor,
-             IRabbitMQPushService RabbitMQPushService,
              ILogService LogService)
         {
             _dueTime = dueTime;
             _periodTime = periodTime;
             _jobExcutor = jobExcutor;
-            this.RabbitMQPushService = RabbitMQPushService;
             this.LogService = LogService;
         }
 
@@ -119,7 +116,7 @@ namespace Puss.Api.Job
         {
             #region 日志记录
             //日志收集
-            LogService.LogCollectPush(QueueKey.LogJob, ex, Name, RabbitMQPushService);
+            LogService.LogCollectPush(QueueKey.LogJob, ex, Name, LogService.GetLoggerRepository());
             #endregion
         }
     }

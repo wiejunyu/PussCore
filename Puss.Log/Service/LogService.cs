@@ -110,12 +110,14 @@ namespace Puss.Log
         /// <summary>
         /// 日志收集（报错）
         /// </summary>
+        /// <param name="QueueKey">队列名称</param>
         /// <param name="Ex">错误信息</param>
         /// <param name="Url">路径</param>
         /// <param name="Token">Token</param>
         /// <param name="Logger">MQ类接口</param>
-        public void LogCollectPush(Exception Ex, string Url, string Token, ILoggerRepository Logger)
+        public void LogCollectPush(string QueueKey, Exception Ex, string Url, string Token, ILoggerRepository Logger)
         {
+            XmlConfigurator.ConfigureAndWatch(Logger, new FileInfo($"config/{QueueKey}.config"));
             JsonSerializerSettings settings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
             var LogErrorDetails = new LogErrorDetails()
             {
@@ -130,13 +132,15 @@ namespace Puss.Log
         /// <summary>
         /// 日志收集（定时计划报错）
         /// </summary>
+        /// <param name="QueueKey">队列名称</param>
         /// <param name="Ex">错误信息</param>
         /// <param name="sDetails">详细信息</param>
         /// <param name="Logger">MQ类接口</param>
-        public void LogCollectPush(Exception Ex, string sDetails, ILoggerRepository Logger)
+        public void LogCollectPush(string QueueKey, Exception Ex, string sDetails, ILoggerRepository Logger)
         {
+            XmlConfigurator.ConfigureAndWatch(Logger, new FileInfo($"config/{QueueKey}.config"));
             JsonSerializerSettings settings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
-            LogManager.GetLogger(Logger.Name, "Job").Debug(JsonConvert.SerializeObject(new LogJobDetails()
+            LogManager.GetLogger(Logger.Name, QueueKey).Debug(JsonConvert.SerializeObject(new LogJobDetails()
             {
                 CreateTime = DateTime.Now,
                 Name = sDetails,
@@ -147,12 +151,14 @@ namespace Puss.Log
         /// <summary>
         /// 日志收集（计时）
         /// </summary>
+        /// <param name="QueueKey">队列名称</param>
         /// <param name="sUrl">Url</param>
         /// <param name="sIP">IP</param>
         /// <param name="sMessage">消息</param>
         /// <param name="Logger">MQ类接口</param>
-        public void LogCollectPush(string sUrl, string sIP, string sMessage, ILoggerRepository Logger)
+        public void LogCollectPush(string QueueKey, string sUrl, string sIP, string sMessage, ILoggerRepository Logger)
         {
+            XmlConfigurator.ConfigureAndWatch(Logger, new FileInfo($"config/{QueueKey}.config"));
             LogManager.GetLogger(Logger.Name, sUrl).Info(JsonConvert.SerializeObject(new
             {
                 CreateTime = DateTime.Now,
@@ -165,13 +171,15 @@ namespace Puss.Log
         /// <summary>
         /// 日志收集（返回结果记录）
         /// </summary>
+        /// <param name="QueueKey">队列名称</param>
         /// <param name="sUrl">Url</param>
         /// <param name="sHeaders">头</param>
         /// <param name="sActionArguments">参数</param>
         /// <param name="sResult">结果</param>
         /// <param name="Logger">MQ类接口</param>
-        public void LogCollectPush(string sUrl, string sHeaders, string sActionArguments, string sResult, ILoggerRepository Logger)
+        public void LogCollectPush(string QueueKey, string sUrl, string sHeaders, string sActionArguments, string sResult, ILoggerRepository Logger)
         {
+            XmlConfigurator.ConfigureAndWatch(Logger, new FileInfo($"config/{QueueKey}.config"));
             LogManager.GetLogger(Logger.Name, sUrl).Info(JsonConvert.SerializeObject(new
             {
                 CreateTime = DateTime.Now,
@@ -179,6 +187,22 @@ namespace Puss.Log
                 Headers = sHeaders,
                 ActionArguments = sActionArguments,
                 Result = sResult,
+            }));
+        }
+
+        /// <summary>
+        /// 日志收集（Apple切面）
+        /// </summary>
+        /// <param name="QueueKey">队列名称</param>
+        /// <param name="sActionArguments">参数</param>
+        /// <param name="Logger">MQ类接口</param>
+        public void LogCollectPushApple(string QueueKey, string sActionArguments,ILoggerRepository Logger)
+        {
+            XmlConfigurator.ConfigureAndWatch(Logger, new FileInfo($"config/{QueueKey}.config"));
+            LogManager.GetLogger(Logger.Name, QueueKey).Info(JsonConvert.SerializeObject(new
+            {
+                CreateTime = DateTime.Now,
+                ActionArguments = sActionArguments,
             }));
         }
         #endregion

@@ -70,13 +70,41 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [AllowAnonymous]
         [Route("api/MDM/GetProfile")]
         public FileResult GetProfile()
         {
             var stream = System.IO.File.OpenRead(Path.Combine(Directory.GetCurrentDirectory(), "1.mobileconfig"));
             FileStreamResult result = File(stream, "application/x-apple-aspen-config", "1.mobileconfig");
             return result;
+        }
+
+        /// <summary>
+        /// 写入配置文件
+        /// </summary>
+        /// <param name="file">文件</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("api/MDM/SetProfile")]
+        public async Task<ReturnResult> SetProfile(IFormFile file)
+        {
+            return await Task.Run(() => {
+                StreamReader reader = new StreamReader(file.OpenReadStream());
+                string content = reader.ReadToEnd();
+                string name = file.FileName;
+                string filename = Path.Combine(GlobalsConfig.ContentRootPath,name);
+                if (System.IO.File.Exists(filename))
+                {
+                    System.IO.File.Delete(filename);
+                }
+                using (FileStream fs = System.IO.File.Create(filename))
+                {
+                    // 复制文件
+                    file.CopyTo(fs);
+                    // 清空缓冲区数据
+                    fs.Flush();
+                }
+                return new ReturnResult(ReturnResultStatus.Succeed);
+            });
         }
 
         /// <summary>
@@ -214,37 +242,8 @@ namespace Puss.Api.Controllers
         [HttpPut]
         [AopIphone]
         [Route("api/MDM/CheckIn")]
-        public object CheckIn()
+        public object CheckIn(string deviceId = null)
         {
-            //string str = $"本次推送了:{deviceId ?? "没有推送"},IP:{_accessor.HttpContext.Connection.RemoteIpAddress}";
-            //RabbitMQPushService.PushMessage(QueueKey.GetGuid, str);
-            var syncIOFeature = HttpContext.Features.Get<IHttpBodyControlFeature>();
-            if (syncIOFeature != null)
-            {
-                syncIOFeature.AllowSynchronousIO = true;
-            }
-
-            #region 流获取参数
-            using var ms = new MemoryStream();
-            string sXml = null;
-            try
-            {
-                Request.Body.CopyTo(ms);
-                var b = ms.ToArray();
-                var postParamsString = Encoding.UTF8.GetString(b);
-                byte[] array = Encoding.ASCII.GetBytes(postParamsString);
-                MemoryStream stream = new MemoryStream(array);             //convert stream 2 string      
-                StreamReader reader = new StreamReader(stream);
-                sXml = JsonConvert.SerializeObject(PListNet.PList.Load(reader.BaseStream));
-                sXml = $"本次推送了:{sXml ?? "没有推送"},IP:{Accessor.HttpContext.Connection.RemoteIpAddress}";
-            }
-            catch (Exception ex)
-            {
-                sXml = ex.Message;
-            }
-            RabbitMQPushService.PushMessage(QueueKey.GetGuid, sXml);
-            #endregion
-
             #region 返回XML
             object objXml = new object();
             try
@@ -277,27 +276,27 @@ namespace Puss.Api.Controllers
             #endregion
         }
 
-        /// <summary>
-        /// CheckIn字符串
-        /// </summary>
-        /// <param name="deviceId">唯一ID</param>
-        /// <returns></returns>
-        [HttpPut]
-        [AopIphone]
-        [Route("api/MDM/CheckInOfString")]
-        public async Task<ReturnResult> CheckInOfString(string deviceId = null)
-        {
-            string str;
-            try
-            {
-                str = $"本次推送了:{deviceId ?? "没有推送"},IP:{Accessor.HttpContext.Connection.RemoteIpAddress}";
-            }
-            catch (Exception ex)
-            {
-                str = ex.Message;
-            }
-            await RabbitMQPushService.PushMessage(QueueKey.GetGuid, str);
-            return new ReturnResult(ReturnResultStatus.Succeed);
-        }
+        ///// <summary>
+        ///// CheckIn字符串
+        ///// </summary>
+        ///// <param name="deviceId">唯一ID</param>
+        ///// <returns></returns>
+        //[HttpPut]
+        //[AopIphone]
+        //[Route("api/MDM/CheckInOfString")]
+        //public async Task<ReturnResult> CheckInOfString(string deviceId = null)
+        //{
+        //    string str;
+        //    try
+        //    {
+        //        str = $"本次推送了:{deviceId ?? "没有推送"},IP:{Accessor.HttpContext.Connection.RemoteIpAddress}";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        str = ex.Message;
+        //    }
+        //    await RabbitMQPushService.PushMessage(QueueKey.GetGuid, str);
+        //    return new ReturnResult(ReturnResultStatus.Succeed);
+        //}
     }
 }

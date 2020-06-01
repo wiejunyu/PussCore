@@ -1,4 +1,5 @@
-﻿using Puss.Log;
+﻿using log4net.Repository;
+using Puss.Log;
 using Puss.RabbitMQ;
 using Puss.Redis;
 using Puss.Reptile;
@@ -15,14 +16,12 @@ namespace Puss.Api.Job
         /// 获取价格定时计划
         /// </summary>
         /// <param name="LogService">日志类接口</param>
-        /// <param name="RabbitMQPushService">MQ类接口</param>
         /// <param name="RedisService">Redis类接口</param>
         /// <param name="ReptileService">Reptile类接口</param>
-        public PriceJobTrigger(ILogService LogService, IRabbitMQPushService RabbitMQPushService, IRedisService RedisService, IReptileService ReptileService) :
+        public PriceJobTrigger(ILogService LogService, IRedisService RedisService, IReptileService ReptileService) :
             base(TimeSpan.Zero,
                 TimeSpan.FromMinutes(1),
                 new PriceJobExcutor(ReptileService,RedisService),
-                RabbitMQPushService,
                 LogService)
         {
         }
