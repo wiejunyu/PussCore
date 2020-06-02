@@ -73,7 +73,7 @@ namespace Puss.Api.Controllers
         [Route("api/MDM/GetProfile")]
         public FileResult GetProfile()
         {
-            var stream = System.IO.File.OpenRead(Path.Combine(Directory.GetCurrentDirectory(), "1.mobileconfig"));
+            var stream = System.IO.File.OpenRead(Path.Combine(GlobalsConfig.WebRootPath, "1.mobileconfig"));
             FileStreamResult result = File(stream, "application/x-apple-aspen-config", "1.mobileconfig");
             return result;
         }
@@ -91,7 +91,8 @@ namespace Puss.Api.Controllers
                 StreamReader reader = new StreamReader(file.OpenReadStream());
                 string content = reader.ReadToEnd();
                 string name = file.FileName;
-                string filename = Path.Combine(GlobalsConfig.ContentRootPath,name);
+                //写入配置文件
+                string filename = Path.Combine(GlobalsConfig.WebRootPath, name);
                 if (System.IO.File.Exists(filename))
                 {
                     System.IO.File.Delete(filename);
