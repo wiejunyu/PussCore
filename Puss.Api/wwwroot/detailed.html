@@ -131,7 +131,7 @@
                         layui.use('laytpl', function () {
                             $.ajax({
                                 type: "GET",
-                                url: GetAjaxUrl() + "/api/Key/GetKeySectionList",
+                                url: GetAjaxUrl() + "/api/Key/GetKeySectionList?iPageIndex=1&iPageSize=1000000",
                                 contentType: 'application/json;charset=utf-8',
                                 headers: {
                                     Authorization: 'Bearer ' + GetToken(),
