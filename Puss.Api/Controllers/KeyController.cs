@@ -56,17 +56,16 @@ namespace Puss.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ReturnResult> GetKeySectionList(int? iPageIndex)
+        public async Task<ReturnResult> GetKeySectionList(int? iPageIndex, int? iPageSize)
         {
             int iUID = LoginManager.GetUserID();
-            int iPageSize = 10;//每页多少条数据
             int iPageCount = await DbContext.Db.Queryable<KeySection>().Where(x => x.CreateUserID == iUID).CountAsync();
-            List<KeySection> list = await KeySectionManager.GetPageListAsync(x => x.CreateUserID == iUID,new SqlSugar.PageModel { PageIndex = iPageIndex ?? 1, PageSize = iPageSize, PageCount = iPageCount });
+            List<KeySection> list = await KeySectionManager.GetPageListAsync(x => x.CreateUserID == iUID,new SqlSugar.PageModel { PageIndex = iPageIndex ?? 1, PageSize = iPageSize ?? 10, PageCount = iPageCount });
             return new ReturnResult<object>(ReturnResultStatus.Succeed,
             new
             {
                 list,
-                pages = (int)System.Math.Ceiling((double)iPageCount / (double)iPageSize),
+                pages = (int)System.Math.Ceiling((double)iPageCount / (double)(iPageSize ?? 10)),
                 count = iPageCount,
             });
         }
@@ -156,20 +155,22 @@ namespace Puss.Api.Controllers
         /// <summary>
         /// 获取用户密匙列表
         /// </summary>
+        /// <param name="ID">密匙栏目ID</param>
+        /// <param name="iPageIndex">第几页</param>
+        /// <param name="iPageSize">每页几条数据</param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ReturnResult> GetKeyList(int ID,int? iPageIndex)
+        public async Task<ReturnResult> GetKeyList(int ID,int? iPageIndex, int? iPageSize)
         {
             if (ID <= 0) throw new AppException("栏目不能为空");
             int iUID = LoginManager.GetUserID();
-            int iPageSize = 10;//每页多少条数据
             int iPageCount = await DbContext.Db.Queryable<KeyContent>().Where(x => x.CreateUserID == iUID && x.SectionID == ID).CountAsync();
-            List<KeyContent> list = await KeyContentManager.GetPageListAsync(x => x.CreateUserID == iUID && x.SectionID == ID, new SqlSugar.PageModel { PageIndex = iPageIndex ?? 1, PageSize = iPageSize, PageCount = iPageCount });
+            List<KeyContent> list = await KeyContentManager.GetPageListAsync(x => x.CreateUserID == iUID && x.SectionID == ID, new SqlSugar.PageModel { PageIndex = iPageIndex ?? 1, PageSize = iPageSize ?? 10, PageCount = iPageCount });
             return new ReturnResult<object>(ReturnResultStatus.Succeed,
             new
             {
                 list,
-                pages = (int)System.Math.Ceiling((double)iPageCount / (double)iPageSize),
+                pages = (int)System.Math.Ceiling((double)iPageCount / (double)(iPageSize ?? 10)),
                 count = iPageCount,
             });
         }

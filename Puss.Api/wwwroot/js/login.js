@@ -84,6 +84,7 @@ function IsLogin() {
         $.ajax({
             type: "POST",
             url: GetAjaxUrl() + "/api/User/IsToken?sToken=" + GetToken(),
+            timeout: 600000, //超时时间设置，单位毫秒
             contentType: 'application/json;charset=utf-8',
             headers: {
                 Accept: "text/plain"
