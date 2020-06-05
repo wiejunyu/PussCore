@@ -1,4 +1,4 @@
 function GetAjaxUrl()
 {
-    return "https://118.89.182.215";
+    return "http://118.89.182.215:85";
 }
