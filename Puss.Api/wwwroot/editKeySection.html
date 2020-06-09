@@ -57,7 +57,7 @@
             //流加载数据
             $.ajax({
                 type: "GET",
-                url: GetAjaxUrl() + "/api/Key/GetKeyKeySectionDetailed?id=" + getUrlParam("id"),
+                url: GetAjaxUrl() + "api/Key/GetKeyKeySectionDetailed?id=" + getUrlParam("id"),
                 contentType: 'application/json;charset=utf-8',
                 headers: {
                     Authorization: 'Bearer ' + GetToken(),
@@ -83,7 +83,7 @@
             var post_data = $("#from").serializeJSON();//表单序列化
             $.ajax({
                 type: "POST",
-                url: GetAjaxUrl() + "/api/Key/EditKeySection",
+                url: GetAjaxUrl() + "api/Key/EditKeySection",
                 contentType: 'application/json;charset=utf-8',
                 headers: {
                     Authorization: 'Bearer ' + GetToken(),

@@ -80,7 +80,7 @@
                     , done: function (page, next) { //到达临界点（默认滚动触发），触发下一页
                         var lis = [];
                         $.ajax({
-                            url: GetAjaxUrl() + "/api/Key/GetKeyList",
+                            url: GetAjaxUrl() + "api/Key/GetKeyList",
                             data: { id: getUrlParam("id"), iPageIndex: page },
                             dataType: 'json',
                             type: "GET",
@@ -124,7 +124,7 @@
                 },
                     function (index, layero) {
                         $.ajax({
-                            url: GetAjaxUrl() + "/api/Key/DeleteKey?id=" + id,
+                            url: GetAjaxUrl() + "api/Key/DeleteKey?id=" + id,
                             type: "POST",
                             contentType: 'application/json;charset=utf-8',
                             headers: {

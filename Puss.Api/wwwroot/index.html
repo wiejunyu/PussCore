@@ -76,7 +76,7 @@
                     , done: function (page, next) { //到达临界点（默认滚动触发），触发下一页
                         var lis = [];
                         $.ajax({
-                            url: GetAjaxUrl() + "/api/Key/GetKeySectionList",
+                            url: GetAjaxUrl() + "api/Key/GetKeySectionList",
                             data: { iPageIndex: page },
                             dataType: 'json',
                             type: "GET",
@@ -121,7 +121,7 @@
                 },
                     function (index, layero) {
                         $.ajax({
-                            url: GetAjaxUrl() + "/api/Key/DeleteKeySection?id=" + id,
+                            url: GetAjaxUrl() + "api/Key/DeleteKeySection?id=" + id,
                             type: "POST",
                             contentType: 'application/json;charset=utf-8',
                             headers: {

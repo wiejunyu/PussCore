@@ -29,7 +29,6 @@ namespace Puss.Api.Manager
         private readonly ICodeManager CodeManager;
         private readonly ICms_SysconfigManager Cms_SysconfigManager;
         private readonly DbContext DbContext;
-        private readonly IRabbitMQPushService RabbitMQPushService;
         private readonly IUserDetailsManager UserDetailsManager;
         private readonly ITokenService TokenService;
 
@@ -43,7 +42,6 @@ namespace Puss.Api.Manager
         /// <param name="CodeManager"></param>
         /// <param name="Cms_SysconfigManager"></param>
         /// <param name="DbContext"></param>
-        /// <param name="RabbitMQPushService"></param>
         /// <param name="UserDetailsManager"></param>
         /// <param name="TokenService"></param>
         public LoginManager(IHttpContextAccessor Accessor, 
@@ -53,7 +51,6 @@ namespace Puss.Api.Manager
             ICodeManager CodeManager,
             ICms_SysconfigManager Cms_SysconfigManager,
             DbContext DbContext,
-            IRabbitMQPushService RabbitMQPushService,
             IUserDetailsManager UserDetailsManager,
             ITokenService TokenService) 
         {
@@ -64,7 +61,6 @@ namespace Puss.Api.Manager
             this.CodeManager = CodeManager;
             this.Cms_SysconfigManager = Cms_SysconfigManager;
             this.DbContext = DbContext;
-            this.RabbitMQPushService = RabbitMQPushService;
             this.UserDetailsManager = UserDetailsManager;
             this.TokenService = TokenService;
         }
@@ -210,7 +206,9 @@ namespace Puss.Api.Manager
                 UserManager.Insert(user);
                 UserDetailsManager.Insert(new UserDetails() { UID = user.ID });
             });
-            await RabbitMQPushService.PushMessage(QueueKey.SendRegisterMessageIsEmail, request.Email);
+            //发送邮件
+            Cms_Sysconfig sys = await Cms_SysconfigManager.GetSingleAsync(x => x.Id == 1);
+            EmailService.MailSending(request.Email, "欢迎您注册宇宙物流", $"欢迎您注册宇宙物流", sys.Mail_From, sys.Mail_Code, sys.Mail_Host);
             return true;
         }
 

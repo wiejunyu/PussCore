@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using App.Metrics;
 using AspNetCoreRateLimit;
 using Autofac;
@@ -339,6 +340,14 @@ namespace Puss.Api
             {
                 endpoints.MapControllers();
             });
+
+            #region IIS启动进入swagger页面
+            app.Run(x =>
+            {
+                x.Response.Redirect("/swagger/"); //可以支持虚拟路径或者index.html这类起始页.
+                return Task.FromResult(0);
+            });
+            #endregion
         }
 
         /// <summary>
@@ -352,7 +361,7 @@ namespace Puss.Api
             builder.RegisterTypes(Assembly.Load("Puss.Application").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
             builder.RegisterTypes(Assembly.Load("Puss.Email").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
             builder.RegisterTypes(Assembly.Load("Puss.QrCode").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
-            builder.RegisterTypes(Assembly.Load("Puss.RabbitMQ").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
+            //builder.RegisterTypes(Assembly.Load("Puss.RabbitMQ").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
             builder.RegisterTypes(Assembly.Load("Puss.Redis").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
             builder.RegisterTypes(Assembly.Load("Puss.Reptile").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();
             builder.RegisterTypes(Assembly.Load("Puss.Log").GetTypes()).AsImplementedInterfaces().PropertiesAutowired();

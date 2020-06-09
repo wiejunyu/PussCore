@@ -4,7 +4,7 @@ function Login()
     $("#loading").show();
     $.ajax({
         type: "POST",
-        url: GetAjaxUrl() + "/api/User/Login",
+        url: GetAjaxUrl() + "api/User/Login",
         contentType: 'application/json;charset=utf-8',
         data: JSON.stringify($("#from").serializeJSON()),
         headers: {
@@ -37,7 +37,7 @@ function CodeKey()
     $("#imgCode").hide();
     $.ajax({
         type: "POST",
-        url: GetAjaxUrl() + "/api/User/ShowValidateCodeBase64?CodeKey=" + Guid,
+        url: GetAjaxUrl() + "api/User/ShowValidateCodeBase64?CodeKey=" + Guid,
         success: function (data) {
             if (data.status == 200) {
                 $("#imgCode").attr("src", data.message);
@@ -59,7 +59,7 @@ function OutLogin()
     $("#loading").show();
 	$.ajax({
 		type: "POST",
-        url: GetAjaxUrl() + "/api/User/LoginOut",
+        url: GetAjaxUrl() + "api/User/LoginOut",
 		contentType: 'application/json;charset=utf-8',
 		headers: {
 			Authorization: 'Bearer ' + GetToken(),
@@ -83,7 +83,7 @@ function IsLogin() {
     else {
         $.ajax({
             type: "POST",
-            url: GetAjaxUrl() + "/api/User/IsToken?sToken=" + GetToken(),
+            url: GetAjaxUrl() + "api/User/IsToken?sToken=" + GetToken(),
             timeout: 600000, //超时时间设置，单位毫秒
             contentType: 'application/json;charset=utf-8',
             headers: {
