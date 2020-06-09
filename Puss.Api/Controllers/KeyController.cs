@@ -59,15 +59,30 @@ namespace Puss.Api.Controllers
         public async Task<ReturnResult> GetKeySectionList(int? iPageIndex, int? iPageSize)
         {
             int iUID = LoginManager.GetUserID();
-            int iPageCount = await DbContext.Db.Queryable<KeySection>().Where(x => x.CreateUserID == iUID).CountAsync();
-            List<KeySection> list = await KeySectionManager.GetPageListAsync(x => x.CreateUserID == iUID,new SqlSugar.PageModel { PageIndex = iPageIndex ?? 1, PageSize = iPageSize ?? 10, PageCount = iPageCount });
-            return new ReturnResult<object>(ReturnResultStatus.Succeed,
-            new
-            {
-                list,
-                pages = (int)System.Math.Ceiling((double)iPageCount / (double)(iPageSize ?? 10)),
-                count = iPageCount,
-            });
+            List<KeySection> list = await KeySectionManager.GetListAsync(x => x.CreateUserID == iUID);
+            int iPageCount = list.Where(x => x.CreateUserID == iUID && x.Level == 0).Count();
+            List<KeySection> lFather = list.Where(x => x.CreateUserID == iUID && x.Level == 0).ToList();
+            return new ReturnResult<object>(ReturnResultStatus.Succeed, lFather.Select(x => new {
+                title = x.Name,
+                id = x.ID,
+                href = $"list.html?id={x.ID}",
+                children = list.Where(p => p.PID == x.ID).Select(p => new {
+                    title = p.Name,
+                    id = p.ID,
+                    href = $"list.html?id={p.ID}"
+                })
+            }));
+        }
+
+        /// <summary>
+        /// 获取用户顶级密匙栏目
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<ReturnResult> GetKeySectionListTop()
+        {
+            int iUID = LoginManager.GetUserID();
+            return new ReturnResult<object>(ReturnResultStatus.Succeed, await KeySectionManager.GetListAsync(x => x.CreateUserID == iUID && x.Level == 0));
         }
 
         /// <summary>
@@ -81,9 +96,12 @@ namespace Puss.Api.Controllers
             return await Task.Run(() =>
             {
                 if (string.IsNullOrWhiteSpace(request.Name)) throw new AppException("栏目名称不能为空");
+                if (int.Parse(request.Level) < 0) throw new AppException("栏目等级不能为空");
+                if (int.Parse(request.Level) > 0 && int.Parse(request.PID) < 0) throw new AppException("父ID不能为空");
                 int iUID = LoginManager.GetUserID();
                 var mapper = new MapperConfiguration(x => x.CreateMap<CreateKeySection, KeySection>()).CreateMapper();
                 KeySection keySection = mapper.Map<KeySection>(request);
+                if (keySection.Level == 0) keySection.PID = 0;
                 keySection.CreateUserID = iUID;
                 return ReturnResult.ResultCalculation(() => KeySectionManager.Insert(keySection));
             });
@@ -98,6 +116,8 @@ namespace Puss.Api.Controllers
         public async Task<ReturnResult> EditKeySection([FromBody]EditKeySection request)
         {
             if (int.Parse(request.ID) <= 0) throw new AppException("栏目ID不能为空");
+            if (int.Parse(request.Level) < 0) throw new AppException("栏目等级不能为空");
+            if (int.Parse(request.Level) > 0 && int.Parse(request.PID) < 0) throw new AppException("父ID不能为空");
             if (string.IsNullOrWhiteSpace(request.Name)) throw new AppException("栏目名称不能为空");
             KeySection keySection = await KeySectionManager.GetByIdAsync(int.Parse(request.ID));
             int iUID = LoginManager.GetUserID();
@@ -105,7 +125,30 @@ namespace Puss.Api.Controllers
 
             var mapper = new MapperConfiguration(x => x.CreateMap<EditKeySection, KeySection>()).CreateMapper();
             keySection = mapper.Map<KeySection>(request);
+            if (keySection.Level == 0) keySection.PID = 0;
+            int iCount = await DbContext.Db.Queryable<KeySection>().Where(x => x.PID == keySection.ID).CountAsync();
+            if (keySection.Level == 1 && iCount > 0) 
+            {
+                throw new AppException("还存在子栏目不能移动到其他栏目下"); 
+            }
             keySection.CreateUserID = iUID;
+            return ReturnResult.ResultCalculation(() => KeySectionManager.Update(keySection));
+        }
+
+        /// <summary>
+        /// 编辑密匙栏目名称
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ReturnResult> EditKeySectionByName([FromBody]EditKeySectionByName request)
+        {
+            if (int.Parse(request.ID) <= 0) throw new AppException("栏目ID不能为空");
+            if (string.IsNullOrWhiteSpace(request.Name)) throw new AppException("栏目名称不能为空");
+            KeySection keySection = await KeySectionManager.GetByIdAsync(int.Parse(request.ID));
+            int iUID = LoginManager.GetUserID();
+            if (keySection.CreateUserID != iUID) throw new AppException((int)ReturnResultStatus.Illegal, "0", "非法操作");
+            keySection.Name = request.Name;
             return ReturnResult.ResultCalculation(() => KeySectionManager.Update(keySection));
         }
 
@@ -146,7 +189,9 @@ namespace Puss.Api.Controllers
             {
                 keySection.ID,
                 keySection.Name,
-                keySection.Remarks
+                keySection.Remarks,
+                keySection.Level,
+                keySection.PID,
             }));
         }
         #endregion

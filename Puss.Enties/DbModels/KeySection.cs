@@ -44,5 +44,19 @@ namespace Puss.Enties
            /// </summary>           
            public string Remarks {get;set;}
 
+           /// <summary>
+           /// Desc:栏目级别
+           /// Default:
+           /// Nullable:False
+           /// </summary>           
+           public int Level {get;set;}
+
+           /// <summary>
+           /// Desc:父栏目ID
+           /// Default:
+           /// Nullable:True
+           /// </summary>           
+           public int? PID {get;set;}
+
     }
 }

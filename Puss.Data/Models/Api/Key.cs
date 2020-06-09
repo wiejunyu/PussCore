@@ -21,6 +21,16 @@ namespace Puss.Data.Models
         /// 栏目备注
         /// </summary>
         public string Remarks { get; set; }
+
+        /// <summary>
+        /// 父ID
+        /// </summary>
+        public string PID { get; set; }
+
+        /// <summary>
+        /// 栏目等级
+        /// </summary>
+        public string Level { get; set; }
     }
 
     /// <summary>
@@ -42,6 +52,32 @@ namespace Puss.Data.Models
         /// 栏目备注
         /// </summary>
         public string Remarks { get; set; }
+
+        /// <summary>
+        /// 父ID
+        /// </summary>
+        public string PID { get; set; }
+
+        /// <summary>
+        /// 栏目等级
+        /// </summary>
+        public string Level { get; set; }
+    }
+
+    /// <summary>
+    /// 编辑Key栏目名称模型
+    /// </summary>
+    public class EditKeySectionByName
+    {
+        /// <summary>
+        /// ID
+        /// </summary>
+        public string ID { get; set; }
+
+        /// <summary>
+        /// 栏目名称
+        /// </summary>
+        public string Name { get; set; }
     }
     #endregion
     #region Key

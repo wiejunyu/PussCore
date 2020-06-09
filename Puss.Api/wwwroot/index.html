@@ -24,8 +24,8 @@
     <script src="./js/configuration.js"></script>
     <script src="./js/login.js"></script>
 </head>
-<body>
-    <div class="am-g myapp-login-1">
+<body style="font-size:20px">
+    <!--<div class="am-g myapp-login-1">
         <div class="myapp-login-bg">
             <div class="am-u-sm-12 myapp-login-form">
                 <form class="am-form" id="from">
@@ -34,18 +34,20 @@
                 </form>
             </div>
         </div>
+    </div>-->
+    <div id="data0" class="am-g myapp-login-1">
     </div>
     <div class="head"><a href="addKeySection.html"><i class="layui-icon layui-icon-addition" style="font-size: 30px;color: #ffffff;float:right;"></i></a></div>
     <div class="loading" id="loading">
         <i class="layui-icon layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop" style="font-size: 120px;"></i>
     </div>
-    <script id="data0_templet" type="text/html">
+    <!--<script id="data0_templet" type="text/html">
         <div class="am-form-li">
             <a href="list.html?id={{d.id}}">{{d.name}}</a>
             <a href="javascript:void(0);" onclick="delKeySection({{d.id}})"><i class="layui-icon layui-icon-close" style="float:right"></i></a>
             <a href="editKeySection.html?id={{d.id}}"><i class="layui-icon layui-icon-edit" style="float:right"></i></a>
         </div>
-    </script>
+    </script>-->
     <script>
         $(function () {
             IsLogin();
@@ -63,54 +65,53 @@
         //流加载数据
         function getlist() {
             var type = 0;
-            $("#data" + type).html('')
-            layui.use(['flow', 'laytpl'], function () {
-                var $ = layui.jquery; //不用额外加载jQuery，flow模块本身是有依赖jQuery的，直接用即可。
-                var flow = layui.flow;
-                var laytpl = layui.laytpl;
-                flow.load({
-                    elem: '#data' + type //指定列表容器
-                    , end: '没有更多了'
-                    , more: '点击加载更多'
-                    , isAuto: true //是否自动加载
-                    , done: function (page, next) { //到达临界点（默认滚动触发），触发下一页
-                        var lis = [];
-                        $.ajax({
-                            url: GetAjaxUrl() + "api/Key/GetKeySectionList",
-                            data: { iPageIndex: page },
-                            dataType: 'json',
-                            type: "GET",
-                            contentType: 'application/json;charset=utf-8',
-                            headers: {
-                                Authorization: 'Bearer ' + GetToken(),
-                                Accept: "text/plain"
-                            },
-                            beforeSend: function (xhr) {
-                                xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
-                            },
-                            success: function (data) {
-                                if (data.status == 200) {
-                                    var rdata = data.data;
-                                    if (rdata) {
-                                        if (!rdata.count) {
-                                            $('#data' + type).html($("#nocontent_templet").html())
-                                        }
-                                        //假设你的列表返回在data集合中
-                                        layui.each(rdata.list, function (index, item) {
-                                            laytpl($("#data" + type + "_templet").html()).render(item, function (html) {
-                                                lis.push(html);
-                                            });
-                                        });
-                                        //执行下一页渲染，第二参数为：满足“加载更多”的条件，即后面仍有分页
-                                        //pages为Ajax返回的总页数，只有当前页小于总页数的情况下，才会继续出现加载更多
-                                        next(lis.join(''), page < rdata.pages);
-                                    }
+            $("#data" + type).html('');
+            $.ajax({
+                url: GetAjaxUrl() + "api/Key/GetKeySectionList",
+                data: { iPageIndex: 1, iPageSize:99999 },
+                dataType: 'json',
+                type: "GET",
+                contentType: 'application/json;charset=utf-8',
+                headers: {
+                    Authorization: 'Bearer ' + GetToken(),
+                    Accept: "text/plain"
+                },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
+                },
+                success: function (data) {
+                    if (data.status == 200) {
+                        console.info(data.data);
+                        layui.use('tree', function () {
+                            var tree = layui.tree;
+                            //渲染
+                            var inst1 = tree.render({
+                                elem: '#data' + type,
+                                id: 'id',
+                                //showCheckbox: true,
+                                edit: ['add', 'update', 'del'],
+                                isJump:true,
+                                data: data.data,
+                                operate: function (obj) {
+                                    var type = obj.type; //得到操作类型：add、edit、del
+                                    var data = obj.data; //得到当前节点的数据
+                                    var elem = obj.elem; //得到当前节点元素
+
+                                    //Ajax 操作
+                                    var id = data.id; //得到节点索引
+                                    if (type === 'add') {
+                                        window.location.href  = 'addKeySection.html?id=' + id;
+                                    } else if (type === 'update') {
+                                        window.location.href = 'editKeySection.html?id=' + id;
+                                    }else if (type === 'del') {
+                                        delKeySection(id);
+                                    };
                                 }
-                            }
-                        })
+                            });
+                        });
                     }
-                });
-            });
+                }
+            })
         }
 
         //删除
@@ -173,7 +174,6 @@
                 }
             }, false);
         });
-        
     </script>
 </body>
 </html>
