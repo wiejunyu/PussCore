@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 using Puss.Api.Manager;
 using Puss.BusinessCore;
@@ -75,14 +76,19 @@ namespace Puss.Api.Controllers
         }
 
         /// <summary>
-        /// 获取用户顶级密匙栏目
+        /// 获取用户密匙栏目
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ReturnResult> GetKeySectionListTop()
+        public async Task<ReturnResult> GetKeySectionListAll(int? Level)
         {
             int iUID = LoginManager.GetUserID();
-            return new ReturnResult<object>(ReturnResultStatus.Succeed, await KeySectionManager.GetListAsync(x => x.CreateUserID == iUID && x.Level == 0));
+            List<KeySection> list = await KeySectionManager.GetListAsync(x => x.CreateUserID == iUID);
+            if (Level.HasValue) 
+            {
+                list = list.Where(x => x.Level == Level).ToList();
+            }
+            return new ReturnResult<List<KeySection>>(ReturnResultStatus.Succeed,list);
         }
 
         /// <summary>

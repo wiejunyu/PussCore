@@ -82,7 +82,7 @@
             layui.use('laytpl', function () {
                 $.ajax({
                     type: "GET",
-                    url: GetAjaxUrl() + "api/Key/GetKeySectionListTop",
+                    url: GetAjaxUrl() + "api/Key/GetKeySectionListAll?Level=0",
                     contentType: 'application/json;charset=utf-8',
                     headers: {
                         Authorization: 'Bearer ' + GetToken(),

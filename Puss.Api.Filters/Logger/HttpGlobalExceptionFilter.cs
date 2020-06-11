@@ -41,10 +41,11 @@ namespace Puss.Api.Filters
         {
             if (context.Exception is AppException)
             {
+                var appException = context.Exception as AppException;
                 context.Result = new JsonResult(new ReturnResult()
                 {
-                    Status = (int)ReturnResultStatus.BLLError,
-                    Message = context.Exception.Message
+                    Status = appException.ErrorStatus,
+                    Message = appException.Message
                 });
                 context.ExceptionHandled = true;
             }

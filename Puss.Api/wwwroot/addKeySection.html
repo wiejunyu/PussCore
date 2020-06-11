@@ -80,7 +80,7 @@
             layui.use('laytpl', function () {
                 $.ajax({
                     type: "GET",
-                    url: GetAjaxUrl() + "api/Key/GetKeySectionListTop",
+                    url: GetAjaxUrl() + "api/Key/GetKeySectionListAll?Level=0",
                     contentType: 'application/json;charset=utf-8',
                     headers: {
                         Authorization: 'Bearer ' + GetToken(),
@@ -109,10 +109,40 @@
                 });
             });
 
-            //当有参数时显示父栏目，没有隐藏
+            //当有父栏目时显示父栏目，没有隐藏
             if (getUrlParam("id") != null && getUrlParam("id") != "") {
-                $("#Level option[value='1']").attr("selected", "selected");
-                $("#dPID").show();
+                $.ajax({
+                    type: "GET",
+                    url: GetAjaxUrl() + "api/Key/GetKeyKeySectionDetailed?id=" + getUrlParam("id"),
+                    contentType: 'application/json;charset=utf-8',
+                    headers: {
+                        Authorization: 'Bearer ' + GetToken(),
+                        Accept: "text/plain"
+                    },
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
+                    },
+                    success: function (data) {
+                        if (data.status == 200) {
+                            obj = JSON.parse(data.message);
+                            if (obj.Level == 0) {
+                                $("#dPID").hide();
+                            }
+                            else
+                            {
+                                $("#Level option[value='1']").attr("selected", "selected");
+                                $("#dPID").show();
+                            }
+                        }
+                        else {
+                            layui.use('layer', function () {
+                                var layer = layui.layer;
+                                layer.msg(data.message, { icon: 2 });
+                            });
+                        }
+                        $("#loading").hide();
+                    }
+                });
             }
             else
             {

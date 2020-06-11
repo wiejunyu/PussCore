@@ -21,19 +21,16 @@ namespace Puss.Api.Controllers
     /// </summary>
     public class TestController : ApiBaseController
     {
-        private readonly IRabbitMQPushService RabbitMQPushService;
         private readonly IUserManager UserManager;
         private readonly ILogJobManager LogJobManager;
 
         /// <summary>
         /// 测试
         /// </summary>
-        /// <param name="RabbitMQPushService"></param>
         /// <param name="UserManager"></param>
         /// <param name="LogJobManager"></param>
-        public TestController(IRabbitMQPushService RabbitMQPushService, IUserManager UserManager, ILogJobManager LogJobManager)
+        public TestController(IUserManager UserManager, ILogJobManager LogJobManager)
         {
-            this.RabbitMQPushService = RabbitMQPushService;
             this.UserManager = UserManager;
             this.LogJobManager = LogJobManager;
         }
@@ -73,7 +70,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public async Task<ReturnResult> PushMessage()
         {
-            await RabbitMQPushService.PushMessage(QueueKey.SendRegisterMessageIsEmail, "1013422066@qq.com");
+            //await RabbitMQPushService.PushMessage(QueueKey.SendRegisterMessageIsEmail, "1013422066@qq.com");
             return new ReturnResult(ReturnResultStatus.Succeed);
         }
 
@@ -87,10 +84,10 @@ namespace Puss.Api.Controllers
         {
             return await Task.Run(() =>
             {
-                RabbitMQPushService.PullMessage(QueueKey.SendRegisterMessageIsEmail, (Message) =>
-                {
-                    return true;
-                });
+                //RabbitMQPushService.PullMessage(QueueKey.SendRegisterMessageIsEmail, (Message) =>
+                //{
+                //    return true;
+                //});
                 return new ReturnResult(ReturnResultStatus.Succeed);
             });
         }
