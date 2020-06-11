@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 
-namespace Puss.BusinessCore
+namespace @(Model.SolutionName).BusinessCore
 {
 	public class @(Model.Name)Manager : I@(Model.Name)Manager
 	{

@@ -8,9 +8,8 @@ using Puss.Data.Config;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Puss.BusinessCore
+namespace @(Model.SolutionName).BusinessCore
 {
-
     public class DbContext
     {
         public DbContext()

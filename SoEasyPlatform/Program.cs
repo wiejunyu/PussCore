@@ -118,7 +118,7 @@ namespace SugarCodeGeneration
         {
             var templatePath = Methods.GetCurrentProjectPath + "\\Template\\Bll.txt";//bll模版地址
             //下面代码不动
-            Methods.CreateBLL(templatePath, savePath, tables, classNamespace);
+            Methods.CreateBLL(templatePath, savePath, tables, classNamespace, SolutionName);
             AddTask(bllProjectName, bllPath);
         }
 
@@ -135,7 +135,8 @@ namespace SugarCodeGeneration
                 ConnectionString = connectionString,
                 DbType = dbType,
                 Tables = tables,
-                ClassNamespace= classNamespace
+                ClassNamespace= classNamespace,
+                SolutionName = SolutionName
             };
             Methods.CreateDbContext(templatePath,savePath,model);
             AddTask(contextProjectName,contextPath);
