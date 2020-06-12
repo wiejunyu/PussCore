@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Puss.Api.Aop;
 using Puss.Api.Manager;
-using Puss.BusinessCore;
 using Puss.Data.Enum;
 using Puss.Data.Models;
-using Puss.Email;
-using Puss.RabbitMQ;
-using Puss.Redis;
 using System.Threading.Tasks;
 
 namespace Puss.Api.Controllers
