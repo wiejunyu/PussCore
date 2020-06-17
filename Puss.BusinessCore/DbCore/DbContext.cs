@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 
 namespace Puss.BusinessCore
 {
-
     public class DbContext
     {
         public DbContext()

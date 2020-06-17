@@ -9,7 +9,9 @@ namespace Puss.BusinessCore
 {
 	public class CodeManager : ICodeManager
 	{
-        public DbContext<Code> CurrentDb { get { return new DbContext<Code>(); } }
+        public SimpleClient<Code> CurrentDb { get { return new DbContext<Code>().CurrentDb; } }
+        public SqlSugarClient Db { get { return new DbContext<Code>().Db; } }
+
 
         /// <summary>
         /// 获取所有
@@ -36,7 +38,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<Code> GetSingleAsync(Expression<Func<Code, bool>> whereExpression)
         {
-            return await CurrentDb.GetSingleAsync(whereExpression);
+            return await Db.Queryable<Code>().Where(whereExpression).SingleAsync();
         }
 
         /// <summary>
@@ -45,7 +47,15 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual Code GetSingleDefault(Expression<Func<Code, bool>> whereExpression)
         {
-            return CurrentDb.GetSingleDefault(whereExpression);
+            Code temp = null;
+            try
+            {
+                temp = CurrentDb.GetSingle(whereExpression);
+            }
+            catch
+            {
+            }
+            return temp ?? new Code();
         }
 
         /// <summary>
@@ -54,7 +64,15 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<Code> GetSingleDefaultAsync(Expression<Func<Code, bool>> whereExpression)
         {
-            return await CurrentDb.GetSingleDefaultAsync(whereExpression);
+            Code temp = null;
+            try
+            {
+                temp = await Db.Queryable<Code>().Where(whereExpression).SingleAsync();
+            }
+            catch
+            {
+            }
+            return temp ?? new Code();
         }
 
         /// <summary>
@@ -81,7 +99,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<List<Code>> GetListAsync(Expression<Func<Code, bool>> whereExpression)
         {
-            return await CurrentDb.GetListAsync(whereExpression);
+            return await Db.Queryable<Code>().Where(whereExpression).ToListAsync();
         }
 
         /// <summary>
@@ -99,7 +117,11 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<List<Code>> GetPageListAsync(Expression<Func<Code, bool>> whereExpression, PageModel pageModel)
         {
-            return await CurrentDb.GetPageListAsync(whereExpression, pageModel);
+            int totalNumber = 0;
+            RefAsync<int> re = new RefAsync<int>(totalNumber);
+            List<Code> result = await Db.Queryable<Code>().Where(whereExpression).ToPageListAsync(pageModel.PageIndex, pageModel.PageSize, re);
+            pageModel.PageCount = re.Value;
+            return result;
         }
 
         /// <summary>
@@ -125,7 +147,12 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<List<Code>> GetPageListAsync(Expression<Func<Code, bool>> whereExpression, PageModel pageModel, Expression<Func<Code, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc)
         {
-            return await CurrentDb.GetPageListAsync(whereExpression, pageModel, orderByExpression, orderByType);
+            int totalNumber = 0;
+            RefAsync<int> re = new RefAsync<int>(totalNumber);
+            List<Code> result = await Db.Queryable<Code>().OrderByIF(orderByExpression != null, orderByExpression, orderByType).Where(whereExpression)
+                .ToPageListAsync(pageModel.PageIndex, pageModel.PageSize, re);
+            pageModel.PageCount = re.Value;
+            return result;
         }
 
 
@@ -144,7 +171,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<Code> GetByIdAsync(dynamic id)
         {
-            return await CurrentDb.GetByIdAsync(id);
+            return await Db.Queryable<Code>().InSingleAsync(id);
         }
 
         /// <summary>
@@ -175,7 +202,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual bool Delete(dynamic[] ids)
         {
-            return CurrentDb.Delete(ids);
+            return CurrentDb.AsDeleteable().In(ids).ExecuteCommand() > 0;
         }
 
         /// <summary>
@@ -206,7 +233,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual bool Update(List<Code> objs)
         {
-            return CurrentDb.Update(objs);
+            return CurrentDb.UpdateRange(objs);
         }
 
         /// <summary>
@@ -227,16 +254,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual bool Insert(List<Code> objs)
         {
-            return CurrentDb.Insert(objs);
-        }
-
-        /// <summary>
-        /// 获取数据库上下文
-        /// </summary>
-        /// <returns></returns>
-        public virtual DbContext<Code> GetDB()
-        {
-            return CurrentDb;
+            return CurrentDb.InsertRange(objs);
         }
     }
 
@@ -394,11 +412,5 @@ namespace Puss.BusinessCore
         /// <param name="id"></param>
         /// <returns></returns>
         bool Insert(List<Code> objs);
-
-        /// <summary>
-        /// 获取数据库上下文
-        /// </summary>
-        /// <returns></returns>
-        DbContext<Code> GetDB();
     }
 }

@@ -9,7 +9,9 @@ namespace Puss.BusinessCore
 {
 	public class ExceptionLogManager : IExceptionLogManager
 	{
-        public DbContext<ExceptionLog> CurrentDb { get { return new DbContext<ExceptionLog>(); } }
+        public SimpleClient<ExceptionLog> CurrentDb { get { return new DbContext<ExceptionLog>().CurrentDb; } }
+        public SqlSugarClient Db { get { return new DbContext<ExceptionLog>().Db; } }
+
 
         /// <summary>
         /// 获取所有
@@ -36,7 +38,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<ExceptionLog> GetSingleAsync(Expression<Func<ExceptionLog, bool>> whereExpression)
         {
-            return await CurrentDb.GetSingleAsync(whereExpression);
+            return await Db.Queryable<ExceptionLog>().Where(whereExpression).SingleAsync();
         }
 
         /// <summary>
@@ -45,7 +47,15 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual ExceptionLog GetSingleDefault(Expression<Func<ExceptionLog, bool>> whereExpression)
         {
-            return CurrentDb.GetSingleDefault(whereExpression);
+            ExceptionLog temp = null;
+            try
+            {
+                temp = CurrentDb.GetSingle(whereExpression);
+            }
+            catch
+            {
+            }
+            return temp ?? new ExceptionLog();
         }
 
         /// <summary>
@@ -54,7 +64,15 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<ExceptionLog> GetSingleDefaultAsync(Expression<Func<ExceptionLog, bool>> whereExpression)
         {
-            return await CurrentDb.GetSingleDefaultAsync(whereExpression);
+            ExceptionLog temp = null;
+            try
+            {
+                temp = await Db.Queryable<ExceptionLog>().Where(whereExpression).SingleAsync();
+            }
+            catch
+            {
+            }
+            return temp ?? new ExceptionLog();
         }
 
         /// <summary>
@@ -81,7 +99,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<List<ExceptionLog>> GetListAsync(Expression<Func<ExceptionLog, bool>> whereExpression)
         {
-            return await CurrentDb.GetListAsync(whereExpression);
+            return await Db.Queryable<ExceptionLog>().Where(whereExpression).ToListAsync();
         }
 
         /// <summary>
@@ -99,7 +117,11 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<List<ExceptionLog>> GetPageListAsync(Expression<Func<ExceptionLog, bool>> whereExpression, PageModel pageModel)
         {
-            return await CurrentDb.GetPageListAsync(whereExpression, pageModel);
+            int totalNumber = 0;
+            RefAsync<int> re = new RefAsync<int>(totalNumber);
+            List<ExceptionLog> result = await Db.Queryable<ExceptionLog>().Where(whereExpression).ToPageListAsync(pageModel.PageIndex, pageModel.PageSize, re);
+            pageModel.PageCount = re.Value;
+            return result;
         }
 
         /// <summary>
@@ -125,7 +147,12 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<List<ExceptionLog>> GetPageListAsync(Expression<Func<ExceptionLog, bool>> whereExpression, PageModel pageModel, Expression<Func<ExceptionLog, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc)
         {
-            return await CurrentDb.GetPageListAsync(whereExpression, pageModel, orderByExpression, orderByType);
+            int totalNumber = 0;
+            RefAsync<int> re = new RefAsync<int>(totalNumber);
+            List<ExceptionLog> result = await Db.Queryable<ExceptionLog>().OrderByIF(orderByExpression != null, orderByExpression, orderByType).Where(whereExpression)
+                .ToPageListAsync(pageModel.PageIndex, pageModel.PageSize, re);
+            pageModel.PageCount = re.Value;
+            return result;
         }
 
 
@@ -144,7 +171,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<ExceptionLog> GetByIdAsync(dynamic id)
         {
-            return await CurrentDb.GetByIdAsync(id);
+            return await Db.Queryable<ExceptionLog>().InSingleAsync(id);
         }
 
         /// <summary>
@@ -175,7 +202,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual bool Delete(dynamic[] ids)
         {
-            return CurrentDb.Delete(ids);
+            return CurrentDb.AsDeleteable().In(ids).ExecuteCommand() > 0;
         }
 
         /// <summary>
@@ -206,7 +233,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual bool Update(List<ExceptionLog> objs)
         {
-            return CurrentDb.Update(objs);
+            return CurrentDb.UpdateRange(objs);
         }
 
         /// <summary>
@@ -227,16 +254,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual bool Insert(List<ExceptionLog> objs)
         {
-            return CurrentDb.Insert(objs);
-        }
-
-        /// <summary>
-        /// 获取数据库上下文
-        /// </summary>
-        /// <returns></returns>
-        public virtual DbContext<ExceptionLog> GetDB()
-        {
-            return CurrentDb;
+            return CurrentDb.InsertRange(objs);
         }
     }
 
@@ -394,11 +412,5 @@ namespace Puss.BusinessCore
         /// <param name="id"></param>
         /// <returns></returns>
         bool Insert(List<ExceptionLog> objs);
-
-        /// <summary>
-        /// 获取数据库上下文
-        /// </summary>
-        /// <returns></returns>
-        DbContext<ExceptionLog> GetDB();
     }
 }

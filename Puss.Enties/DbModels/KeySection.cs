@@ -54,9 +54,9 @@ namespace Puss.Enties
            /// <summary>
            /// Desc:父栏目ID
            /// Default:
-           /// Nullable:True
+           /// Nullable:False
            /// </summary>           
-           public int? PID {get;set;}
+           public int PID {get;set;}
 
     }
 }

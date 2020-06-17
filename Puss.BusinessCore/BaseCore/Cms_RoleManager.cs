@@ -9,7 +9,9 @@ namespace Puss.BusinessCore
 {
 	public class Cms_RoleManager : ICms_RoleManager
 	{
-        public DbContext<Cms_Role> CurrentDb { get { return new DbContext<Cms_Role>(); } }
+        public SimpleClient<Cms_Role> CurrentDb { get { return new DbContext<Cms_Role>().CurrentDb; } }
+        public SqlSugarClient Db { get { return new DbContext<Cms_Role>().Db; } }
+
 
         /// <summary>
         /// 获取所有
@@ -36,7 +38,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<Cms_Role> GetSingleAsync(Expression<Func<Cms_Role, bool>> whereExpression)
         {
-            return await CurrentDb.GetSingleAsync(whereExpression);
+            return await Db.Queryable<Cms_Role>().Where(whereExpression).SingleAsync();
         }
 
         /// <summary>
@@ -45,7 +47,15 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual Cms_Role GetSingleDefault(Expression<Func<Cms_Role, bool>> whereExpression)
         {
-            return CurrentDb.GetSingleDefault(whereExpression);
+            Cms_Role temp = null;
+            try
+            {
+                temp = CurrentDb.GetSingle(whereExpression);
+            }
+            catch
+            {
+            }
+            return temp ?? new Cms_Role();
         }
 
         /// <summary>
@@ -54,7 +64,15 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<Cms_Role> GetSingleDefaultAsync(Expression<Func<Cms_Role, bool>> whereExpression)
         {
-            return await CurrentDb.GetSingleDefaultAsync(whereExpression);
+            Cms_Role temp = null;
+            try
+            {
+                temp = await Db.Queryable<Cms_Role>().Where(whereExpression).SingleAsync();
+            }
+            catch
+            {
+            }
+            return temp ?? new Cms_Role();
         }
 
         /// <summary>
@@ -81,7 +99,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<List<Cms_Role>> GetListAsync(Expression<Func<Cms_Role, bool>> whereExpression)
         {
-            return await CurrentDb.GetListAsync(whereExpression);
+            return await Db.Queryable<Cms_Role>().Where(whereExpression).ToListAsync();
         }
 
         /// <summary>
@@ -99,7 +117,11 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<List<Cms_Role>> GetPageListAsync(Expression<Func<Cms_Role, bool>> whereExpression, PageModel pageModel)
         {
-            return await CurrentDb.GetPageListAsync(whereExpression, pageModel);
+            int totalNumber = 0;
+            RefAsync<int> re = new RefAsync<int>(totalNumber);
+            List<Cms_Role> result = await Db.Queryable<Cms_Role>().Where(whereExpression).ToPageListAsync(pageModel.PageIndex, pageModel.PageSize, re);
+            pageModel.PageCount = re.Value;
+            return result;
         }
 
         /// <summary>
@@ -125,7 +147,12 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<List<Cms_Role>> GetPageListAsync(Expression<Func<Cms_Role, bool>> whereExpression, PageModel pageModel, Expression<Func<Cms_Role, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc)
         {
-            return await CurrentDb.GetPageListAsync(whereExpression, pageModel, orderByExpression, orderByType);
+            int totalNumber = 0;
+            RefAsync<int> re = new RefAsync<int>(totalNumber);
+            List<Cms_Role> result = await Db.Queryable<Cms_Role>().OrderByIF(orderByExpression != null, orderByExpression, orderByType).Where(whereExpression)
+                .ToPageListAsync(pageModel.PageIndex, pageModel.PageSize, re);
+            pageModel.PageCount = re.Value;
+            return result;
         }
 
 
@@ -144,7 +171,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual async Task<Cms_Role> GetByIdAsync(dynamic id)
         {
-            return await CurrentDb.GetByIdAsync(id);
+            return await Db.Queryable<Cms_Role>().InSingleAsync(id);
         }
 
         /// <summary>
@@ -175,7 +202,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual bool Delete(dynamic[] ids)
         {
-            return CurrentDb.Delete(ids);
+            return CurrentDb.AsDeleteable().In(ids).ExecuteCommand() > 0;
         }
 
         /// <summary>
@@ -206,7 +233,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual bool Update(List<Cms_Role> objs)
         {
-            return CurrentDb.Update(objs);
+            return CurrentDb.UpdateRange(objs);
         }
 
         /// <summary>
@@ -227,16 +254,7 @@ namespace Puss.BusinessCore
         /// <returns></returns>
         public virtual bool Insert(List<Cms_Role> objs)
         {
-            return CurrentDb.Insert(objs);
-        }
-
-        /// <summary>
-        /// 获取数据库上下文
-        /// </summary>
-        /// <returns></returns>
-        public virtual DbContext<Cms_Role> GetDB()
-        {
-            return CurrentDb;
+            return CurrentDb.InsertRange(objs);
         }
     }
 
@@ -394,11 +412,5 @@ namespace Puss.BusinessCore
         /// <param name="id"></param>
         /// <returns></returns>
         bool Insert(List<Cms_Role> objs);
-
-        /// <summary>
-        /// 获取数据库上下文
-        /// </summary>
-        /// <returns></returns>
-        DbContext<Cms_Role> GetDB();
     }
 }
