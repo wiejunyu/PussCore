@@ -70,8 +70,11 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public async Task<ReturnResult> PushMessage()
         {
-            //await RabbitMQPushService.PushMessage(QueueKey.SendRegisterMessageIsEmail, "1013422066@qq.com");
-            return new ReturnResult(ReturnResultStatus.Succeed);
+            return await Task.Run(() =>
+            {
+                //await RabbitMQPushService.PushMessage(QueueKey.SendRegisterMessageIsEmail, "1013422066@qq.com");
+                return new ReturnResult(ReturnResultStatus.Succeed);
+            });
         }
 
         /// <summary>
