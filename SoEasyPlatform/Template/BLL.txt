@@ -9,7 +9,7 @@ namespace @(Model.SolutionName).BusinessCore
 {
 	public class @(Model.Name)Manager : I@(Model.Name)Manager
 	{
-        public SimpleClient<@(Model.Name)> CurrentDb { get { return new DbContext<@(Model.Name)>().CurrentDb; } }
+        public SimpleClient<@(Model.Name)> CurrentDb { get { return new DbContext<@(Model.Name)>().@(Model.Name)Db; } }
         public SqlSugarClient Db { get { return new DbContext<@(Model.Name)>().Db; } }
 
 

@@ -9,7 +9,7 @@ namespace Puss.BusinessCore
 {
 	public class ExceptionLogManager : IExceptionLogManager
 	{
-        public SimpleClient<ExceptionLog> CurrentDb { get { return new DbContext<ExceptionLog>().CurrentDb; } }
+        public SimpleClient<ExceptionLog> CurrentDb { get { return new DbContext<ExceptionLog>().ExceptionLogDb; } }
         public SqlSugarClient Db { get { return new DbContext<ExceptionLog>().Db; } }
 
 

@@ -9,7 +9,7 @@ namespace Puss.BusinessCore
 {
 	public class HotManager : IHotManager
 	{
-        public SimpleClient<Hot> CurrentDb { get { return new DbContext<Hot>().CurrentDb; } }
+        public SimpleClient<Hot> CurrentDb { get { return new DbContext<Hot>().HotDb; } }
         public SqlSugarClient Db { get { return new DbContext<Hot>().Db; } }
 
 

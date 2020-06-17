@@ -9,7 +9,7 @@ namespace Puss.BusinessCore
 {
 	public class KeyContentManager : IKeyContentManager
 	{
-        public SimpleClient<KeyContent> CurrentDb { get { return new DbContext<KeyContent>().CurrentDb; } }
+        public SimpleClient<KeyContent> CurrentDb { get { return new DbContext<KeyContent>().KeyContentDb; } }
         public SqlSugarClient Db { get { return new DbContext<KeyContent>().Db; } }
 
 

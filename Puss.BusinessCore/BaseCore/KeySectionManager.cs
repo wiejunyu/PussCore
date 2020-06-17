@@ -9,7 +9,7 @@ namespace Puss.BusinessCore
 {
 	public class KeySectionManager : IKeySectionManager
 	{
-        public SimpleClient<KeySection> CurrentDb { get { return new DbContext<KeySection>().CurrentDb; } }
+        public SimpleClient<KeySection> CurrentDb { get { return new DbContext<KeySection>().KeySectionDb; } }
         public SqlSugarClient Db { get { return new DbContext<KeySection>().Db; } }
 
 

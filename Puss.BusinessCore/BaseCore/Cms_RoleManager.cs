@@ -9,7 +9,7 @@ namespace Puss.BusinessCore
 {
 	public class Cms_RoleManager : ICms_RoleManager
 	{
-        public SimpleClient<Cms_Role> CurrentDb { get { return new DbContext<Cms_Role>().CurrentDb; } }
+        public SimpleClient<Cms_Role> CurrentDb { get { return new DbContext<Cms_Role>().Cms_RoleDb; } }
         public SqlSugarClient Db { get { return new DbContext<Cms_Role>().Db; } }
 
 

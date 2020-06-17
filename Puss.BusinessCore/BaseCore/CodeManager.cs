@@ -9,7 +9,7 @@ namespace Puss.BusinessCore
 {
 	public class CodeManager : ICodeManager
 	{
-        public SimpleClient<Code> CurrentDb { get { return new DbContext<Code>().CurrentDb; } }
+        public SimpleClient<Code> CurrentDb { get { return new DbContext<Code>().CodeDb; } }
         public SqlSugarClient Db { get { return new DbContext<Code>().Db; } }
 
 

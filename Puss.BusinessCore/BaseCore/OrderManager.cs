@@ -9,7 +9,7 @@ namespace Puss.BusinessCore
 {
 	public class OrderManager : IOrderManager
 	{
-        public SimpleClient<Order> CurrentDb { get { return new DbContext<Order>().CurrentDb; } }
+        public SimpleClient<Order> CurrentDb { get { return new DbContext<Order>().OrderDb; } }
         public SqlSugarClient Db { get { return new DbContext<Order>().Db; } }
 
 

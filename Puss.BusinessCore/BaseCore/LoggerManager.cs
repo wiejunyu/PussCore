@@ -9,7 +9,7 @@ namespace Puss.BusinessCore
 {
 	public class LoggerManager : ILoggerManager
 	{
-        public SimpleClient<Logger> CurrentDb { get { return new DbContext<Logger>().CurrentDb; } }
+        public SimpleClient<Logger> CurrentDb { get { return new DbContext<Logger>().LoggerDb; } }
         public SqlSugarClient Db { get { return new DbContext<Logger>().Db; } }
 
 

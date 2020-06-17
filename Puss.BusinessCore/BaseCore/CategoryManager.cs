@@ -9,7 +9,7 @@ namespace Puss.BusinessCore
 {
 	public class CategoryManager : ICategoryManager
 	{
-        public SimpleClient<Category> CurrentDb { get { return new DbContext<Category>().CurrentDb; } }
+        public SimpleClient<Category> CurrentDb { get { return new DbContext<Category>().CategoryDb; } }
         public SqlSugarClient Db { get { return new DbContext<Category>().Db; } }
 
 

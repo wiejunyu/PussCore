@@ -9,7 +9,7 @@ namespace Puss.BusinessCore
 {
 	public class Cms_ArticleManager : ICms_ArticleManager
 	{
-        public SimpleClient<Cms_Article> CurrentDb { get { return new DbContext<Cms_Article>().CurrentDb; } }
+        public SimpleClient<Cms_Article> CurrentDb { get { return new DbContext<Cms_Article>().Cms_ArticleDb; } }
         public SqlSugarClient Db { get { return new DbContext<Cms_Article>().Db; } }
 
 

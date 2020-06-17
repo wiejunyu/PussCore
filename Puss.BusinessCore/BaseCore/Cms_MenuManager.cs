@@ -9,7 +9,7 @@ namespace Puss.BusinessCore
 {
 	public class Cms_MenuManager : ICms_MenuManager
 	{
-        public SimpleClient<Cms_Menu> CurrentDb { get { return new DbContext<Cms_Menu>().CurrentDb; } }
+        public SimpleClient<Cms_Menu> CurrentDb { get { return new DbContext<Cms_Menu>().Cms_MenuDb; } }
         public SqlSugarClient Db { get { return new DbContext<Cms_Menu>().Db; } }
 
 

@@ -9,7 +9,7 @@ namespace Puss.BusinessCore
 {
 	public class Cms_SysconfigManager : ICms_SysconfigManager
 	{
-        public SimpleClient<Cms_Sysconfig> CurrentDb { get { return new DbContext<Cms_Sysconfig>().CurrentDb; } }
+        public SimpleClient<Cms_Sysconfig> CurrentDb { get { return new DbContext<Cms_Sysconfig>().Cms_SysconfigDb; } }
         public SqlSugarClient Db { get { return new DbContext<Cms_Sysconfig>().Db; } }
 
 

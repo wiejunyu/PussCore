@@ -9,7 +9,7 @@ namespace Puss.BusinessCore
 {
 	public class ShoppingCartManager : IShoppingCartManager
 	{
-        public SimpleClient<ShoppingCart> CurrentDb { get { return new DbContext<ShoppingCart>().CurrentDb; } }
+        public SimpleClient<ShoppingCart> CurrentDb { get { return new DbContext<ShoppingCart>().ShoppingCartDb; } }
         public SqlSugarClient Db { get { return new DbContext<ShoppingCart>().Db; } }
 
 

@@ -9,7 +9,7 @@ namespace Puss.BusinessCore
 {
 	public class ShopManager : IShopManager
 	{
-        public SimpleClient<Shop> CurrentDb { get { return new DbContext<Shop>().CurrentDb; } }
+        public SimpleClient<Shop> CurrentDb { get { return new DbContext<Shop>().ShopDb; } }
         public SqlSugarClient Db { get { return new DbContext<Shop>().Db; } }
 
 

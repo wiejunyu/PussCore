@@ -9,7 +9,7 @@ namespace Puss.BusinessCore
 {
 	public class Cms_UserInfoManager : ICms_UserInfoManager
 	{
-        public SimpleClient<Cms_UserInfo> CurrentDb { get { return new DbContext<Cms_UserInfo>().CurrentDb; } }
+        public SimpleClient<Cms_UserInfo> CurrentDb { get { return new DbContext<Cms_UserInfo>().Cms_UserInfoDb; } }
         public SqlSugarClient Db { get { return new DbContext<Cms_UserInfo>().Db; } }
 
 
