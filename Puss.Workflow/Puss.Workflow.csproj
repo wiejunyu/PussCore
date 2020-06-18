@@ -8,4 +8,9 @@
     <PackageReference Include="WorkflowCore" Version="3.1.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Puss.Api.Manager\Puss.Api.Manager.csproj" />
+    <ProjectReference Include="..\Puss.Redis\Puss.Redis.csproj" />
+  </ItemGroup>
+
 </Project>

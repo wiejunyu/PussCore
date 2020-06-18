@@ -22,7 +22,7 @@ namespace Puss.Api.Aop
         [Argument(Source.Arguments)] object[] arguments)
         {
             #region 注入
-            ILogService LogService = AutofacUtil.GetScopeService<ILogService>();
+            ILogService LogService = AutofacUtil.GetAutofacScopeService<ILogService>();
             #endregion
 
             LogService.LogCollectPushApple("LogIphone", JsonConvert.SerializeObject(arguments),LogService.GetLoggerRepository());

@@ -17,7 +17,6 @@ namespace Puss.Api.Filters
     public class HttpGlobalExceptionFilter : ExceptionFilterAttribute
     {
         private readonly ILogService LogService;
-        private readonly ILogger<HttpGlobalExceptionFilter> Logger;
         private readonly IHttpContextAccessor Accessor;
 
         /// <summary>
@@ -26,10 +25,9 @@ namespace Puss.Api.Filters
         /// <param name="LogService">日志接口</param>
         /// <param name="RabbitMQPushService">MQ接口</param>
         /// <param name="Accessor"></param>
-        public HttpGlobalExceptionFilter(ILogService LogService, ILogger<HttpGlobalExceptionFilter> Logger, IHttpContextAccessor Accessor)
+        public HttpGlobalExceptionFilter(ILogService LogService, IHttpContextAccessor Accessor)
         {
             this.LogService = LogService;
-            this.Logger = Logger;
             this.Accessor = Accessor;
         }
 

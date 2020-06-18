@@ -37,6 +37,7 @@
     <PackageReference Include="PListNet" Version="3.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.1.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.0" />
+    <PackageReference Include="WorkflowCore" Version="3.1.5" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,6 +56,7 @@
     <ProjectReference Include="..\Puss.RabbitMQ\Puss.RabbitMQ.csproj" />
     <ProjectReference Include="..\Puss.Redis\Puss.Redis.csproj" />
     <ProjectReference Include="..\Puss.Reptile\Puss.Reptile.csproj" />
+    <ProjectReference Include="..\Puss.Workflow\Puss.Workflow.csproj" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

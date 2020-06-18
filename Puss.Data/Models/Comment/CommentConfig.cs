@@ -43,5 +43,12 @@ namespace Puss.Data.Models
         /// </summary>
         public static string MDM_Token { get { return "MDM_Token"; } }
         #endregion
+
+        #region 工作流
+        /// <summary>
+        /// Workflow_ApplySetUser
+        /// </summary>
+        public static string Workflow_ApplySetUser { get { return "Workflow_ApplySetUser"; } }
+        #endregion
     }
 }

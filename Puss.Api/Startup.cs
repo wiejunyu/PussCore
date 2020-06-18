@@ -253,6 +253,15 @@ namespace Puss.Api
             // Add the processing server as IHostedService
             services.AddHangfireServer();
             #endregion
+
+            #region Workflow
+            services.AddLogging();
+            services.AddWorkflow();
+            #endregion
+
+            #region 保存系统依赖注入服务
+            AutofacUtil.SetSysService(services);
+            #endregion
         }
 
         /// <summary>
@@ -332,8 +341,8 @@ namespace Puss.Api
             });
             #endregion
 
-            #region Autofac依赖注入服务
-            AutofacUtil.Container = app.ApplicationServices.GetAutofacRoot();
+            #region 保存Autofac依赖注入服务
+            AutofacUtil.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
             #endregion
 
             app.UseEndpoints(endpoints =>

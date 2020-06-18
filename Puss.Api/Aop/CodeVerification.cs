@@ -30,7 +30,7 @@ namespace Puss.Api.Aop
         [Argument(Source.Arguments)] object[] arguments)
         {
             #region 注入
-            IValidateCodeManager ValidateCodeManager = AutofacUtil.GetScopeService<IValidateCodeManager>();
+            IValidateCodeManager ValidateCodeManager = AutofacUtil.GetAutofacScopeService<IValidateCodeManager>();
             #endregion
 
             if (GlobalsConfig.Configuration[ConfigurationKeys.Verification_Code].ToLower() == "false") return;
