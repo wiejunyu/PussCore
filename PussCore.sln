@@ -47,6 +47,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.Api.Filters", "Puss.Ap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.Api.Job", "Puss.Api.Job\Puss.Api.Job.csproj", "{2A8F322E-FB01-472D-952A-E50D5357AED5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.Workflow", "Puss.Workflow\Puss.Workflow.csproj", "{E270DE05-CB5B-4E6C-827D-7E3DE2306C97}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -129,6 +131,10 @@ Global
 		{2A8F322E-FB01-472D-952A-E50D5357AED5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A8F322E-FB01-472D-952A-E50D5357AED5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A8F322E-FB01-472D-952A-E50D5357AED5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E270DE05-CB5B-4E6C-827D-7E3DE2306C97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E270DE05-CB5B-4E6C-827D-7E3DE2306C97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E270DE05-CB5B-4E6C-827D-7E3DE2306C97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E270DE05-CB5B-4E6C-827D-7E3DE2306C97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -153,6 +159,7 @@ Global
 		{BED03A05-61B3-4E76-8314-DA64418EA626} = {6738FE0B-8D8E-4112-B3EE-2F5251E8BF1C}
 		{950E1C6B-8994-4BFB-8E7D-8F28F472ECFD} = {6738FE0B-8D8E-4112-B3EE-2F5251E8BF1C}
 		{2A8F322E-FB01-472D-952A-E50D5357AED5} = {6738FE0B-8D8E-4112-B3EE-2F5251E8BF1C}
+		{E270DE05-CB5B-4E6C-827D-7E3DE2306C97} = {B60CB1B8-F0C4-4ECC-9BF4-E69960A5689C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {59F6E3B6-A66D-4C21-9329-CF920749F1C2}
