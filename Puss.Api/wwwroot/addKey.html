@@ -99,7 +99,7 @@
             layui.use('laytpl', function () {
                 $.ajax({
                     type: "GET",
-                    url: GetAjaxUrl() + "api/Key/GetKeySectionList?iPageIndex=1&iPageSize=1000000",
+                    url: GetAjaxUrl() + "api/Key/GetKeySectionListAll",
                     contentType: 'application/json;charset=utf-8',
                     headers: {
                         Authorization: 'Bearer ' + GetToken(),
@@ -111,7 +111,7 @@
                     success: function (data) {
                         if (data.status == 200) {
                             //假设你的列表返回在data集合中
-                            layui.each(data.data.list, function (index, item) {
+                            layui.each(data.data, function (index, item) {
                                 layui.laytpl($("#SectionID_templet").html()).render(item, function (html) {
                                     $("#SectionID").html($("#SectionID").html() + html);
                                 });
