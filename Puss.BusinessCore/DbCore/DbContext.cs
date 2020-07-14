@@ -97,6 +97,7 @@ namespace Puss.BusinessCore
        public SimpleClient<ShoppingCart> ShoppingCartDb { get { return new SimpleClient<ShoppingCart>(Db); } }//用来处理ShoppingCart表的常用操作
        public SimpleClient<User> UserDb { get { return new SimpleClient<User>(Db); } }//用来处理User表的常用操作
        public SimpleClient<UserDetails> UserDetailsDb { get { return new SimpleClient<UserDetails>(Db); } }//用来处理UserDetails表的常用操作
+       public SimpleClient<Tel> TelDb { get { return new SimpleClient<Tel>(Db); } }//用来处理Tel表的常用操作
     }
 }
 

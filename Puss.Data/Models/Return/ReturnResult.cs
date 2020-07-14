@@ -32,6 +32,7 @@ namespace Puss.Data.Models
         /// </summary>
         /// <param name="Status">状态</param>
         public ReturnResult(ReturnResultStatus Status)
+            :this()
         {
             this.Status = (int)Status;
         }
@@ -41,6 +42,7 @@ namespace Puss.Data.Models
         /// </summary>
         /// <param name="Message">消息</param>
         public ReturnResult(string Message)
+            : this()
         {
             this.Message = Message;
         }
@@ -51,8 +53,8 @@ namespace Puss.Data.Models
         /// <param name="Status">状态</param>
         /// <param name="Message">消息</param>
         public ReturnResult(ReturnResultStatus Status, string Message)
+            : this(Status)
         {
-            this.Status = (int)Status;
             this.Message = Message;
         }
 
@@ -101,8 +103,9 @@ namespace Puss.Data.Models
         /// </summary>
         /// <param name="Status">状态</param>
         public ReturnResult(ReturnResultStatus Status)
-            : base(Status)
+            : this()
         {
+            this.Status = (int)Status;
         }
 
         /// <summary>
@@ -111,9 +114,20 @@ namespace Puss.Data.Models
         /// <param name="Status">状态</param>
         /// <param name="Data">数据</param>
         public ReturnResult(ReturnResultStatus Status, T Data)
-            : base(Status)
+            : this(Status)
         {
             this.Data = Data;
+        }
+
+        /// <summary>
+        /// 状态 + 数据
+        /// </summary>
+        /// <param name="Status">状态</param>
+        /// <param name="Data">数据</param>
+        public ReturnResult(ReturnResultStatus Status, T Data,string Message)
+            : this(Status, Data)
+        {
+            this.Message = Message;
         }
     }
 }

@@ -1,0 +1,179 @@
+﻿<!doctype html>
+<html class="no-js">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="stylesheet" href="./css/amazeui.min.css">
+    <link rel="stylesheet" href="./css/app.css">
+    <link href="./Plugin/layui/css/layui.css" rel="stylesheet" />
+
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/amazeui.min.js"></script>
+    <script src="./js/jquery.serializejson.min.js"></script>
+    <script src="./js/jquery.cookie.js"></script>
+    <script src="./Plugin/layui/layui.js"></script>
+
+    <script src="./js/app.js"></script>
+    <script src="./js/configuration.js"></script>
+    <script src="./js/login.js"></script>
+</head>
+<body style="font-size:20px">
+    <!--<div class="am-g myapp-login-1">
+        <div class="myapp-login-bg">
+            <div class="am-u-sm-12 myapp-login-form">
+                <form class="am-form" id="from">
+                    <fieldset id="data0">
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>-->
+    <div id="data0" class="am-g myapp-login-1">
+    </div>
+    <div class="head"><a href="addKeySection.html"><i class="layui-icon layui-icon-addition" style="font-size: 30px;color: #ffffff;float:right;"></i></a></div>
+    <div class="loading" id="loading">
+        <i class="layui-icon layui-icon-loading layui-icon layui-anim layui-anim-rotate layui-anim-loop" style="font-size: 120px;"></i>
+    </div>
+    <!--<script id="data0_templet" type="text/html">
+        <div class="am-form-li">
+            <a href="list.html?id={{d.id}}">{{d.name}}</a>
+            <a href="javascript:void(0);" onclick="delKeySection({{d.id}})"><i class="layui-icon layui-icon-close" style="float:right"></i></a>
+            <a href="editKeySection.html?id={{d.id}}"><i class="layui-icon layui-icon-edit" style="float:right"></i></a>
+        </div>
+    </script>-->
+    <script>
+        $(function () {
+            IsLogin();
+            console.log(GetToken());
+            getlist();
+        })
+
+        //退出登录提交
+        $("#btnOutLogin").click(function () {
+            OutLogin();
+        });
+    </script>
+
+    <script type="text/javascript">
+        //流加载数据
+        function getlist() {
+            var type = 0;
+            $("#data" + type).html('');
+            $.ajax({
+                url: GetAjaxUrl() + "api/Key/GetKeySectionList",
+                data: { iPageIndex: 1, iPageSize:99999 },
+                dataType: 'json',
+                type: "GET",
+                contentType: 'application/json;charset=utf-8',
+                headers: {
+                    Authorization: 'Bearer ' + GetToken(),
+                    Accept: "text/plain"
+                },
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
+                },
+                success: function (data) {
+                    if (data.status == 200) {
+                        console.info(data.data);
+                        layui.use('tree', function () {
+                            var tree = layui.tree;
+                            //渲染
+                            var inst1 = tree.render({
+                                elem: '#data' + type,
+                                id: 'id',
+                                //showCheckbox: true,
+                                edit: ['add', 'update', 'del'],
+                                isJump:true,
+                                data: data.data,
+                                operate: function (obj) {
+                                    var type = obj.type; //得到操作类型：add、edit、del
+                                    var data = obj.data; //得到当前节点的数据
+                                    var elem = obj.elem; //得到当前节点元素
+
+                                    //Ajax 操作
+                                    var id = data.id; //得到节点索引
+                                    if (type === 'add') {
+                                        window.location.href  = 'addKeySection.html?id=' + id;
+                                    } else if (type === 'update') {
+                                        window.location.href = 'editKeySection.html?id=' + id;
+                                    }else if (type === 'del') {
+                                        delKeySection(id);
+                                    };
+                                }
+                            });
+                        });
+                    }
+                }
+            })
+        }
+
+        //删除
+        function delKeySection(id) {
+            layui.use('layer', function () {
+                layer.confirm('删除密匙栏目之后底下的密匙都会丢失，是否确定删除？', {
+                    btn: ['确定', '取消'] //可以无限个按钮
+                },
+                    function (index, layero) {
+                        $.ajax({
+                            url: GetAjaxUrl() + "api/Key/DeleteKeySection?id=" + id,
+                            type: "POST",
+                            contentType: 'application/json;charset=utf-8',
+                            headers: {
+                                Authorization: 'Bearer ' + GetToken(),
+                                Accept: "text/plain"
+                            },
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader("Authorization", 'Bearer ' + GetToken());
+                            },
+                            success: function (data) {
+                                if (data.status == 200) {
+                                    layui.use('layer', function () {
+                                        var layer = layui.layer;
+                                        layer.open({ content: "删除成功", icon: 1, yes: null });
+                                        getlist();
+                                    });
+                                }
+                                else {
+                                    layui.use('layer', function () {
+                                        var layer = layui.layer;
+                                        layer.open({ content: data.message, icon: 2, yes: null });
+                                    });
+                                }
+                            }
+                        })
+                    },
+                    function (index) {
+                    });
+            });
+        }
+    </script>
+
+    <script>
+        //不需要mui.js版本
+        document.addEventListener('plusready', function (a) {
+            var first = null;
+            plus.key.addEventListener('backbutton', function () {
+                //首次按键，提示‘再按一次退出应用’
+                if (!first) {
+                    first = new Date().getTime();
+                    console.log('再按一次退出应用');//用自定义toast提示最好
+                    setTimeout(function () {
+                        first = null;
+                    }, 1000);
+                } else {
+                    if (new Date().getTime() - first < 1000) {
+                        plus.runtime.quit();
+                    }
+                }
+            }, false);
+        });
+    </script>
+</body>
+</html>

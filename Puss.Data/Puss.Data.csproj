@@ -116,6 +116,7 @@
     <Compile Include="Config\ConfigurationKeys.cs" />
     <Compile Include="Config\AutofacUtil.cs" />
     <Compile Include="Config\GlobalsConfig.cs" />
+    <Compile Include="Enum\TelStateEnum.cs" />
     <Compile Include="Enum\CodeType.cs" />
     <Compile Include="Enum\ExceptionTypeEnum.cs" />
     <Compile Include="Enum\ReturnResultStatus.cs" />
