@@ -33,8 +33,8 @@
                 <form class="am-form" id="from">
                     <fieldset>
                         <div class="am-form-group">
-                            手机号：
-                            <input type="text" name="Tel" id="Tel" placeholder="手机号">
+                            要发送的数据：
+                            <input type="text" name="Text" id="Text" placeholder="要发送的数据">
                         </div>
                         <p><button type="button" class="layui-btn" id="btnSubmit">点击开始发送</button></p>
 
@@ -47,7 +47,7 @@
     <script type="text/javascript">
         $("#btnSubmit").click(function () {
             $.ajax({
-                url: GetAjaxUrl() + "api/Excel/SendExcel?text=" + $("#Tel").val(),
+                url: GetAjaxUrl() + "api/Excel/SendExcel?text=" + $("#Text").val(),
                 type: "POST",
                 contentType: 'application/json;charset=utf-8',
                 headers: {
