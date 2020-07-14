@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace Puss.Api.Controllers
 {
     /// <summary>
-    /// 用户
+    /// 表格
     /// </summary>
     [AllowAnonymous]
     public class ExcelController : ApiBaseController
@@ -25,7 +25,7 @@ namespace Puss.Api.Controllers
         private readonly ITelManager TelManager;
 
         /// <summary>
-        /// 用户
+        /// 表格
         /// </summary>
         /// <param name="TelManager"></param>
         public ExcelController(
@@ -48,7 +48,7 @@ namespace Puss.Api.Controllers
                 string content = reader.ReadToEnd();
                 string name = file.FileName;
                 //写入配置文件
-                string filename = Path.Combine(GlobalsConfig.ContentRootPath, name);
+                string filename = Path.Combine(GlobalsConfig.WebRootPath, name);
                 if (System.IO.File.Exists(filename))
                 {
                     System.IO.File.Delete(filename);
