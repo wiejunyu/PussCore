@@ -11,9 +11,7 @@ using Newtonsoft.Json;
 using System.Text;
 using Puss.Iphone;
 using Puss.Api.Aop;
-using Puss.RabbitMQ;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
 using System.Xml;
 using Puss.Redis;
 using Puss.Data.Config;
@@ -27,21 +25,14 @@ namespace Puss.Api.Controllers
     [AllowAnonymous]
     public class MDMController : ControllerBase
     {
-        private readonly IHttpContextAccessor Accessor;
-        private readonly IRabbitMQPushService RabbitMQPushService;
         private readonly IRedisService RedisService;
-
 
         /// <summary>
         /// MDM
         /// </summary>
-        /// <param name="Accessor"></param>
-        /// <param name="RabbitMQPushService"></param>
         /// <param name="RedisService"></param>
-        public MDMController(IHttpContextAccessor Accessor, IRabbitMQPushService RabbitMQPushService, IRedisService RedisService) 
+        public MDMController(IRedisService RedisService) 
         {
-            this.Accessor = Accessor;
-            this.RabbitMQPushService = RabbitMQPushService;
             this.RedisService = RedisService;
         }
 

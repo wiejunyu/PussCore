@@ -29,6 +29,8 @@ namespace Puss.Api.Aop
         [Argument(Source.Name)] string name,
         [Argument(Source.Arguments)] object[] arguments)
         {
+#if DEBUG
+#else
             #region 注入
             IValidateCodeManager ValidateCodeManager = AutofacUtil.GetAutofacScopeService<IValidateCodeManager>();
             #endregion
@@ -67,6 +69,7 @@ namespace Puss.Api.Aop
                 if (code.code.ToLower() != Code.ToLower()) throw new AppException("验证码错误或已过期");
             }
             else throw new AppException("验证码错误或已过期");
+#endif
         }
     }
 }

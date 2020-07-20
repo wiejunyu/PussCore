@@ -52,6 +52,14 @@ namespace Puss.Data.Models
         }
 
         /// <summary>
+        /// 定时计划日志收集
+        /// </summary>
+        public static string LogSql
+        {
+            get { return "LogSql"; }
+        }
+
+        /// <summary>
         /// 唯一ID获取
         /// </summary>
         public static string GetGuid

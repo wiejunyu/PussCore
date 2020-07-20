@@ -6,7 +6,6 @@ using Puss.BusinessCore;
 using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Email;
-using Puss.RabbitMQ;
 using Puss.Redis;
 using Puss.Enties;
 using System;
@@ -14,6 +13,7 @@ using System.Threading.Tasks;
 using Puss.Data.Config;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using Puss.Log;
 
 namespace Puss.Api.Manager
 {
@@ -23,7 +23,7 @@ namespace Puss.Api.Manager
     public class LoginManager : ILoginManager
     {
         private readonly IHttpContextAccessor Accessor;
-        private readonly IRedisService RedisService; 
+        private readonly IRedisService RedisService;
         private readonly IUserManager UserManager;
         private readonly IEmailService EmailService;
         private readonly ICodeManager CodeManager;
@@ -31,6 +31,7 @@ namespace Puss.Api.Manager
         private readonly DbContext DbContext;
         private readonly IUserDetailsManager UserDetailsManager;
         private readonly ITokenService TokenService;
+        private readonly ILogService LogService;
 
         /// <summary>
         /// 登录
@@ -44,15 +45,17 @@ namespace Puss.Api.Manager
         /// <param name="DbContext"></param>
         /// <param name="UserDetailsManager"></param>
         /// <param name="TokenService"></param>
-        public LoginManager(IHttpContextAccessor Accessor, 
-            IRedisService RedisService, 
+        /// <param name="LogService"></param>
+        public LoginManager(IHttpContextAccessor Accessor,
+            IRedisService RedisService,
             IUserManager UserManager,
             IEmailService EmailService,
             ICodeManager CodeManager,
             ICms_SysconfigManager Cms_SysconfigManager,
             DbContext DbContext,
             IUserDetailsManager UserDetailsManager,
-            ITokenService TokenService) 
+            ITokenService TokenService,
+            ILogService LogService)
         {
             this.Accessor = Accessor;
             this.RedisService = RedisService;
@@ -63,6 +66,7 @@ namespace Puss.Api.Manager
             this.DbContext = DbContext;
             this.UserDetailsManager = UserDetailsManager;
             this.TokenService = TokenService;
+            this.LogService = LogService;
         }
 
         /// <summary>
@@ -183,6 +187,8 @@ namespace Puss.Api.Manager
         public async Task<bool> UserRegister(RegisterRequest request)
         {
             #region 验证
+#if DEBUG
+#else
             if (UserManager.IsAny(x => x.UserName == request.UserName)) throw new AppException("该用户名已经注册过");
             if (string.IsNullOrWhiteSpace(request.Email)) throw new AppException("请输入邮箱");
             if (UserManager.IsAny(x => x.Email == request.Email)) throw new AppException("该邮箱已经注册过");
@@ -190,6 +196,7 @@ namespace Puss.Api.Manager
             if (string.IsNullOrWhiteSpace(request.ConfirmPassWord)) throw new AppException("请输入确认密码");
             if (string.IsNullOrWhiteSpace(request.ConfirmPassWord)) throw new AppException("请输入确认密码");
             if (request.PassWord != request.ConfirmPassWord) throw new AppException("密码和确认密码不一致");
+#endif
             #endregion
 
             var mapper = new MapperConfiguration(x => x.CreateMap<RegisterRequest, User>()).CreateMapper();
@@ -206,9 +213,13 @@ namespace Puss.Api.Manager
                 UserManager.Insert(user);
                 UserDetailsManager.Insert(new UserDetails() { UID = user.ID });
             });
+
+#if DEBUG
+#else
             //发送邮件
             Cms_Sysconfig sys = await Cms_SysconfigManager.GetSingleAsync(x => x.Id == 1);
             EmailService.MailSending(request.Email, "欢迎您注册宇宙物流", $"欢迎您注册宇宙物流", sys.Mail_From, sys.Mail_Code, sys.Mail_Host);
+#endif
             return true;
         }
 
