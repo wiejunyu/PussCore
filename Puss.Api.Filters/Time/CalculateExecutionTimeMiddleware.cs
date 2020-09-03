@@ -24,7 +24,6 @@ namespace Puss.Api.Filters
         /// </summary>
         /// <param name="next">next</param>
         /// <param name="LogService">日志类接口</param>
-        /// <param name="RabbitMQPushService">MQ类接口</param>
         public CalculateExecutionTimeMiddleware(RequestDelegate next, ILogService LogService, ILogger<WebApiResultMiddleware> Logger)
         {
             this._next = next;

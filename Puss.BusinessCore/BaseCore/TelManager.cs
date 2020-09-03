@@ -7,11 +7,11 @@ using System.Linq.Expressions;
 
 namespace Puss.BusinessCore
 {
-    public interface IOrderManager : IDbContext<Order>
+    public interface ITelManager : IDbContext<Tel>
     {
     }
 
-    public class OrderManager : DbContext<Order>, IOrderManager
+    public class TelManager : DbContext<Tel>, ITelManager
     {
     }
 }

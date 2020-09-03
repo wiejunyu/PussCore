@@ -170,5 +170,16 @@ namespace Puss.Data.Config
         /// </summary>
         public static string MDM_Certificate = "MDM:Certificate";
         #endregion
+
+        #region 版本
+        /// <summary>
+        /// 主版本
+        /// </summary>
+        public static string Version_Primary = "Version:Primary";
+        /// <summary>
+        /// 副版本
+        /// </summary>
+        public static string Version_Secondary = "Version:Secondary";
+        #endregion
     }
 }

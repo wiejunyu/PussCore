@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,6 +26,8 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Puss.Api.Filters;
+using Puss.Api.Filters.Swagger;
+using Puss.Api.Filters.Version;
 using Puss.Api.Job;
 using Puss.BusinessCore;
 using Puss.Data.Config;
@@ -87,18 +91,42 @@ namespace Puss.Api
             #endregion
 
             #region Swagger
-            services.AddSwaggerGen(c =>
+            //添加版本配置
+            services.AddApiVersioning(o =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo
+                //当设置为 true 时, API 将返回响应标头中支持的版本信息
+                o.ReportApiVersions = true;
+                //指定版本传输方式，这里使用Query(参数)和Header(头部)
+                o.ApiVersionReader = ApiVersionReader.Combine(new QueryStringApiVersionReader("version"), new HeaderApiVersionReader("version"));
+                //true设置如果不传版本号使用默认
+                o.AssumeDefaultVersionWhenUnspecified = true;
+                //设置默认版本号
+                o.DefaultApiVersion = new ApiVersion(int.Parse(GlobalsConfig.Configuration[ConfigurationKeys.Version_Primary].ToLower()), int.Parse(GlobalsConfig.Configuration[ConfigurationKeys.Version_Secondary].ToLower()));
+                //设置错误自定义返回
+                o.ErrorResponses = new VersionErrorResponseProvider();
+            }).AddVersionedApiExplorer(option =>
+            {
+                option.GroupNameFormat = "'v'VVVV";//api组名格式
+                option.AssumeDefaultVersionWhenUnspecified = true;//是否提供API版本服务
+            }).AddSwaggerGen(c =>
+            {
+                //内容文档
+                IApiVersionDescriptionProvider provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+                foreach (var description in provider.ApiVersionDescriptions)
                 {
-                    Title = "Puss API",
-                    Version = "v1",
-                    Description = "这是一个基于.NetCore的WebApi",
-                    License = new OpenApiLicense()
+                    c.SwaggerDoc(description.GroupName, new OpenApiInfo
                     {
-                        Name = "Puss"
-                    }
-                });
+                        Title = $"Puss API v{description.ApiVersion}",
+                        Version = description.ApiVersion.ToString(),
+                        Description = "这是一个基于.NetCore的WebApi,切换版本请点右上角版本切换",
+                        License = new OpenApiLicense()
+                        {
+                            Name = "Puss"
+                        },
+                    });
+                }
+
+                //添加JWT验证头部
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "请输入你的Token",
@@ -109,7 +137,7 @@ namespace Puss.Api
                     BearerFormat = "JWT"
                 });
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
+                  {
                     {
                         new OpenApiSecurityScheme
                         {
@@ -117,13 +145,16 @@ namespace Puss.Api
                         },
                         new List<string>()
                     }
-                });
+                  });
+
+                //设置输出Xml
                 var basePath = PlatformServices.Default.Application.ApplicationBasePath;
                 if (GlobalsConfig.Configuration[ConfigurationKeys.Swagger_IsXml].ToLower() == "true")
                 {
                     c.IncludeXmlComments(Path.Combine(basePath, "Puss.Api.xml"));
                     c.IncludeXmlComments(Path.Combine(basePath, "Puss.Data.xml"));
                 }
+                c.OperationFilter<CustomOperationFilter>();
             });
             #endregion
 
@@ -261,7 +292,7 @@ namespace Puss.Api
         /// <param name="app"></param>
         /// <param name="env"></param>
         /// <param name="loggerFactory"></param>
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, IApiVersionDescriptionProvider provider)
         {
             if (env.IsDevelopment())
             {
@@ -283,10 +314,13 @@ namespace Puss.Api
             app.UseAuthorization();
 
             #region Swagger
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
+            app.UseSwagger().UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                //写入swagger Json文件和头部definition选择
+                foreach (var description in provider.ApiVersionDescriptions.OrderByDescending(x => x.ApiVersion == new ApiVersion(int.Parse(GlobalsConfig.Configuration[ConfigurationKeys.Version_Primary].ToLower()), int.Parse(GlobalsConfig.Configuration[ConfigurationKeys.Version_Secondary].ToLower()))))
+                {
+                    c.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+                }
             });
             #endregion
 

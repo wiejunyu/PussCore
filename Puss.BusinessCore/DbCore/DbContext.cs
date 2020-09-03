@@ -7,6 +7,11 @@ using System.Linq.Expressions;
 using Puss.Data.Config;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
+using log4net.Repository;
+using log4net.Config;
+using log4net;
+using System.IO;
 
 namespace Puss.BusinessCore
 {
@@ -29,6 +34,8 @@ namespace Puss.BusinessCore
                 //Console.WriteLine(sql + "\r\n" +
                 //    Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value)));
                 //Console.WriteLine();
+                ILoggerRepository Logger = new Log().GetLoggerRepository();
+                LogManager.GetLogger(Logger.Name, "Sql").Info($"{sql}\r\n{Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value))}");
             };
         }
 
@@ -52,6 +59,8 @@ namespace Puss.BusinessCore
 
     public class DbContext<T> where T : class, new()
     {
+        private readonly ILogger<DbContext> _logger;
+
         public DbContext()
         {
             Db = new SqlSugarClient(new ConnectionConfig()
@@ -65,9 +74,11 @@ namespace Puss.BusinessCore
             //调式代码 用来打印SQL 
             Db.Aop.OnLogExecuting = (sql, pars) =>
             {
-                Console.WriteLine(sql + "\r\n" +
-                    Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value)));
-                Console.WriteLine();
+                //Console.WriteLine(sql + "\r\n" +
+                //    Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value)));
+                //Console.WriteLine();
+                ILoggerRepository Logger = new Log().GetLoggerRepository();
+                LogManager.GetLogger(Logger.Name, "Sql").Info($"{sql}\r\n{Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value))}");
             };
 
         }
@@ -97,6 +108,445 @@ namespace Puss.BusinessCore
        public SimpleClient<ShoppingCart> ShoppingCartDb { get { return new SimpleClient<ShoppingCart>(Db); } }//用来处理ShoppingCart表的常用操作
        public SimpleClient<User> UserDb { get { return new SimpleClient<User>(Db); } }//用来处理User表的常用操作
        public SimpleClient<UserDetails> UserDetailsDb { get { return new SimpleClient<UserDetails>(Db); } }//用来处理UserDetails表的常用操作
+       public SimpleClient<Tel> TelDb { get { return new SimpleClient<Tel>(Db); } }//用来处理Tel表的常用操作
+        
+        /// <summary>
+        /// 获取所有
+        /// </summary>
+        /// <returns></returns>
+        public List<T> GetList()
+        {
+            return CurrentDb.GetList();
+        }
+
+        /// <summary>
+        /// 获取单个
+        /// </summary>
+        /// <returns></returns>
+        public T GetSingle(Expression<Func<T, bool>> whereExpression)
+        {
+            return CurrentDb.GetSingle(whereExpression);
+        }
+
+
+        /// <summary>
+        /// 异步获取单个
+        /// </summary>
+        /// <returns></returns>
+        public async Task<T> GetSingleAsync(Expression<Func<T, bool>> whereExpression)
+        {
+            return await Db.Queryable<T>().Where(whereExpression).SingleAsync();
+        }
+
+        /// <summary>
+        /// 获取单个，为空自动自动初始化
+        /// </summary>
+        /// <returns></returns>
+        public T GetSingleDefault(Expression<Func<T, bool>> whereExpression)
+        {
+            T temp = null;
+            try
+            {
+                temp = CurrentDb.GetSingle(whereExpression);
+            }
+            catch
+            {
+            }
+            return temp ?? new T();
+        }
+
+        /// <summary>
+        /// 异步获取单个，为空自动自动初始化
+        /// </summary>
+        /// <returns></returns>
+        public async Task<T> GetSingleDefaultAsync(Expression<Func<T, bool>> whereExpression)
+        {
+            T temp = null;
+            try
+            {
+                temp = await Db.Queryable<T>().Where(whereExpression).SingleAsync();
+            }
+            catch
+            {
+            }
+            return temp ?? new T();
+        }
+
+        /// <summary>
+        /// 判断是否存在
+        /// </summary>
+        /// <returns></returns>
+        public bool IsAny(Expression<Func<T, bool>> whereExpression)
+        {
+            return CurrentDb.IsAny(whereExpression);
+        }
+
+        /// <summary>
+        /// 根据表达式查询
+        /// </summary>
+        /// <returns></returns>
+        public List<T> GetList(Expression<Func<T, bool>> whereExpression)
+        {
+            return CurrentDb.GetList(whereExpression);
+        }
+
+        /// <summary>
+        /// 异步根据表达式查询
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<T>> GetListAsync(Expression<Func<T, bool>> whereExpression)
+        {
+            return await Db.Queryable<T>().Where(whereExpression).ToListAsync();
+        }
+
+        /// <summary>
+        /// 根据表达式查询分页
+        /// </summary>
+        /// <returns></returns>
+        public List<T> GetPageList(Expression<Func<T, bool>> whereExpression, PageModel pageModel)
+        {
+            return CurrentDb.GetPageList(whereExpression, pageModel);
+        }
+
+        /// <summary>
+        /// 异步根据表达式查询分页
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<T>> GetPageListAsync(Expression<Func<T, bool>> whereExpression, PageModel pageModel)
+        {
+            int totalNumber = 0;
+            RefAsync<int> re = new RefAsync<int>(totalNumber);
+            List<T> result = await Db.Queryable<T>().Where(whereExpression).ToPageListAsync(pageModel.PageIndex, pageModel.PageSize, re);
+            pageModel.PageCount = re.Value;
+            return result;
+        }
+
+        /// <summary>
+        /// 根据表达式查询分页并排序
+        /// </summary>
+        /// <param name="whereExpression">it</param>
+        /// <param name="pageModel"></param>
+        /// <param name="orderByExpression">it=>it.id或者it=>new{it.id,it.name}</param>
+        /// <param name="orderByType">OrderByType.Desc</param>
+        /// <returns></returns>
+        public List<T> GetPageList(Expression<Func<T, bool>> whereExpression, PageModel pageModel, Expression<Func<T, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc)
+        {
+            return CurrentDb.GetPageList(whereExpression, pageModel, orderByExpression, orderByType);
+        }
+
+        /// <summary>
+        /// 异步根据表达式查询分页并排序
+        /// </summary>
+        /// <param name="whereExpression">it</param>
+        /// <param name="pageModel"></param>
+        /// <param name="orderByExpression">it=>it.id或者it=>new{it.id,it.name}</param>
+        /// <param name="orderByType">OrderByType.Desc</param>
+        /// <returns></returns>
+        public async Task<List<T>> GetPageListAsync(Expression<Func<T, bool>> whereExpression, PageModel pageModel, Expression<Func<T, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc)
+        {
+            int totalNumber = 0;
+            RefAsync<int> re = new RefAsync<int>(totalNumber);
+            List<T> result = await Db.Queryable<T>().OrderByIF(orderByExpression != null, orderByExpression, orderByType).Where(whereExpression)
+                .ToPageListAsync(pageModel.PageIndex, pageModel.PageSize, re);
+            pageModel.PageCount = re.Value;
+            return result;
+        }
+
+
+        /// <summary>
+        /// 根据主键查询
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public T GetById(dynamic id)
+        {
+            return CurrentDb.GetById(id);
+        }
+
+        /// <summary>
+        /// 异步根据主键查询
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<T> GetByIdAsync(dynamic id)
+        {
+            return await Db.Queryable<T>().InSingleAsync(id);
+        }
+
+        /// <summary>
+        /// 根据主键删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool Delete(dynamic id)
+        {
+            return CurrentDb.DeleteById(id);
+        }
+
+
+        /// <summary>
+        /// 根据实体删除
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool Delete(T data)
+        {
+            return CurrentDb.Delete(data);
+        }
+
+        /// <summary>
+        /// 根据主键删除
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public bool Delete(dynamic[] ids)
+        {
+            return CurrentDb.AsDeleteable().In(ids).ExecuteCommand() > 0;
+        }
+
+        /// <summary>
+        /// 根据表达式删除
+        /// </summary>
+        /// <param name="whereExpression"></param>
+        /// <returns></returns>
+        public bool Delete(Expression<Func<T, bool>> whereExpression)
+        {
+            return CurrentDb.Delete(whereExpression);
+        }
+
+
+        /// <summary>
+        /// 根据实体更新，实体需要有主键
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public bool Update(T obj)
+        {
+            return CurrentDb.Update(obj);
+        }
+
+        /// <summary>
+        ///批量更新
+        /// </summary>
+        /// <param name="objs"></param>
+        /// <returns></returns>
+        public bool Update(List<T> objs)
+        {
+            return CurrentDb.UpdateRange(objs);
+        }
+
+        /// <summary>
+        /// 插入
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public bool Insert(T obj)
+        {
+            return CurrentDb.Insert(obj);
+        }
+
+        /// <summary>
+        /// 插入返回ID
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public int InsertReturnIdentity(T obj)
+        {
+            return CurrentDb.InsertReturnIdentity(obj);
+        }
+
+        /// <summary>
+        /// 批量
+        /// </summary>
+        /// <param name="objs"></param>
+        /// <returns></returns>
+        public bool Insert(List<T> objs)
+        {
+            return CurrentDb.InsertRange(objs);
+        }
+    }
+
+    public interface IDbContext<T>
+    {
+        /// <summary>
+        /// 获取所有
+        /// </summary>
+        /// <returns></returns>
+        List<T> GetList();
+
+        /// <summary>
+        /// 获取单个
+        /// </summary>
+        /// <returns></returns>
+        T GetSingle(Expression<Func<T, bool>> whereExpression);
+
+
+        /// <summary>
+        /// 异步获取单个
+        /// </summary>
+        /// <returns></returns>
+        Task<T> GetSingleAsync(Expression<Func<T, bool>> whereExpression);
+
+        /// <summary>
+        /// 获取单个，为空自动自动初始化
+        /// </summary>
+        /// <returns></returns>
+        T GetSingleDefault(Expression<Func<T, bool>> whereExpression);
+
+        /// <summary>
+        /// 异步获取单个，为空自动自动初始化
+        /// </summary>
+        /// <returns></returns>
+        Task<T> GetSingleDefaultAsync(Expression<Func<T, bool>> whereExpression);
+
+        /// <summary>
+        /// 判断是否存在
+        /// </summary>
+        /// <returns></returns>
+        bool IsAny(Expression<Func<T, bool>> whereExpression);
+
+        /// <summary>
+        /// 根据表达式查询
+        /// </summary>
+        /// <returns></returns>
+        List<T> GetList(Expression<Func<T, bool>> whereExpression);
+
+        /// <summary>
+        /// 异步根据表达式查询
+        /// </summary>
+        /// <returns></returns>
+        Task<List<T>> GetListAsync(Expression<Func<T, bool>> whereExpression);
+
+        /// <summary>
+        /// 根据表达式查询分页
+        /// </summary>
+        /// <returns></returns>
+        List<T> GetPageList(Expression<Func<T, bool>> whereExpression, PageModel pageModel);
+
+        /// <summary>
+        /// 异步根据表达式查询分页
+        /// </summary>
+        /// <returns></returns>
+        Task<List<T>> GetPageListAsync(Expression<Func<T, bool>> whereExpression, PageModel pageModel);
+
+        /// <summary>
+        /// 根据表达式查询分页并排序
+        /// </summary>
+        /// <param name="whereExpression">it</param>
+        /// <param name="pageModel"></param>
+        /// <param name="orderByExpression">it=>it.id或者it=>new{it.id,it.name}</param>
+        /// <param name="orderByType">OrderByType.Desc</param>
+        /// <returns></returns>
+        List<T> GetPageList(Expression<Func<T, bool>> whereExpression, PageModel pageModel, Expression<Func<T, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc);
+
+        /// <summary>
+        /// 异步根据表达式查询分页并排序
+        /// </summary>
+        /// <param name="whereExpression">it</param>
+        /// <param name="pageModel"></param>
+        /// <param name="orderByExpression">it=>it.id或者it=>new{it.id,it.name}</param>
+        /// <param name="orderByType">OrderByType.Desc</param>
+        /// <returns></returns>
+        Task<List<T>> GetPageListAsync(Expression<Func<T, bool>> whereExpression, PageModel pageModel, Expression<Func<T, object>> orderByExpression = null, OrderByType orderByType = OrderByType.Asc);
+
+
+        /// <summary>
+        /// 根据主键查询
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        T GetById(dynamic id);
+
+        /// <summary>
+        /// 异步根据主键查询
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<T> GetByIdAsync(dynamic id);
+
+        /// <summary>
+        /// 根据主键删除
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        bool Delete(dynamic id);
+
+
+        /// <summary>
+        /// 根据实体删除
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        bool Delete(T data);
+
+        /// <summary>
+        /// 根据主键删除
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        bool Delete(dynamic[] ids);
+
+        /// <summary>
+        /// 根据表达式删除
+        /// </summary>
+        /// <param name="whereExpression"></param>
+        /// <returns></returns>
+        bool Delete(Expression<Func<T, bool>> whereExpression);
+
+
+        /// <summary>
+        /// 根据实体更新，实体需要有主键
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        bool Update(T obj);
+
+        /// <summary>
+        ///批量更新
+        /// </summary>
+        /// <param name="objs"></param>
+        /// <returns></returns>
+        bool Update(List<T> objs);
+
+        /// <summary>
+        /// 插入
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        bool Insert(T obj);
+
+        /// <summary>
+        /// 插入返回ID
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        int InsertReturnIdentity(T obj);
+
+        /// <summary>
+        /// 批量
+        /// </summary>
+        /// <param name="objs"></param>
+        /// <returns></returns>
+        bool Insert(List<T> objs);
+    }
+
+    /// <summary>
+    /// 日志
+    /// </summary>
+    public class Log 
+    {
+        private static ILoggerRepository _loggerRepository;
+
+        public ILoggerRepository GetLoggerRepository()
+        {
+            if (_loggerRepository != null)
+            {
+                return _loggerRepository;
+            }
+            _loggerRepository = LogManager.CreateRepository(nameof(Log));
+            XmlConfigurator.ConfigureAndWatch(_loggerRepository, new FileInfo("config/log4net.config"));
+            return _loggerRepository;
+        }
     }
 }
 
