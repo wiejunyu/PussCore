@@ -117,7 +117,6 @@ namespace Puss.Log
         /// <param name="Logger">MQ类接口</param>
         public void LogCollectPush(string QueueKey, Exception Ex, string Url, string Token, ILoggerRepository Logger)
         {
-            XmlConfigurator.ConfigureAndWatch(Logger, new FileInfo($"config/Log4Net.config"));
             JsonSerializerSettings settings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
             var LogErrorDetails = new LogErrorDetails()
             {
@@ -138,7 +137,6 @@ namespace Puss.Log
         /// <param name="Logger">MQ类接口</param>
         public void LogCollectPush(string QueueKey, Exception Ex, string sDetails, ILoggerRepository Logger)
         {
-            XmlConfigurator.ConfigureAndWatch(Logger, new FileInfo($"config/Log4Net.config"));
             JsonSerializerSettings settings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
             LogManager.GetLogger(Logger.Name, QueueKey).Error(JsonConvert.SerializeObject(new LogJobDetails()
             {
@@ -158,7 +156,6 @@ namespace Puss.Log
         /// <param name="Logger">MQ类接口</param>
         public void LogCollectPush(string QueueKey, string sUrl, string sIP, string sMessage, ILoggerRepository Logger)
         {
-            XmlConfigurator.ConfigureAndWatch(Logger, new FileInfo($"config/Log4Net.config"));
             LogManager.GetLogger(Logger.Name, sUrl).Info(JsonConvert.SerializeObject(new
             {
                 CreateTime = DateTime.Now,
@@ -179,7 +176,6 @@ namespace Puss.Log
         /// <param name="Logger">MQ类接口</param>
         public void LogCollectPush(string QueueKey, string sUrl, string sHeaders, string sActionArguments, string sResult, ILoggerRepository Logger)
         {
-            XmlConfigurator.ConfigureAndWatch(Logger, new FileInfo($"config/Log4Net.config"));
             LogManager.GetLogger(Logger.Name, sUrl).Info(JsonConvert.SerializeObject(new
             {
                 CreateTime = DateTime.Now,
@@ -198,7 +194,6 @@ namespace Puss.Log
         /// <param name="Logger">MQ类接口</param>
         public void LogCollectPushApple(string QueueKey, string sActionArguments,ILoggerRepository Logger)
         {
-            XmlConfigurator.ConfigureAndWatch(Logger, new FileInfo($"config/Log4Net.config"));
             LogManager.GetLogger(Logger.Name, QueueKey).Info(JsonConvert.SerializeObject(new
             {
                 CreateTime = DateTime.Now,

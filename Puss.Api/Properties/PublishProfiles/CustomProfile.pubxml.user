@@ -6,7 +6,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <_PublishTargetUrl>D:\Doc\工作\个人项目\NetCore\PussCore\www\Puss.Api\../../发布/Puss.Core</_PublishTargetUrl>
+    <_PublishTargetUrl>G:\个人工作\项目\Core\PussCore\Puss.Api\../../发布/Puss.Core</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
     <File Include="App.Metrics.Abstractions.dll">
