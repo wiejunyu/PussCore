@@ -73,6 +73,10 @@ namespace Puss.Data.Config
         /// MQ密码
         /// </summary>
         public static string MQ_PassWord = "MQ:PassWord";
+        /// <summary>
+        /// MQ主机
+        /// </summary>
+        public static string MQ_VirtualHost = "MQ:VirtualHost";
         #endregion
 
         #region Redis

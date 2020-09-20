@@ -31,6 +31,7 @@ namespace Puss.RabbitMQ
                     HostName = Connection.RabbitMQ_HostName,
                     UserName = Connection.RabbitMQ_UserName,
                     Password = Connection.RabbitMQ_PassWord,
+                    VirtualHost = Connection.RabbitMQ_VirtualHost,
                 };
                 //2. 建立连接
                 connection = factory.CreateConnection();

@@ -51,7 +51,8 @@ namespace Puss.Api.Filters
             if (!"[/][/swagger/index.html]".Contains($"[{tlog.ApiPath}]") && !tlog.ApiPath.Contains("hangfire")) 
             {
                 //日志收集
-                LogService.LogCollectPush(QueueKey.LogTime,context.Request.Path.ToString(), context.Connection.RemoteIpAddress.ToString(), JsonConvert.SerializeObject(tlog), LogService.GetLoggerRepository());
+                Logger.LogInformation($"[Url]:{context.Request.Path.ToString()}[log]:{JsonConvert.SerializeObject(tlog)}");
+                //LogService.LogCollectPush(QueueKey.LogTime,context.Request.Path.ToString(), context.Connection.RemoteIpAddress.ToString(), JsonConvert.SerializeObject(tlog), LogService.GetLoggerRepository());
             }
         }
     }

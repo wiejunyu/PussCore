@@ -16,8 +16,8 @@
 #FROM build AS publish
 #RUN dotnet publish "Puss.Api.csproj" -c Release -o /app/publish
 #s
-FROM registry.cn-shenzhen.aliyuncs.com/mynetcore/basecore:3.1.0 AS base
-FROM base AS final
+FROM registry.cn-shenzhen.aliyuncs.com/mynetcore/sdk:3.1-bionic AS build
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY . /app
+EXPOSE 5000
 ENTRYPOINT ["dotnet", "Puss.Api.dll"]

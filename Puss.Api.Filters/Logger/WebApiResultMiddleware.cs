@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Puss.Data.Models;
 using Puss.RabbitMQ;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace Puss.Api.Filters
 {
@@ -57,7 +58,8 @@ namespace Puss.Api.Filters
             catch
             {
             }
-            LogService.LogCollectPush(QueueKey.LogResult, context.HttpContext.Request.Path,JsonConvert.SerializeObject(Headers),ActionArguments ,resultStr , LogService.GetLoggerRepository());
+            Logger.LogInformation($"[CreateTime]:{DateTime.Now}[Url]:{context.HttpContext.Request.Path}[Headers]:{JsonConvert.SerializeObject(Headers)}[ActionArguments]:{ActionArguments}[Result]:{resultStr}");
+            //LogService.LogCollectPush(QueueKey.LogResult, context.HttpContext.Request.Path,JsonConvert.SerializeObject(Headers),ActionArguments ,resultStr , LogService.GetLoggerRepository());
         }
     }
 }

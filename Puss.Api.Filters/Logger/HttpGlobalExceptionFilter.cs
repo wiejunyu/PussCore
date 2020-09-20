@@ -51,21 +51,22 @@ namespace Puss.Api.Filters
             }
             else
             {
+                JsonSerializerSettings settings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
                 //拦截处理
                 if (!context.ExceptionHandled)
                 {
                     context.Result = new JsonResult(new ReturnResult()
                     {
                         Status = (int)ReturnResultStatus.BLLError,
-                        Message = "网络错误"
+                        Message = JsonConvert.SerializeObject(context.Exception.Message, settings),
                     });
                     context.ExceptionHandled = true;
                 }
 
-                
-                //日志收集
 
-                LogService.LogCollectPush(QueueKey.LogError, context.Exception, Accessor.HttpContext.Request.Path.ToString(), Accessor.HttpContext.Request.Headers["Authorization"].ToString(), LogService.GetLoggerRepository());
+                //日志收集
+                Logger.LogError(JsonConvert.SerializeObject(context.Exception.Message, settings));
+                //LogService.LogCollectPush(QueueKey.LogError, context.Exception, Accessor.HttpContext.Request.Path.ToString(), Accessor.HttpContext.Request.Headers["Authorization"].ToString(), LogService.GetLoggerRepository());
             }
         }
     }

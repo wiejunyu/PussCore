@@ -23,16 +23,19 @@ namespace Puss.Api.Controllers
     {
         private readonly IUserManager UserManager;
         private readonly ILogJobManager LogJobManager;
+        private readonly IRabbitMQPushService RabbitMQPushService;
 
         /// <summary>
         /// 测试
         /// </summary>
         /// <param name="UserManager"></param>
         /// <param name="LogJobManager"></param>
-        public TestController(IUserManager UserManager, ILogJobManager LogJobManager)
+        /// <param name="RabbitMQPushService"></param>
+        public TestController(IUserManager UserManager, ILogJobManager LogJobManager, IRabbitMQPushService RabbitMQPushService)
         {
             this.UserManager = UserManager;
             this.LogJobManager = LogJobManager;
+            this.RabbitMQPushService = RabbitMQPushService;
         }
 
         /// <summary>
@@ -70,11 +73,8 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public async Task<ReturnResult> PushMessage()
         {
-            return await Task.Run(() =>
-            {
-                //await RabbitMQPushService.PushMessage(QueueKey.SendRegisterMessageIsEmail, "1013422066@qq.com");
-                return new ReturnResult(ReturnResultStatus.Succeed);
-            });
+            await RabbitMQPushService.PushMessage(QueueKey.SendRegisterMessageIsEmail, "1013422066@qq.com");
+            return new ReturnResult(ReturnResultStatus.Succeed);
         }
 
         /// <summary>
@@ -85,14 +85,11 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public async Task<ReturnResult> PullMessage()
         {
-            return await Task.Run(() =>
+            RabbitMQPushService.PullMessage(QueueKey.SendRegisterMessageIsEmail, (Message) =>
             {
-                //RabbitMQPushService.PullMessage(QueueKey.SendRegisterMessageIsEmail, (Message) =>
-                //{
-                //    return true;
-                //});
-                return new ReturnResult(ReturnResultStatus.Succeed);
+                return true;
             });
+            return new ReturnResult(ReturnResultStatus.Succeed);
         }
 
         /// <summary>

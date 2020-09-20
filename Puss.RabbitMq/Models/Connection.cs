@@ -41,5 +41,16 @@ namespace Puss.RabbitMQ
                 return GlobalsConfig.Configuration[ConfigurationKeys.MQ_PassWord] ?? string.Empty;
             }
         }
+
+        /// <summary>
+        /// 主机
+        /// </summary>
+        public static string RabbitMQ_VirtualHost
+        {
+            get
+            {
+                return GlobalsConfig.Configuration[ConfigurationKeys.MQ_VirtualHost] ?? string.Empty;
+            }
+        }
     }
 }
