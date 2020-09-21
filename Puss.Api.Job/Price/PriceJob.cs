@@ -2,7 +2,7 @@
 using log4net.Repository;
 using Microsoft.Extensions.Logging;
 using Puss.Log;
-using Puss.RabbitMQ;
+using Puss.RabbitMq;
 using Puss.Redis;
 using Puss.Reptile;
 using System;

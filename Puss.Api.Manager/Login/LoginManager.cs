@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Puss.Api.Filters;
-using Puss.Application.Common;
 using Puss.BusinessCore;
 using Puss.Data.Enum;
 using Puss.Data.Models;
-using Puss.Email;
 using Puss.Redis;
 using Puss.Enties;
 using System;
@@ -13,6 +11,8 @@ using System.Threading.Tasks;
 using Puss.Data.Config;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using Puss.Email;
+using Puss.Application.Common;
 
 namespace Puss.Api.Manager
 {

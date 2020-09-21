@@ -1,7 +1,6 @@
 ﻿using Puss.Data.Enum;
 using System;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 
 namespace Puss.Data.Models
 {

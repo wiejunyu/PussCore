@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using System.Text;
 using Puss.Iphone;
 using Puss.Api.Aop;
-using Puss.RabbitMQ;
+using Puss.RabbitMq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using System.Xml;

@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Web;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
 
 namespace Puss.Application.Common
 {
     public class Common
     {
     }
+
     public class ValidateCode
     {
         /// <summary>

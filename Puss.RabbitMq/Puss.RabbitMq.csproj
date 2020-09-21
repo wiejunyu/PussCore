@@ -1,17 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0-preview.1.20120.4" />
-    <PackageReference Include="RabbitMQ.Client" Version="6.0.0-pre9" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.2.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Puss.Data\Puss.Data.csproj" />
-    <ProjectReference Include="..\Puss.Email\Puss.Email.csproj" />
   </ItemGroup>
 
 </Project>

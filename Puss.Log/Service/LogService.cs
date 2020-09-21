@@ -1,4 +1,4 @@
-﻿using Puss.RabbitMQ;
+﻿using Puss.RabbitMq;
 using System;
 using Newtonsoft.Json;
 using Puss.Enties;

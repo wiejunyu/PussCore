@@ -1,12 +1,9 @@
 ﻿using Puss.Data.Models;
-using Puss.RabbitMQ;
 using System;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using System.Linq;
-using Puss.Data.Enum;
 
 namespace Puss.Attendance
 {

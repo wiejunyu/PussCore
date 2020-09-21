@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Puss.Data.Models;
-using Puss.RabbitMQ;
+using Puss.RabbitMq;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Newtonsoft.Json;

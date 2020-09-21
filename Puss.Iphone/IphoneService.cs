@@ -1,13 +1,13 @@
 ﻿using Puss.Data.Config;
 using Puss.Data.Models;
 using Puss.OAuth1;
-using Puss.Redis;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Puss.Redis;
 
 namespace Puss.Iphone
 {

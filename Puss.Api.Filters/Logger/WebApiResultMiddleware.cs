@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Puss.Log;
 using Newtonsoft.Json;
 using Puss.Data.Models;
-using Puss.RabbitMQ;
 using Microsoft.Extensions.Logging;
 using System;
 

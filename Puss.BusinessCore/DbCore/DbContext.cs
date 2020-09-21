@@ -7,10 +7,9 @@ using System.Linq.Expressions;
 using Puss.Data.Config;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Microsoft.Extensions.Logging;
 using log4net.Repository;
-using log4net.Config;
 using log4net;
+using log4net.Config;
 using System.IO;
 
 namespace Puss.BusinessCore
@@ -59,8 +58,6 @@ namespace Puss.BusinessCore
 
     public class DbContext<T> where T : class, new()
     {
-        private readonly ILogger<DbContext> _logger;
-
         public DbContext()
         {
             Db = new SqlSugarClient(new ConnectionConfig()
@@ -71,16 +68,12 @@ namespace Puss.BusinessCore
                 IsAutoCloseConnection = true,//开启自动释放模式和EF原理一样我就不多解释了
 
             });
-            //调式代码 用来打印SQL 
+            //调式代码 用来打印SQL
             Db.Aop.OnLogExecuting = (sql, pars) =>
             {
-                //Console.WriteLine(sql + "\r\n" +
-                //    Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value)));
-                //Console.WriteLine();
                 ILoggerRepository Logger = new Log().GetLoggerRepository();
                 LogManager.GetLogger(Logger.Name, "Sql").Info($"{sql}\r\n{Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value))}");
             };
-
         }
         //注意：不能写成静态的
         public SqlSugarClient Db;//用来处理事务多表查询和复杂的操作
@@ -365,7 +358,7 @@ namespace Puss.BusinessCore
             return CurrentDb.InsertRange(objs);
         }
     }
-
+    
     public interface IDbContext<T>
     {
         /// <summary>

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Puss.Data.Models;
 using Puss.Log;
-using Puss.RabbitMQ;
+using Puss.RabbitMq;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

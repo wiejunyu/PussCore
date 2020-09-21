@@ -1,11 +1,6 @@
 ﻿using Puss.Data.Config;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Puss.RabbitMQ
+namespace Puss.RabbitMq
 {
     public class Connection
     {
@@ -43,7 +38,7 @@ namespace Puss.RabbitMQ
         }
 
         /// <summary>
-        /// 主机
+        /// 密码
         /// </summary>
         public static string RabbitMQ_VirtualHost
         {

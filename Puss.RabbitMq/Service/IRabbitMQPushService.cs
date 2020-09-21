@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using static Puss.RabbitMQ.RabbitMQPushService;
+using static Puss.RabbitMq.RabbitMQPushService;
 
-namespace Puss.RabbitMQ
+namespace Puss.RabbitMq
 {
     public interface IRabbitMQPushService
     {

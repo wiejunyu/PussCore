@@ -9,7 +9,6 @@ using Puss.Enties;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Puss.BusinessCore;
 
 namespace Puss.Api.Filters
 {

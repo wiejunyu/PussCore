@@ -1,6 +1,5 @@
 ﻿using log4net.Repository;
-using Microsoft.Extensions.Logging;
-using Puss.RabbitMQ;
+using Puss.RabbitMq;
 using System;
 
 namespace Puss.Log

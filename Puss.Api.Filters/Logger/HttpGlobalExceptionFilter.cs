@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Log;
-using Puss.RabbitMQ;
 using Newtonsoft.Json;
-using Hangfire;
 using Microsoft.Extensions.Logging;
 
 namespace Puss.Api.Filters

@@ -1,11 +1,11 @@
-﻿using Puss.RabbitMQ;
+﻿using System.Threading.Tasks;
+using Puss.RabbitMq;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace Puss.RabbitMQ
+namespace Puss.RabbitMq
 {
     public class RabbitMQPushService: IRabbitMQPushService
     {
@@ -102,7 +102,7 @@ namespace Puss.RabbitMQ
             bool result = false;
             try
             {
-                var body = args.Body;
+                var body = args.Body.ToArray();
                 var message = Encoding.UTF8.GetString(body);
                 //将消息业务处理交给外部业务
                 result = ReceiveMessageCallback(message);

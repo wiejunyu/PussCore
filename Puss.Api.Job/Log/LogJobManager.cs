@@ -1,6 +1,6 @@
 ﻿using Puss.BusinessCore;
 using Puss.Enties;
-using Puss.RabbitMQ;
+using Puss.RabbitMq;
 using Puss.Data.Models;
 using Newtonsoft.Json;
 using Hangfire;

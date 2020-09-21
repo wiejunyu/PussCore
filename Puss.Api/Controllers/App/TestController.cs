@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Puss.BusinessCore;
 using Puss.Data.Enum;
 using Puss.Data.Models;
-using Puss.Email;
-using Puss.RabbitMQ;
+using Puss.RabbitMq;
 using Puss.Enties;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Puss.Api.Job;
 using System;
 using System.IO;

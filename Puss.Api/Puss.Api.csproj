@@ -45,19 +45,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Puss.Api.Job\Puss.Api.Job.csproj" />
     <ProjectReference Include="..\Puss.Api.Manager\Puss.Api.Manager.csproj" />
-    <ProjectReference Include="..\Puss.Application\Puss.Application.csproj" />
     <ProjectReference Include="..\Puss.Attendance\Puss.Attendance.csproj" />
-    <ProjectReference Include="..\Puss.BusinessCore\Puss.BusinessCore.csproj" />
-    <ProjectReference Include="..\Puss.Data\Puss.Data.csproj" />
-    <ProjectReference Include="..\Puss.Email\Puss.Email.csproj" />
     <ProjectReference Include="..\Puss.Encrypt\Puss.Encrypt.csproj" />
     <ProjectReference Include="..\Puss.Iphone\Puss.Iphone.csproj" />
     <ProjectReference Include="..\Puss.Log\Puss.Log.csproj" />
     <ProjectReference Include="..\Puss.OAuth1\Puss.OAuth1.csproj" />
-    <ProjectReference Include="..\Puss.QrCode\Puss.QrCode.csproj" />
-    <ProjectReference Include="..\Puss.RabbitMQ\Puss.RabbitMQ.csproj" />
-    <ProjectReference Include="..\Puss.Redis\Puss.Redis.csproj" />
-    <ProjectReference Include="..\Puss.Reptile\Puss.Reptile.csproj" />
   </ItemGroup>
 
   <ItemGroup>
