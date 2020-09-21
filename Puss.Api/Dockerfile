@@ -19,7 +19,7 @@
 FROM registry.cn-shenzhen.aliyuncs.com/basecore/aspnet:3.1-buster-slim-ex AS base
 RUN ln -s /lib/x86_64-linux-gnu/libdl.so.2 /lib/x86_64-linux-gnu/libdl.so
 RUN apt install libgdiplus
-RUN ln -s /usr/lib/libgdiplus.so /usr/lib/gdiplus.dll
+RUN ln -s /usr/lib/libgdiplus.so /usr/lib/gdiplus.dll -e "\nyes"
 WORKDIR /app
 COPY Puss.Api/obj/Docker/publish .
 ENTRYPOINT ["dotnet", "Puss.Api.dll"]
