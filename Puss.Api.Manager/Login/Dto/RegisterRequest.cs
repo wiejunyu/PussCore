@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Puss.Api.Manager
+namespace Puss.Api.Manager.LoginManager
 {
     /// <summary>
     /// 注册模型

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Puss.Api.Aop;
 using Puss.Api.Manager;
+using Puss.Api.Manager.MovieManager;
 using Puss.Application.Common;
 using Puss.Data.Enum;
 using Puss.Data.Models;
@@ -15,29 +16,26 @@ namespace Puss.Api.Controllers
     /// </summary>
     public class MovieController : AppBaseController
     {
+        private readonly IMovieManager MovieManager;
+
         /// <summary>
         /// 电影
         /// </summary>
-        public MovieController()
+        public MovieController(IMovieManager MovieManager)
         {
+            this.MovieManager = MovieManager;
         }
 
-        ///// <summary>
-        ///// 请求返回数据
-        ///// </summary>
-        ///// <returns></returns>
-        //[HttpPost]
-        //[AllowAnonymous]
-        //public async Task<ReturnResult> Post()
-        //{
-        //    Dictionary<string, string> dic = new Dictionary<string, string>();
-        //    dic.Add("cityId", "2");
-        //    dic.Add("channelId", "20001");
-        //    dic.Add("cityId", "2");
-        //    dic.Add("cityId", "2");
-        //    dic.Add("cityId", "2");
-        //    HttpPostHelper.getParamSrc("");
-        //    return new ReturnResult(ReturnResultStatus.Succeed);
-        //}
+        /// <summary>
+        /// 请求返回数据
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ReturnResult> QueryCitys()
+        {
+            List<ResultQueryCitysDataList> list = await MovieManager.QueryCitys();
+            return new ReturnResult<List<ResultQueryCitysDataList>>(ReturnResultStatus.Succeed, list);
+        }
     }
 }

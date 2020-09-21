@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Puss.Encrypt;
 
-namespace Puss.Api.Manager
+namespace Puss.Api.Manager.KeyManager
 {
     /// <summary>
     /// 密匙

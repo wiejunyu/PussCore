@@ -56,7 +56,7 @@ namespace Puss.Api.Filters
                     context.Result = new JsonResult(new ReturnResult()
                     {
                         Status = (int)ReturnResultStatus.BLLError,
-                        Message = JsonConvert.SerializeObject(context.Exception.Message, settings),
+                        Message = "网络错误",
                     });
                     context.ExceptionHandled = true;
                 }

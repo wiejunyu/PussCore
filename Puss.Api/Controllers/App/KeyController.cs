@@ -1,18 +1,14 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
-using Puss.Api.Manager;
+using Puss.Api.Manager.KeyManager;
+using Puss.Api.Manager.LoginManager;
 using Puss.BusinessCore;
 using Puss.Data.Enum;
 using Puss.Data.Models;
-using Puss.Encrypt;
 using Puss.Enties;
-using Puss.Redis;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Puss.Api.Controllers

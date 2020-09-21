@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Puss.Api.Manager
+﻿
+namespace Puss.Api.Manager.ValidateCodeManager
 {
 
     /// <summary>

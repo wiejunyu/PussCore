@@ -8,7 +8,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Puss.Data.Config;
 using Autofac;
-using Puss.Api.Manager;
+using Puss.Api.Manager.ValidateCodeManager;
 
 namespace Puss.Api.Aop
 {

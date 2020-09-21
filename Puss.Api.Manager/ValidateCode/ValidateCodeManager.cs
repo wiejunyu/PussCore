@@ -3,7 +3,7 @@ using Puss.Enties;
 using Puss.Redis;
 using System.Threading.Tasks;
 
-namespace Puss.Api.Manager
+namespace Puss.Api.Manager.ValidateCodeManager
 {
     /// <summary>
     /// 验证码

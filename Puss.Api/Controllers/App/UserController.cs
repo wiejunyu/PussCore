@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Puss.Api.Aop;
-using Puss.Api.Manager;
+using Puss.Api.Manager.LoginManager;
 using Puss.Data.Enum;
 using Puss.Data.Models;
 using System.Threading.Tasks;

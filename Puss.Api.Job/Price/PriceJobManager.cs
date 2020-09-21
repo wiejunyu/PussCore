@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Puss.Reptile;
 using Newtonsoft.Json;
 using Puss.Reptile.Models;
-using Puss.Api.Manager;
+using Puss.Api.Manager.PriceManager;
 
 namespace Puss.Api.Job
 {

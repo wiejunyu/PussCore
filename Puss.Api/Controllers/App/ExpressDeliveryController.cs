@@ -9,7 +9,7 @@ using Puss.Reptile.Models;
 using Puss.Redis;
 using System.Linq;
 using System.Threading.Tasks;
-using Puss.Api.Manager;
+using Puss.Api.Manager.PriceManager;
 
 namespace Puss.Api.Controllers
 {

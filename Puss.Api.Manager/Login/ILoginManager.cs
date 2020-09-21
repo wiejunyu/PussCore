@@ -1,7 +1,7 @@
 ﻿using Puss.Data.Models;
 using System.Threading.Tasks;
 
-namespace Puss.Api.Manager
+namespace Puss.Api.Manager.LoginManager
 {
     /// <summary>
     /// 登录

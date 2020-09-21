@@ -14,7 +14,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Puss.Email;
 using Puss.Application.Common;
 
-namespace Puss.Api.Manager
+namespace Puss.Api.Manager.LoginManager
 {
     /// <summary>
     /// 登录
