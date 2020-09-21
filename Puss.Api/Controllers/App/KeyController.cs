@@ -20,7 +20,7 @@ namespace Puss.Api.Controllers
     /// <summary>
     /// 密匙
     /// </summary>
-    public class KeyController : ApiBaseController
+    public class KeyController : AppBaseController
     {
         private readonly DbContext DbContext;
         private readonly IKeySectionManager KeySectionManager;

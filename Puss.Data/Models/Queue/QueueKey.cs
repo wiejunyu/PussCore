@@ -20,38 +20,6 @@ namespace Puss.Data.Models
         }
 
         /// <summary>
-        /// 报错日志收集
-        /// </summary>
-        public static string LogError
-        {
-            get { return "LogError"; }
-        }
-
-        /// <summary>
-        /// 接口耗时日志收集
-        /// </summary>
-        public static string LogTime
-        {
-            get { return "LogTime"; }
-        }
-
-        /// <summary>
-        /// 请求结果日志收集
-        /// </summary>
-        public static string LogResult
-        {
-            get { return "LogResult"; }
-        }
-
-        /// <summary>
-        /// 定时计划日志收集
-        /// </summary>
-        public static string LogJob
-        {
-            get { return "LogJob"; }
-        }
-
-        /// <summary>
         /// 唯一ID获取
         /// </summary>
         public static string GetGuid

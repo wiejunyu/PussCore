@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Puss.Data.Models.Api
+namespace Puss.Api.Manager
 {
     /// <summary>
     /// 价格类

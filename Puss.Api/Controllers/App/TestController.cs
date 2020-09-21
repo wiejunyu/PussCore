@@ -19,7 +19,7 @@ namespace Puss.Api.Controllers
     /// <summary>
     /// 测试
     /// </summary>
-    public class TestController : ApiBaseController
+    public class TestController : AdminBaseController
     {
         private readonly IUserManager UserManager;
         private readonly ILogJobManager LogJobManager;

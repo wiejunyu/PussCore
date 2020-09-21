@@ -7,16 +7,16 @@ using Puss.Reptile;
 using Newtonsoft.Json;
 using Puss.Reptile.Models;
 using Puss.Redis;
-using Puss.Data.Models.Api;
 using System.Linq;
 using System.Threading.Tasks;
+using Puss.Api.Manager;
 
 namespace Puss.Api.Controllers
 {
     /// <summary>
     /// 快递查询接口
     /// </summary>
-    public class ExpressDeliveryController : ApiBaseController
+    public class ExpressDeliveryController : AppBaseController
     {
         private readonly IReptileService ReptileService;
         private readonly IRedisService RedisService;

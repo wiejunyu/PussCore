@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
@@ -143,6 +145,22 @@ namespace Puss.Application.Common
             {
                 if (property.GetValue(header, null) is NameValueCollection collection) collection[name] = value;
             }
+        }
+
+        /// <summary>
+        /// 参数按照ASCII码从小到大排序（字典序）
+        /// </summary>
+        /// <param name="dic">字典</param>
+        /// <returns></returns>
+        public static string getParamSrc(Dictionary<string, string> dic)
+        {
+            dic = dic.OrderBy(key => key.Key).ToDictionary(keyItem => keyItem.Key, valueItem => valueItem.Value);
+            var sbPara = new StringBuilder(1024);
+            foreach (var para in dic.Where(para => !string.IsNullOrWhiteSpace(para.Value)))
+            {
+                sbPara.AppendFormat("{0}={1}&", para.Key, para.Value);
+            }
+            return sbPara.ToString().TrimEnd('&');
         }
     }
 }

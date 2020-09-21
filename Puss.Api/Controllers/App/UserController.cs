@@ -11,7 +11,7 @@ namespace Puss.Api.Controllers
     /// <summary>
     /// 用户
     /// </summary>
-    public class UserController : ApiBaseController
+    public class UserController : AppBaseController
     {
         private readonly ILoginManager LoginManager;
 

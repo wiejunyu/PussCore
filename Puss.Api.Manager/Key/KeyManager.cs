@@ -1,14 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Puss.Api.Filters;
-using Puss.Application.Common;
-using Puss.BusinessCore;
-using Puss.Data.Enum;
-using Puss.Data.Models;
-using Puss.Email;
-using Puss.Redis;
-using Puss.Enties;
-using System;
+﻿using Puss.Enties;
 using System.Threading.Tasks;
 using Puss.Encrypt;
 

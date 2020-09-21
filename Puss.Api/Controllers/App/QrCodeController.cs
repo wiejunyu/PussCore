@@ -10,7 +10,7 @@ namespace Puss.Api.Controllers
     /// <summary>
     /// 二维码
     /// </summary>
-    public class QrCodeController : ApiBaseController
+    public class QrCodeController : AppBaseController
     {
         private readonly IQrCodeService QrCodeService;
 

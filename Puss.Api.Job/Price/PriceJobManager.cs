@@ -1,12 +1,10 @@
 ﻿using Puss.Data.Models;
 using Puss.Redis;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using Puss.Data.Models.Api;
 using Puss.Reptile;
 using Newtonsoft.Json;
 using Puss.Reptile.Models;
+using Puss.Api.Manager;
 
 namespace Puss.Api.Job
 {

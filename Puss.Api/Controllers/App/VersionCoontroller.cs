@@ -12,7 +12,7 @@ namespace BasicStore.Api.Controllers
     /// 版本测试
     /// </summary>
     [ApiVersion("1.0", Deprecated = true)]
-    public class VersionCoontroller : ApiBaseController
+    public class VersionCoontroller : AppBaseController
     {
         /// <summary>
         /// 版本测试
@@ -50,7 +50,7 @@ namespace BasicStore.Api.Controllers.v2
     /// 版本测试
     /// </summary>
     [ApiVersion("2.0", Deprecated = true)]
-    public class VersionCoontroller : ApiBaseController
+    public class VersionCoontroller : AdminBaseController
     {
         /// <summary>
         /// 版本测试
@@ -74,7 +74,7 @@ namespace BasicStore.Api.Controllers.v3
     /// 版本测试
     /// </summary>
     [ApiVersion("3.0")]
-    public class VersionCoontroller : ApiBaseController
+    public class VersionCoontroller : AdminBaseController
     {
         /// <summary>
         /// 版本测试 

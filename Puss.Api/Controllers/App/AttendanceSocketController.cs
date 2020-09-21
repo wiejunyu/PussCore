@@ -12,7 +12,7 @@ namespace Puss.Api.Controllers
     /// 考勤
     /// </summary>
     [AllowAnonymous]
-    public class AttendanceSocketController : ApiBaseController
+    public class AttendanceSocketController : AppBaseController
     {
         /// <summary>
         /// 学生进校离校记录

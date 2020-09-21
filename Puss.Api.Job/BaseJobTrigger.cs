@@ -1,6 +1,7 @@
 ﻿using log4net.Repository;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Puss.Data.Models;
 using Puss.Log;
 using Puss.RabbitMQ;
@@ -20,7 +21,8 @@ namespace Puss.Api.Job
         private readonly TimeSpan _dueTime;
         private readonly TimeSpan _periodTime;
         private readonly IJobExecutor _jobExcutor;
-        private readonly ILogService LogService;
+        //private readonly ILogService LogService;
+        private readonly ILogger<BaseJobTrigger> Logger;
 
         /// <summary>
         /// 构造函数
@@ -28,16 +30,16 @@ namespace Puss.Api.Job
         /// <param name="dueTime">到期执行时间</param>
         /// <param name="periodTime">间隔时间</param>
         /// <param name="jobExcutor">任务执行者</param>
-        /// <param name="LogService">日志类接口</param>
+        /// <param name="Logger">日志类接口</param>
         protected BaseJobTrigger(TimeSpan dueTime,
              TimeSpan periodTime,
              IJobExecutor jobExcutor,
-             ILogService LogService)
+             ILogger<BaseJobTrigger> Logger)
         {
             _dueTime = dueTime;
             _periodTime = periodTime;
             _jobExcutor = jobExcutor;
-            this.LogService = LogService;
+            this.Logger = Logger;
         }
 
         #region  计时器相关方法
@@ -116,7 +118,8 @@ namespace Puss.Api.Job
         {
             #region 日志记录
             //日志收集
-            LogService.LogCollectPush(QueueKey.LogJob, ex, Name, LogService.GetLoggerRepository());
+            //LogService.LogCollectPush(QueueKey.LogJob, ex, Name, LogService.GetLoggerRepository());
+            Logger.LogInformation($"[CreateTime]:{DateTime.Now}[Name]:{Name}[Exception]:{JsonConvert.SerializeObject(ex)}");
             #endregion
         }
     }

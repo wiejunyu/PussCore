@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Puss.Data.Models
+namespace Puss.Api.Manager
 {
     #region Key栏目
     /// <summary>

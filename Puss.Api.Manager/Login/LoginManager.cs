@@ -6,7 +6,6 @@ using Puss.BusinessCore;
 using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Email;
-using Puss.RabbitMQ;
 using Puss.Redis;
 using Puss.Enties;
 using System;

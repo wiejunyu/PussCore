@@ -17,11 +17,11 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\Puss.Data.xml</DocumentationFile>
+    <DocumentationFile>bin\Puss.Data.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -113,12 +113,8 @@
     <Compile Include="Enum\CodeType.cs" />
     <Compile Include="Enum\ExceptionTypeEnum.cs" />
     <Compile Include="Enum\ReturnResultStatus.cs" />
-    <Compile Include="Models\Api\Price.cs" />
-    <Compile Include="Models\Api\Key.cs" />
     <Compile Include="Models\Exception\AppException.cs" />
     <Compile Include="Models\Comment\CommentConfig.cs" />
-    <Compile Include="Models\Api\LoginRequest.cs" />
-    <Compile Include="Models\Api\RegisterRequest.cs" />
     <Compile Include="Models\Log\TimeLog.cs" />
     <Compile Include="Models\Iphone\PostProfile.cs" />
     <Compile Include="Models\Queue\QueueKey.cs" />
