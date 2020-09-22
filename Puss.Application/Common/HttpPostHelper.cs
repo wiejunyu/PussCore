@@ -148,6 +148,36 @@ namespace Puss.Application.Common
         }
 
         /// <summary>
+        /// Get请求
+        /// </summary>
+        /// <param name="Url"></param>
+        /// <param name="contentType"></param>
+        /// <returns></returns>
+        public static string HttpGet(string Url, string contentType)
+        {
+            try
+            {
+                string retString = string.Empty;
+
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(Url);
+                request.Method = "GET";
+                request.ContentType = contentType;
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                Stream myResponseStream = response.GetResponseStream();
+                StreamReader streamReader = new StreamReader(myResponseStream);
+                retString = streamReader.ReadToEnd();
+                streamReader.Close();
+                myResponseStream.Close();
+                return retString;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
         /// 参数按照ASCII码从小到大排序（字典序）,不带（=）
         /// </summary>
         /// <param name="dic">字典</param>

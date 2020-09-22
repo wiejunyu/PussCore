@@ -18,4 +18,8 @@
     <ProjectReference Include="..\Puss.Reptile\Puss.Reptile.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Movie\" />
+  </ItemGroup>
+
 </Project>

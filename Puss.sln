@@ -35,15 +35,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.Enties", "Puss.Enties\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.BusinessCore", "Puss.BusinessCore\Puss.BusinessCore.csproj", "{D23F1A7F-CEC4-4F70-9E20-9F04DD73EE08}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.Application", "Puss.Application\Puss.Application.csproj", "{CC3371A7-B53E-4AE6-886F-7264DC0A7B46}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.Application", "Puss.Application\Puss.Application.csproj", "{CC3371A7-B53E-4AE6-886F-7264DC0A7B46}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.Email", "Puss.Email\Puss.Email.csproj", "{01AF5614-448C-4265-8CA6-D766553EB4CD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.Email", "Puss.Email\Puss.Email.csproj", "{01AF5614-448C-4265-8CA6-D766553EB4CD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.RabbitMq", "Puss.RabbitMq\Puss.RabbitMq.csproj", "{01EE55B4-815D-4D78-A2A9-CE372324B8E5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.RabbitMq", "Puss.RabbitMq\Puss.RabbitMq.csproj", "{01EE55B4-815D-4D78-A2A9-CE372324B8E5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.Redis", "Puss.Redis\Puss.Redis.csproj", "{92EBFDD2-4371-4B8C-B793-E7B7859C293D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.Redis", "Puss.Redis\Puss.Redis.csproj", "{92EBFDD2-4371-4B8C-B793-E7B7859C293D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Puss.Reptile", "Puss.Reptile\Puss.Reptile.csproj", "{EE9BE321-D8DB-4450-BD63-5EB1C0F99FB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Puss.Reptile", "Puss.Reptile\Puss.Reptile.csproj", "{EE9BE321-D8DB-4450-BD63-5EB1C0F99FB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

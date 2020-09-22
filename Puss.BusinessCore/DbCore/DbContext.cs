@@ -7,10 +7,10 @@ using System.Linq.Expressions;
 using Puss.Data.Config;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.IO;
 using log4net.Repository;
 using log4net;
 using log4net.Config;
-using System.IO;
 
 namespace Puss.BusinessCore
 {
@@ -68,9 +68,12 @@ namespace Puss.BusinessCore
                 IsAutoCloseConnection = true,//开启自动释放模式和EF原理一样我就不多解释了
 
             });
-            //调式代码 用来打印SQL
+            //调式代码 用来打印SQL 
             Db.Aop.OnLogExecuting = (sql, pars) =>
             {
+                //Console.WriteLine(sql + "\r\n" +
+                //    Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value)));
+                //Console.WriteLine();
                 ILoggerRepository Logger = new Log().GetLoggerRepository();
                 LogManager.GetLogger(Logger.Name, "Sql").Info($"{sql}\r\n{Db.Utilities.SerializeObject(pars.ToDictionary(it => it.ParameterName, it => it.Value))}");
             };
@@ -102,6 +105,7 @@ namespace Puss.BusinessCore
        public SimpleClient<User> UserDb { get { return new SimpleClient<User>(Db); } }//用来处理User表的常用操作
        public SimpleClient<UserDetails> UserDetailsDb { get { return new SimpleClient<UserDetails>(Db); } }//用来处理UserDetails表的常用操作
        public SimpleClient<Tel> TelDb { get { return new SimpleClient<Tel>(Db); } }//用来处理Tel表的常用操作
+       public SimpleClient<Movie_City> Movie_CityDb { get { return new SimpleClient<Movie_City>(Db); } }//用来处理Movie_City表的常用操作
         
         /// <summary>
         /// 获取所有
