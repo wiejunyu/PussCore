@@ -16,21 +16,9 @@ namespace Puss.Api.Manager.MovieManager
         Task<List<ResultQueryCitysDataList>> QueryCitys();
 
         /// <summary>
-        /// 获取当前热映影片
+        /// 返回当前地区影院列表
         /// </summary>
         /// <returns></returns>
-        Task<List<ResultHotFilmList>> HotShowingMovies();
-
-        /// <summary>
-        /// 获取当前热映影片
-        /// </summary>
-        /// <returns></returns>
-        Task<List<MoviesItem>> OldHotShowingMovies();
-
-        /// <summary>
-        /// 比较
-        /// </summary>
-        /// <returns></returns>
-        Task<List<ResultHotFilmList>> Bijiao();
+        Task<List<ResultHotFilmList>> QueryCinemas(int cityId);
     }
 }

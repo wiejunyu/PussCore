@@ -57,7 +57,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public async Task<ReturnResult> Movies(int cityId)
         {
-            List<ResultHotFilmList> list = await MovieManager.Bijiao();
+            List<ResultHotFilmList> list = await MovieManager.QueryCinemas(cityId);
             return new ReturnResult<List<ResultHotFilmList>>(ReturnResultStatus.Succeed, list);
         }
     }

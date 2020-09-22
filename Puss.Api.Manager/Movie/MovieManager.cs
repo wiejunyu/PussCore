@@ -53,20 +53,22 @@ namespace Puss.Api.Manager.MovieManager
         }
 
         /// <summary>
-        /// 获取当前热映影片
+        /// 返回当前地区影院列表
         /// </summary>
         /// <returns></returns>
-        public async Task<List<ResultHotFilmList>> HotShowingMovies()
+        public async Task<List<ResultHotFilmList>> QueryCinemas(int cityId)
         {
             return await Task.Run(() =>
             {
                 Dictionary<string, string> dic = new Dictionary<string, string>();
                 dic.Add("channelId", channelId);
+                dic.Add("cityId", cityId.ToString());
                 string sign = MD5.Md5(HttpPostHelper.GetParamSrc(dic) + secret).ToLowerInvariant();
-                PostHotShowingMovies temp = new PostHotShowingMovies();
+                PostQueryCinemas temp = new PostQueryCinemas();
                 temp.channelId = channelId;
+                temp.cityId = cityId.ToString();
                 temp.sign = sign;
-                string url = $"{http}/manman/index.php/open/partner/hotShowingMovies";
+                string url = $"{http}/manman/index.php/open/partner/queryCinemas";
                 string result = HttpPostHelper.DoHttpPost(url, JsonConvert.SerializeObject(temp));
                 ResultHotResult resultData = JsonConvert.DeserializeObject<ResultHotResult>(result);
                 if (resultData.code == 0)
@@ -75,38 +77,6 @@ namespace Puss.Api.Manager.MovieManager
                 }
                 else throw new AppException(resultData.message);
             });
-        }
-
-        /// <summary>
-        /// 获取当前热映影片
-        /// </summary>
-        /// <returns></returns>
-        public async Task<List<MoviesItem>> OldHotShowingMovies()
-        {
-            return await Task.Run(() =>
-            {
-                Dictionary<string, string> dic = new Dictionary<string, string>();
-                dic.Add("channelId", channelId);
-                string sign = MD5.Md5(HttpPostHelper.GetParamSrc(dic) + secret).ToLowerInvariant();
-                PostHotShowingMovies temp = new PostHotShowingMovies();
-                temp.channelId = channelId;
-                temp.sign = sign;
-                string url = $"https://api.jintone.com/api/Movies/Movies?cityId=99&pageSize=99&pageIndex=0";
-                string result = HttpPostHelper.HttpGet(url, string.Empty);
-                TestRoot resultData = JsonConvert.DeserializeObject<TestRoot>(result);
-                return resultData.Movies;
-            });
-        }
-
-        /// <summary>
-        /// 比较
-        /// </summary>
-        /// <returns></returns>
-        public async Task<List<ResultHotFilmList>> Bijiao()
-        {
-            List<ResultHotFilmList> list = await this.HotShowingMovies();
-            List<MoviesItem> list1 = await this.OldHotShowingMovies();
-            return list.Where(x => !list1.Where(p => p.Name == x.name).Any()).ToList();
         }
     }
 }

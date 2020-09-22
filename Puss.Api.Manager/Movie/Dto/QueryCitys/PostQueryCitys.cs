@@ -248,7 +248,17 @@ namespace Puss.Api.Manager.MovieManager
     /// </summary>
     public class PostHotShowingMovies : PostBase
     {
+    }
 
+    /// <summary>
+    /// 请求数据
+    /// </summary>
+    public class PostQueryCinemas : PostBase
+    {
+        /// <summary>
+        /// 签名
+        /// </summary>
+        public string cityId { get; set; }
     }
     #endregion
 
