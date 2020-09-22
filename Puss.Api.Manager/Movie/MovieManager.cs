@@ -56,26 +56,27 @@ namespace Puss.Api.Manager.MovieManager
         /// 返回当前地区影院列表
         /// </summary>
         /// <returns></returns>
-        public async Task<List<ResultHotFilmList>> QueryCinemas(int cityId)
+        public async Task<List<ResultCinemasList>> QueryCinemas(string cityId)
         {
             return await Task.Run(() =>
             {
                 Dictionary<string, string> dic = new Dictionary<string, string>();
                 dic.Add("channelId", channelId);
-                dic.Add("cityId", cityId.ToString());
-                string sign = MD5.Md5(HttpPostHelper.GetParamSrc(dic) + secret).ToLowerInvariant();
+                dic.Add("cityId", cityId);
+                string sign = HttpPostHelper.GetParamSrc(dic) + secret;
+                sign = MD5.Md5(sign).ToLowerInvariant();
                 PostQueryCinemas temp = new PostQueryCinemas();
                 temp.channelId = channelId;
-                temp.cityId = cityId.ToString();
+                temp.cityId = cityId;
                 temp.sign = sign;
                 string url = $"{http}/manman/index.php/open/partner/queryCinemas";
                 string result = HttpPostHelper.DoHttpPost(url, JsonConvert.SerializeObject(temp));
-                ResultHotResult resultData = JsonConvert.DeserializeObject<ResultHotResult>(result);
+                ResultQueryCinemas resultData = JsonConvert.DeserializeObject<ResultQueryCinemas>(result);
                 if (resultData.code == 0)
                 {
-                    return resultData.result.filmList;
+                    return resultData.result.cinemasList;
                 }
-                else throw new AppException(resultData.message);
+                else throw new AppException(resultData.errorMsg);
             });
         }
     }

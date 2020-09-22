@@ -188,7 +188,7 @@ namespace Puss.Application.Common
             var sbPara = new StringBuilder(1024);
             foreach (var para in dic.Where(para => !string.IsNullOrWhiteSpace(para.Value)))
             {
-                sbPara.AppendFormat("{0}{1}&", para.Key, para.Value);
+                sbPara.AppendFormat("{0}{1}", para.Key, para.Value);
             }
             return sbPara.ToString().TrimEnd('&');
         }

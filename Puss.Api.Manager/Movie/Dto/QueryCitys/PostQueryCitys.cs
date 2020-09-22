@@ -9,26 +9,10 @@ namespace Puss.Api.Manager.MovieManager
     /// <summary>
     /// 城市结果
     /// </summary>
-    public class ResultQueryCitys
+    public class ResultQueryCitys : ResultBase
     {
         /// <summary>
-        /// 状态码
-        /// </summary>
-        public int code { get; set; }
-        /// <summary>
-        /// 消息
-        /// </summary>
-        public string message { get; set; }
-        /// <summary>
-        /// 签名
-        /// </summary>
-        public string sign { get; set; }
-        /// <summary>
-        /// 错误消息
-        /// </summary>
-        public string errorMsg { get; set; }
-        /// <summary>
-        /// data
+        /// 返回
         /// </summary>
         public ResultQueryCitysData result { get; set; }
     }
@@ -194,7 +178,98 @@ namespace Puss.Api.Manager.MovieManager
     /// <summary>
     /// 结果
     /// </summary>
-    public class ResultHotResult
+    public class ResultHotResult : ResultBase
+    {
+        /// <summary>
+        /// 返回结果
+        /// </summary>
+        public ResultHotResultData result { get; set; }
+    }
+    #endregion
+
+    #region 影院列表
+    /// <summary>
+    /// 影院列表
+    /// </summary>
+    public class ResultCinemasList
+    {
+        /// <summary>
+        /// 影院ID
+        /// </summary>
+        public int cinemaId { get; set; }
+        /// <summary>
+        /// 影院名称
+        /// </summary>
+        public string cinemaName { get; set; }
+        /// <summary>
+        /// 城市名称
+        /// </summary>
+        public string cityName { get; set; }
+        /// <summary>
+        ///  影院地址
+        /// </summary>
+        public string cinemaAddr { get; set; }
+        /// <summary>
+        /// 地区名称
+        /// </summary>
+        public string areaName { get; set; }
+        /// <summary>
+        /// 影院电话
+        /// </summary>
+        public string tel { get; set; }
+        /// <summary>
+        /// 影院专资编码
+        /// </summary>
+        public string std_cinema_id { get; set; }
+        /// <summary>
+        /// 区域ID（县区）
+        /// </summary>
+        public string regionid { get; set; }
+        /// <summary>
+        /// 经度
+        /// </summary>
+        public double longitude { get; set; }
+        /// <summary>
+        /// 纬度
+        /// </summary>
+        public double latitude { get; set; }
+    }
+
+    /// <summary>
+    /// 影院列表结果
+    /// </summary>
+    public class ResultQueryCinemasData
+    {
+        /// <summary>
+        /// 影院列表
+        /// </summary>
+        public List<ResultCinemasList> cinemasList { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int pageTotal { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public int page { get; set; }
+    }
+
+    /// <summary>
+    /// 结果
+    /// </summary>
+    public class ResultQueryCinemas : ResultBase
+    {
+        /// <summary>
+        /// 结果
+        /// </summary>
+        public ResultQueryCinemasData result { get; set; }
+    }
+    #endregion
+
+    /// <summary>
+    /// 结果
+    /// </summary>
+    public class ResultBase
     {
         /// <summary>
         /// 状态码
@@ -212,12 +287,7 @@ namespace Puss.Api.Manager.MovieManager
         /// 错误消息
         /// </summary>
         public string errorMsg { get; set; }
-        /// <summary>
-        /// 返回结果
-        /// </summary>
-        public ResultHotResultData result { get; set; }
     }
-    #endregion
     #endregion
 
     #region 请求
@@ -259,89 +329,6 @@ namespace Puss.Api.Manager.MovieManager
         /// 签名
         /// </summary>
         public string cityId { get; set; }
-    }
-    #endregion
-
-    #region Test
-    //如果好用，请收藏地址，帮忙分享。
-    public class MoviesItem
-    {
-        /// <summary>
-        /// 详情
-        /// </summary>
-        public string Description { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public int Duration { get; set; }
-        /// <summary>
-        /// ID
-        /// </summary>
-        public string MovieId { get; set; }
-        /// <summary>
-        /// 名称
-        /// </summary>
-        public string Name { get; set; }
-        /// <summary>
-        /// 封面
-        /// </summary>
-        public string PosterUrl { get; set; }
-        /// <summary>
-        /// 上映方式：2D/IMAX 2D/中国巨幕2D/CINITY 2D/杜比影院 2D
-        /// </summary>
-        public string Version { get; set; }
-        /// <summary>
-        /// 是否预先展览
-        /// </summary>
-        public string IsPreShow { get; set; }
-        /// <summary>
-        /// 是否全球发布
-        /// </summary>
-        public string IsGlobalReleased { get; set; }
-        /// <summary>
-        /// 评分
-        /// </summary>
-        public double Score { get; set; }
-        /// <summary>
-        /// 心愿
-        /// </summary>
-        public int Wish { get; set; }
-        /// <summary>
-        /// 演员
-        /// </summary>
-        public string Star { get; set; }
-        /// <summary>
-        /// 推出日期
-        /// </summary>
-        public string ReleaseTime { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public string ShowInfo { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public string ComingTitle { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public int ShowSt { get; set; }
-        /// <summary>
-        /// 栏目
-        /// </summary>
-        public string Category { get; set; }
-    }
-
-    public class TestRoot
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        public List<MoviesItem> Movies { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
-        public int Count { get; set; }
     }
     #endregion
 }

@@ -19,6 +19,6 @@ namespace Puss.Api.Manager.MovieManager
         /// 返回当前地区影院列表
         /// </summary>
         /// <returns></returns>
-        Task<List<ResultHotFilmList>> QueryCinemas(int cityId);
+        Task<List<ResultCinemasList>> QueryCinemas(string cityId);
     }
 }
