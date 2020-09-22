@@ -105,7 +105,7 @@
             //流加载数据
             $.ajax({
                 type: "GET",
-                url: GetAjaxUrl() + "api/Key/GetKeyDetailed?id=" + getUrlParam("id"),
+                url: GetAjaxUrl() + "Key/GetKeyDetailed?id=" + getUrlParam("id"),
                 contentType: 'application/json;charset=utf-8',
                 headers: {
                     Authorization: 'Bearer ' + GetToken(),
@@ -131,7 +131,7 @@
                         layui.use('laytpl', function () {
                             $.ajax({
                                 type: "GET",
-                                url: GetAjaxUrl() + "api/Key/GetKeySectionListAll",
+                                url: GetAjaxUrl() + "Key/GetKeySectionListAll",
                                 contentType: 'application/json;charset=utf-8',
                                 headers: {
                                     Authorization: 'Bearer ' + GetToken(),
@@ -178,7 +178,7 @@
             var post_data = $("#from").serializeJSON();//表单序列化
             $.ajax({
                 type: "POST",
-                url: GetAjaxUrl() + "api/Key/EditKey",
+                url: GetAjaxUrl() + "Key/EditKey",
                 contentType: 'application/json;charset=utf-8',
                 headers: {
                     Authorization: 'Bearer ' + GetToken(),

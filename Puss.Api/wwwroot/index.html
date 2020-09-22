@@ -67,7 +67,7 @@
             var type = 0;
             $("#data" + type).html('');
             $.ajax({
-                url: GetAjaxUrl() + "api/Key/GetKeySectionList",
+                url: GetAjaxUrl() + "Key/GetKeySectionList",
                 data: { iPageIndex: 1, iPageSize:99999 },
                 dataType: 'json',
                 type: "GET",
@@ -122,7 +122,7 @@
                 },
                     function (index, layero) {
                         $.ajax({
-                            url: GetAjaxUrl() + "api/Key/DeleteKeySection?id=" + id,
+                            url: GetAjaxUrl() + "Key/DeleteKeySection?id=" + id,
                             type: "POST",
                             contentType: 'application/json;charset=utf-8',
                             headers: {
