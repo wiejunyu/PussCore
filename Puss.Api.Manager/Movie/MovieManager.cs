@@ -165,8 +165,17 @@ namespace Puss.Api.Manager.MovieManager
         /// <returns></returns>
         public async Task StartUpdateCitysAndCinemas()
         {
-            List<ResultQueryCitysDataList> lResultCitys = await QueryCitys();
-            List<Movie_City> lResultMovieCity = lResultCitys.MapToList<ResultQueryCitysDataList, Movie_City>();
+            List<ResultQueryCitysDataList> lResultCitys = new List<ResultQueryCitysDataList>();
+            List<Movie_City> lResultMovieCity = new List<Movie_City>();
+            try
+            {
+                lResultCitys = await QueryCitys();
+                lResultMovieCity = lResultCitys.MapToList<ResultQueryCitysDataList, Movie_City>();
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
             //返回当前没有的城市列表
             List<Movie_City> lMovieCity = await Movie_CityManager.GetListAsync();
             List<Movie_City> lInsertMovieCity = lResultMovieCity.Where(x => !lMovieCity.Any(p => p.cityId == x.cityId)).ToList();
@@ -182,8 +191,17 @@ namespace Puss.Api.Manager.MovieManager
 
             foreach (var temp in lMovieCity)
             {
-                List<ResultCinemasList> lResultCinemas = await QueryCinemas(temp.cityId.ToString());
-                List<Movie_Cinemas> lResultMovieCinemas = lResultCinemas.MapToList<ResultCinemasList, Movie_Cinemas>();
+                List<ResultCinemasList> lResultCinemas = new List<ResultCinemasList>();
+                List<Movie_Cinemas> lResultMovieCinemas = new List<Movie_Cinemas>();
+                try
+                {
+                    lResultCinemas = await QueryCinemas(temp.cityId.ToString());
+                    lResultMovieCinemas = lResultCinemas.MapToList<ResultCinemasList, Movie_Cinemas>();
+                }
+                catch (Exception ex)
+                {
+                    continue;
+                }
                 //返回当前没有的影院列表
                 var lInsertTemp = lResultMovieCinemas.Where(x => !lMovieCinemas.Any(p => p.cinemaId == x.cinemaId)).ToList();
                 //写入城市ID
@@ -193,6 +211,7 @@ namespace Puss.Api.Manager.MovieManager
                 //返回当前需要删除的影院列表
                 var lDeleteTemp = lMovieCinemas.Where(x => x.cityId == temp.cityId && !lResultMovieCinemas.Any(p => p.cinemaId == x.cinemaId)).ToList();
                 lDeleteMovieCinemas.AddRange(lDeleteTemp);
+
             }
             //总影院列表
             lMovieCinemas.AddRange(lInsertMovieCinemas);
@@ -232,28 +251,31 @@ namespace Puss.Api.Manager.MovieManager
             List<Movie_Shows> lDeleteMovieShows = new List<Movie_Shows>();
             foreach (var temp in lMovieCinemas)
             {
+                List<ResultShows> lResultShows = new List<ResultShows>();
+                List<Movie_Shows> lResultMovieShows = new List<Movie_Shows>();
                 try
                 {
-                    List<ResultShows> lResultShows = await QueryShows(temp.cinemaId.ToString());
-                    List<Movie_Shows> lResultMovieShows = lResultShows.MapToList<ResultShows, Movie_Shows>();
-                    //返回当前没有的场次列表
-                    var lInsertTemp = lResultMovieShows.Where(x => !lMovieShows.Any(p => p.showId == x.showId)).ToList();
-                    //写入影院ID
-                    lInsertTemp.ForEach(x =>
-                    {
-                        x.cinemaId = temp.cinemaId;
-                        x.createTime = DateTime.Now;
-                    });
-                    lInsertMovieShows.AddRange(lInsertTemp);
-
-                    //返回当前需要删除的影院列表
-                    var lDeleteTemp = lMovieShows.Where(x => x.cinemaId == temp.cinemaId && !lResultMovieShows.Any(p => p.showId == x.showId)).ToList();
-                    lDeleteMovieShows.AddRange(lDeleteTemp);
+                    lResultShows = await QueryShows(temp.cinemaId.ToString());
+                    lResultMovieShows = lResultShows.MapToList<ResultShows, Movie_Shows>();
                 }
-                catch 
+                catch (Exception ex)
                 {
-                    ;
+                    continue;
                 }
+
+                //返回当前没有的场次列表
+                var lInsertTemp = lResultMovieShows.Where(x => !lMovieShows.Any(p => p.showId == x.showId)).ToList();
+                //写入影院ID
+                lInsertTemp.ForEach(x =>
+                {
+                    x.cinemaId = temp.cinemaId;
+                    x.createTime = DateTime.Now;
+                });
+                lInsertMovieShows.AddRange(lInsertTemp);
+
+                //返回当前需要删除的影院列表
+                var lDeleteTemp = lMovieShows.Where(x => x.cinemaId == temp.cinemaId && !lResultMovieShows.Any(p => p.showId == x.showId)).ToList();
+                lDeleteMovieShows.AddRange(lDeleteTemp);
             }
 
             //数据库操作
