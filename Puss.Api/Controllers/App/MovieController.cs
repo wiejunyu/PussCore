@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Puss.Api.Aop;
@@ -22,56 +23,54 @@ namespace Puss.Api.Controllers
     {
         private readonly IMovieManager MovieManager;
         private readonly IMovie_CityManager Movie_CityManager;
-        private readonly DbContext _dbContext;
+        private readonly IMovie_CinemasManager Movie_CinemasManager;
+        private readonly DbContext _dbContext; 
 
         /// <summary>
         /// 电影
         /// </summary>
-        public MovieController(IMovieManager MovieManager, IMovie_CityManager Movie_CityManager, DbContext _dbContext)
+        public MovieController(IMovieManager MovieManager, IMovie_CityManager Movie_CityManager, IMovie_CinemasManager Movie_CinemasManager, DbContext _dbContext)
         {
             this.MovieManager = MovieManager;
             this.Movie_CityManager = Movie_CityManager;
+            this.Movie_CinemasManager = Movie_CinemasManager;
             this._dbContext = _dbContext;
         }
 
         /// <summary>
-        /// 获取地区列表
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<ReturnResult> QueryCitys()
-        {
-            _dbContext.Db.Ado.UseTran(async () =>
-            {
-                List<ResultQueryCitysDataList> lResultCitys = await MovieManager.QueryCitys();
-                List<Movie_City> lResultMovieCity = lResultCitys.MapToList<ResultQueryCitysDataList, Movie_City>();
-                //判断当前数据库是否已存在
-                List<Movie_City> lMovieCity = Movie_CityManager.GetList();
-                List<Movie_City> list = lMovieCity.Where(x => !lResultMovieCity.Any(p => p.cityId == x.cityId)).ToList();
-                if (list.Any())
-                {
-                    Movie_CityManager.Insert(list);
-                }
-                foreach (var temp in lMovieCity)
-                {
-                    List<ResultCinemasList> lCinemas = await MovieManager.QueryCinemas(temp.cityId);
-
-                }
-            });
-            return ReturnResult.ResultCalculation(() => true);
-        }
-
-        /// <summary>
-        /// 获取当前热映影片
+        /// 返回当前影院场次
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ReturnResult> Movies(string cityId)
+        public async Task<ReturnResult> Test()
         {
-            List<ResultHotFilmList> list = await MovieManager.QueryCinemas(cityId);
-            return new ReturnResult<List<ResultHotFilmList>>(ReturnResultStatus.Succeed, list);
+            List<Movie_Cinemas> list = await Movie_CinemasManager.GetListAsync();
+            foreach (var temp in list) 
+            {
+                List<ResultShows> lShows = await MovieManager.QueryShows(temp.cinemaId.ToString());
+                if (lShows.Any()) 
+                {
+                    ;
+                }
+            }
+            return new ReturnResult<List<ResultCinemasList>>(ReturnResultStatus.Succeed);
+        }
+
+        /// <summary>
+        /// 开始
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<ReturnResult> Start()
+        {
+#if DEBUG
+            MovieManager.Start();
+#else
+            BackgroundJob.Enqueue(() => MovieManager.Start());
+#endif
+            return new ReturnResult(ReturnResultStatus.Succeed);
         }
     }
 }

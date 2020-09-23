@@ -187,7 +187,7 @@ namespace Puss.Api.Manager.MovieManager
     }
     #endregion
 
-    #region 影院列表
+    #region 影院
     /// <summary>
     /// 影院列表
     /// </summary>
@@ -266,6 +266,94 @@ namespace Puss.Api.Manager.MovieManager
     }
     #endregion
 
+    #region 场次
+    /// <summary>
+    /// 场次
+    /// </summary>
+    public class ResultShows
+    {
+        /// <summary>
+        /// 影院ID
+        /// </summary>
+        public string cinemaId { get; set; }
+        /// <summary>
+        /// 厅名称
+        /// </summary>
+        public string hallName { get; set; }
+        /// <summary>
+        /// 电影ID
+        /// </summary>
+        public string filmId { get; set; }
+        /// <summary>
+        /// 电影名称
+        /// </summary>
+        public string filmName { get; set; }
+        /// <summary>
+        /// 场次ID
+        /// </summary>
+        public string showId { get; set; }
+        /// <summary>
+        /// 播放时长
+        /// </summary>
+        public string duration { get; set; }
+        /// <summary>
+        /// 开演时间
+        /// </summary>
+        public string showTime { get; set; }
+        /// <summary>
+        /// 停售时间
+        /// </summary>
+        public string stopSellTime { get; set; }
+        /// <summary>
+        /// 场次类型国语 2D
+        /// </summary>
+        public string showVersionType { get; set; }
+        /// <summary>
+        /// 结算价格
+        /// </summary>
+        public string settlePrice { get; set; }
+        /// <summary>
+        /// 市场价
+        /// </summary>
+        public string price { get; set; }
+        /// <summary>
+        /// 最低价
+        /// </summary>
+        public string minPrice { get; set; }
+        /// <summary>
+        /// 语言类型  中文 原版  英文
+        /// </summary>
+        public string language { get; set; }
+        /// <summary>
+        /// 影厅类型  2D 3D
+        /// </summary>
+        public string planType { get; set; }
+    }
+
+    /// <summary>
+    /// 场次数据
+    /// </summary>
+    public class ResultQueryShowsData
+    {
+        /// <summary>
+        /// 场次列表
+        /// </summary>
+        public List<ResultShows> showList { get; set; }
+    }
+
+    /// <summary>
+    /// 场次结果
+    /// </summary>
+    public class ResultQueryShows : ResultBase
+    {
+        /// <summary>
+        /// 结果
+        /// </summary>
+        public ResultQueryShowsData result { get; set; }
+    }
+
+    #endregion
+
     /// <summary>
     /// 结果
     /// </summary>
@@ -307,28 +395,39 @@ namespace Puss.Api.Manager.MovieManager
     }
 
     /// <summary>
-    /// 请求数据
+    /// 获取城市请求
     /// </summary>
     public class PostQueryCitys : PostBase
     {
     }
 
     /// <summary>
-    /// 请求数据
+    /// 获取热门电影请求
     /// </summary>
     public class PostHotShowingMovies : PostBase
     {
     }
 
     /// <summary>
-    /// 请求数据
+    /// 获取影院请求
     /// </summary>
     public class PostQueryCinemas : PostBase
     {
         /// <summary>
-        /// 签名
+        /// 城市ID
         /// </summary>
         public string cityId { get; set; }
+    }
+
+    /// <summary>
+    /// 获取场次请求
+    /// </summary>
+    public class PostQueryShows : PostBase
+    {
+        /// <summary>
+        /// 影院ID
+        /// </summary>
+        public string cinemaId { get; set; }
     }
     #endregion
 }

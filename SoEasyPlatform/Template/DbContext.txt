@@ -97,6 +97,15 @@ namespace @(Model.SolutionName).BusinessCore
         }
 
         /// <summary>
+        /// 异步获取所有
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<T>> GetListAsync()
+        {
+            return await Db.Queryable<T>().ToListAsync();
+        }
+
+        /// <summary>
         /// 获取单个
         /// </summary>
         /// <returns></returns>
@@ -350,6 +359,12 @@ namespace @(Model.SolutionName).BusinessCore
         /// </summary>
         /// <returns></returns>
         List<T> GetList();
+
+        /// <summary>
+        /// 异步获取所有
+        /// </summary>
+        /// <returns></returns>
+        Task<List<T>> GetListAsync();
 
         /// <summary>
         /// 获取单个

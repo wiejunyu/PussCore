@@ -105,6 +105,7 @@ namespace Puss.BusinessCore
        public SimpleClient<User> UserDb { get { return new SimpleClient<User>(Db); } }//用来处理User表的常用操作
        public SimpleClient<UserDetails> UserDetailsDb { get { return new SimpleClient<UserDetails>(Db); } }//用来处理UserDetails表的常用操作
        public SimpleClient<Tel> TelDb { get { return new SimpleClient<Tel>(Db); } }//用来处理Tel表的常用操作
+       public SimpleClient<Movie_Cinemas> Movie_CinemasDb { get { return new SimpleClient<Movie_Cinemas>(Db); } }//用来处理Movie_Cinemas表的常用操作
        public SimpleClient<Movie_City> Movie_CityDb { get { return new SimpleClient<Movie_City>(Db); } }//用来处理Movie_City表的常用操作
         
         /// <summary>
@@ -114,6 +115,15 @@ namespace Puss.BusinessCore
         public List<T> GetList()
         {
             return CurrentDb.GetList();
+        }
+
+        /// <summary>
+        /// 异步获取所有
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<T>> GetListAsync()
+        {
+            return await Db.Queryable<T>().ToListAsync();
         }
 
         /// <summary>
@@ -370,6 +380,12 @@ namespace Puss.BusinessCore
         /// </summary>
         /// <returns></returns>
         List<T> GetList();
+
+        /// <summary>
+        /// 异步获取所有
+        /// </summary>
+        /// <returns></returns>
+        Task<List<T>> GetListAsync();
 
         /// <summary>
         /// 获取单个

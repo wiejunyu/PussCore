@@ -20,5 +20,23 @@ namespace Puss.Api.Manager.MovieManager
         /// </summary>
         /// <returns></returns>
         Task<List<ResultCinemasList>> QueryCinemas(string cityId);
+
+        /// <summary>
+        /// 返回当前影院场次
+        /// </summary>
+        /// <returns></returns>
+        Task<List<ResultShows>> QueryShows(string cinemaId);
+
+        /// <summary>
+        /// 获取当前热映影片
+        /// </summary>
+        /// <returns></returns>
+        Task<List<ResultHotFilmList>> HotShowingMovies();
+
+        /// <summary>
+        /// 开始
+        /// </summary>
+        /// <returns></returns>
+        Task Start();
     }
 }
