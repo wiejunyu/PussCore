@@ -45,16 +45,8 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public async Task<ReturnResult> Test()
         {
-            List<Movie_Cinemas> list = await Movie_CinemasManager.GetListAsync();
-            foreach (var temp in list) 
-            {
-                List<ResultShows> lShows = await MovieManager.QueryShows(temp.cinemaId.ToString());
-                if (lShows.Any()) 
-                {
-                    ;
-                }
-            }
-            return new ReturnResult<List<ResultCinemasList>>(ReturnResultStatus.Succeed);
+            await MovieManager.StartUpdateCinemas();
+            return new ReturnResult(ReturnResultStatus.Succeed);
         }
 
         /// <summary>
@@ -66,7 +58,7 @@ namespace Puss.Api.Controllers
         public async Task<ReturnResult> Start()
         {
 #if DEBUG
-            MovieManager.Start();
+            await MovieManager.StartUpdate();
 #else
             BackgroundJob.Enqueue(() => MovieManager.Start());
 #endif

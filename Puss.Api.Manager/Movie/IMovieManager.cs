@@ -33,10 +33,23 @@ namespace Puss.Api.Manager.MovieManager
         /// <returns></returns>
         Task<List<ResultHotFilmList>> HotShowingMovies();
 
+
         /// <summary>
-        /// 开始
+        /// 开始更新
         /// </summary>
         /// <returns></returns>
-        Task Start();
+        Task StartUpdate();
+
+        /// <summary>
+        /// 开始更新城市和影院
+        /// </summary>
+        /// <returns></returns>
+        Task StartUpdateCitysAndCinemas();
+
+        /// <summary>
+        /// 开始更新场次
+        /// </summary>
+        /// <returns></returns>
+        Task StartUpdateCinemas();
     }
 }

@@ -107,6 +107,7 @@ namespace Puss.BusinessCore
        public SimpleClient<Tel> TelDb { get { return new SimpleClient<Tel>(Db); } }//用来处理Tel表的常用操作
        public SimpleClient<Movie_Cinemas> Movie_CinemasDb { get { return new SimpleClient<Movie_Cinemas>(Db); } }//用来处理Movie_Cinemas表的常用操作
        public SimpleClient<Movie_City> Movie_CityDb { get { return new SimpleClient<Movie_City>(Db); } }//用来处理Movie_City表的常用操作
+       public SimpleClient<Movie_Shows> Movie_ShowsDb { get { return new SimpleClient<Movie_Shows>(Db); } }//用来处理Movie_Shows表的常用操作
         
         /// <summary>
         /// 获取所有
