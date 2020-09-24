@@ -8,6 +8,10 @@ using Puss.BusinessCore;
 using Puss.Enties;
 using System;
 using Puss.Data.Enum;
+using Microsoft.Extensions.Logging;
+using Puss.Redis;
+using SqlSugar;
+using System.Text.RegularExpressions;
 
 namespace Puss.Api.Manager.MovieManager
 {
@@ -22,14 +26,18 @@ namespace Puss.Api.Manager.MovieManager
         private readonly IMovie_FilmManager Movie_FilmManager;
         private readonly IMovie_MemberManager Movie_MemberManager;
         private readonly DbContext DbContext;
+        private readonly ILogger<MovieManager> Logger;
+        private readonly IRedisService RedisService;
 
         public MovieManager(
-            DbContext DbContext, 
-            IMovie_CityManager Movie_CityManager, 
-            IMovie_CinemasManager Movie_CinemasManager, 
-            IMovie_ShowsManager Movie_ShowsManager, 
+            DbContext DbContext,
+            IMovie_CityManager Movie_CityManager,
+            IMovie_CinemasManager Movie_CinemasManager,
+            IMovie_ShowsManager Movie_ShowsManager,
             IMovie_FilmManager Movie_FilmManager,
-            IMovie_MemberManager Movie_MemberManager)
+            IMovie_MemberManager Movie_MemberManager,
+            ILogger<MovieManager> Logger,
+            IRedisService RedisService)
         {
             this.DbContext = DbContext;
             this.Movie_CinemasManager = Movie_CinemasManager;
@@ -37,6 +45,8 @@ namespace Puss.Api.Manager.MovieManager
             this.Movie_ShowsManager = Movie_ShowsManager;
             this.Movie_FilmManager = Movie_FilmManager;
             this.Movie_MemberManager = Movie_MemberManager;
+            this.Logger = Logger;
+            this.RedisService = RedisService;
         }
 
         /// <summary>
@@ -58,7 +68,7 @@ namespace Puss.Api.Manager.MovieManager
         /// 获取地区列表
         /// </summary>
         /// <returns></returns>
-        public async Task<List<ResultQueryCitysDataList>> QueryCitys()
+        public async Task<List<ResultCitys>> QueryCitys()
         {
             return await Task.Run(() =>
             {
@@ -169,7 +179,7 @@ namespace Puss.Api.Manager.MovieManager
 #if DEBUG
 #else
             StartUpdateCitysAndCinemas();
-            StartUpdateCinemas();
+            StartUpdateShows();
 #endif
         }
 
@@ -179,14 +189,14 @@ namespace Puss.Api.Manager.MovieManager
         /// <returns></returns>
         public async Task StartUpdateCitysAndCinemas()
         {
-            #if DEBUG
-#else
-            List<ResultQueryCitysDataList> lResultCitys = new List<ResultQueryCitysDataList>();
+            //日志收集
+            Logger.LogInformation($"[Url]:StartUpdateCitysAndCinemas(开始更新城市和影院)[Time]:{DateTime.Now}");
+            List<ResultCitys> lResultCitys = new List<ResultCitys>();
             List<Movie_City> lResultMovieCity = new List<Movie_City>();
             try
             {
                 lResultCitys = await QueryCitys();
-                lResultMovieCity = lResultCitys.MapToList<ResultQueryCitysDataList, Movie_City>();
+                lResultMovieCity = lResultCitys.MapToList<ResultCitys, Movie_City>();
             }
             catch (Exception ex)
             {
@@ -205,8 +215,22 @@ namespace Puss.Api.Manager.MovieManager
             //最终需要删除的影院列表
             List<Movie_Cinemas> lDeleteMovieCinemas = new List<Movie_Cinemas>();
 
+            //记录信息
+            UpdateCount updateCount = new UpdateCount
+            {
+                count = lMovieCity.Count,
+                name = "",
+                status = (int)UpdateCountStatus.Start,
+                current = 0
+            };
+            await RedisService.SetAsync(CommentConfig.MovieManager_UpdateCinemas, updateCount);
             foreach (var temp in lMovieCity)
             {
+                //记录信息
+                updateCount.name = temp.cityName;
+                updateCount.current++;
+                await RedisService.SetAsync(CommentConfig.MovieManager_UpdateCinemas, updateCount);
+
                 List<ResultCinemasList> lResultCinemas = new List<ResultCinemasList>();
                 List<Movie_Cinemas> lResultMovieCinemas = new List<Movie_Cinemas>();
                 try
@@ -227,10 +251,14 @@ namespace Puss.Api.Manager.MovieManager
                 //返回当前需要删除的影院列表
                 var lDeleteTemp = lMovieCinemas.Where(x => x.cityId == temp.cityId && !lResultMovieCinemas.Any(p => p.cinemaId == x.cinemaId)).ToList();
                 lDeleteMovieCinemas.AddRange(lDeleteTemp);
-
             }
             //总影院列表
             lMovieCinemas.AddRange(lInsertMovieCinemas);
+
+            //记录信息
+            updateCount.name = "";
+            updateCount.status = (int)UpdateCountStatus.Save;
+            await RedisService.SetAsync(CommentConfig.MovieManager_UpdateCinemas, updateCount);
 
             //数据库操作
             DbContext.Db.Ado.UseTran(() =>
@@ -250,73 +278,121 @@ namespace Puss.Api.Manager.MovieManager
                     Movie_CinemasManager.Delete(lDeleteMovieCinemas.Select(x => x.cinemaId));
                 }
             });
-#endif
+
+            //记录信息
+            updateCount.name = "";
+            updateCount.status = (int)UpdateCountStatus.Success;
+            await RedisService.SetAsync(CommentConfig.MovieManager_UpdateCinemas, updateCount);
+            Logger.LogInformation($"[Url]:EndUpdateCitysAndCinemas(结束更新城市和影院)[Time]:{DateTime.Now}");
         }
 
         /// <summary>
         /// 开始更新场次
         /// </summary>
+        /// <param name="index">第几页</param>
+        /// <param name="size">每页大小</param>
+        /// <param name="count">总数</param>
+        /// <param name="lMovieShows">所有影院场次</param>
         /// <returns></returns>
-        public async Task StartUpdateCinemas()
+        public async Task StartUpdateShows(int index, int size, int count, List<Movie_Shows> lMovieShows)
         {
-#if DEBUG
-#else
-            while (true)
+            string redisKey = $"{CommentConfig.MovieManager_UpdateShows}{index}";
+
+            //日志收集
+            Logger.LogInformation($"[Url]:StartUpdateShows(开始更新场次)[Index]:{index}[Time]:{DateTime.Now}");
+            Movie_ShowsManager.Delete(x => x.createTime < DateTime.Now.AddDays(-7));
+            var lMovieCinemas = await Movie_CinemasManager.GetPageListAsync(x => true, new PageModel
             {
-                var lMovieCinemas = await Movie_CinemasManager.GetListAsync();
-                //查出所有影院场次
-                List<Movie_Shows> lMovieShows = await Movie_ShowsManager.GetListAsync();
+                PageIndex = index,
+                PageSize = size,
+                PageCount = count
+            });
+
+            //记录信息
+            UpdateCount updateCount = new UpdateCount
+            {
+                count = lMovieCinemas.Count,
+                name = "",
+                status = (int)UpdateCountStatus.Start,
+                current = 0
+            };
+            await RedisService.SetAsync(redisKey, count);
+
+            try
+            {
                 //最终需要提交的影院场次
                 List<Movie_Shows> lInsertMovieShows = new List<Movie_Shows>();
                 //最终需要删除的影院场次
                 List<Movie_Shows> lDeleteMovieShows = new List<Movie_Shows>();
+
+                //查询出所有场次
+                List<ResultShows> lResultMovieShows = new List<ResultShows>();
                 foreach (var temp in lMovieCinemas)
                 {
-                    List<ResultShows> lResultShows = new List<ResultShows>();
-                    List<Movie_Shows> lResultMovieShows = new List<Movie_Shows>();
+                    //记录信息
+                    updateCount.name = temp.cityName;
+                    updateCount.current++;
+                    await RedisService.SetAsync(redisKey, updateCount);
                     try
                     {
-                        lResultShows = await QueryShows(temp.cinemaId.ToString());
-                        lResultMovieShows = lResultShows.MapToList<ResultShows, Movie_Shows>();
+                        lResultMovieShows.AddRange(await QueryShows(temp.cinemaId.ToString()));
                     }
                     catch (Exception ex)
                     {
-                        continue;
+                        Logger.LogError($"[Url]:ErrorPostUpdateShows(更新场次请求错误)[Index]:{index}[Id]:{temp.cinemaId}");
                     }
-
-                    //返回当前没有的场次列表
-                    var lInsertTemp = lResultMovieShows.Where(x => !lMovieShows.Any(p => p.showId == x.showId)).ToList();
-                    //写入影院ID
-                    lInsertTemp.ForEach(x =>
-                    {
-                        x.cinemaId = temp.cinemaId;
-                        x.createTime = DateTime.Now;
-                    });
-                    lInsertMovieShows.AddRange(lInsertTemp);
-
-                    //返回当前需要删除的影院列表
-                    var lDeleteTemp = lMovieShows.Where(x => x.cinemaId == temp.cinemaId && !lResultMovieShows.Any(p => p.showId == x.showId)).ToList();
-                    lDeleteMovieShows.AddRange(lDeleteTemp);
                 }
+                if (lResultMovieShows.Any()) 
+                {
+                    Logger.LogInformation($"cao:{index}");
+                }
+                //返回当前没有的场次列表
+                lInsertMovieShows = lResultMovieShows.Where(x => !lMovieShows.Any(p => p.showId == int.Parse(x.showId)) && Regex.IsMatch(x.showId, @"^[+-]?\d*[.]?\d*$")).MapToList<ResultShows, Movie_Shows>();
+                //写入影院ID
+                lInsertMovieShows.ForEach(x =>
+                {
+                    x.createTime = DateTime.Now;
+                });
+                lInsertMovieShows.AddRange(lInsertMovieShows);
+
+                //返回当前需要删除的影院列表
+                lDeleteMovieShows = lMovieShows.Where(x => !lResultMovieShows.Any(p => int.Parse(p.showId) == x.showId)).ToList();
+                //记录信息
+                updateCount.name = "";
+                updateCount.status = (int)UpdateCountStatus.Save;
+                await RedisService.SetAsync(redisKey, updateCount);
 
                 //数据库操作
                 DbContext.Db.Ado.UseTran(() =>
                 {
-                //提交数据
-                if (lInsertMovieShows.Any())
+                    //提交数据
+                    if (lInsertMovieShows.Any())
                     {
                         Movie_ShowsManager.Insert(lInsertMovieShows);
                     }
-                //删除数据
-                if (lDeleteMovieShows.Any())
+                    //删除数据
+                    if (lDeleteMovieShows.Any())
                     {
                         Movie_ShowsManager.Delete(lDeleteMovieShows.Select(x => x.showId));
                     }
-                    DateTime now = DateTime.Now.Date;
-                    Movie_ShowsManager.Delete(x => x.createTime < now);
                 });
+
+                //记录信息
+                updateCount.name = "";
+                updateCount.status = (int)UpdateCountStatus.Success;
+                await RedisService.SetAsync(redisKey, updateCount);
+                Logger.LogInformation($"[Url]:EndUpdateShows(结束更新城市和影院)[Index]:{index}[Time]:{DateTime.Now}");
             }
-#endif
+            catch (Exception ex)
+            {
+                JsonSerializerSettings settings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
+                Logger.LogError($"[Url]:ErrorUpdateShows(更新场次错误)[Exception]:{JsonConvert.SerializeObject(ex, settings)}");
+                //记录信息
+                updateCount.name = "";
+                updateCount.status = (int)UpdateCountStatus.Error;
+                await RedisService.SetAsync(redisKey, updateCount);
+
+            }
         }
 
         /// <summary>

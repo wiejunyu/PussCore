@@ -2,17 +2,12 @@
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Puss.Api.Aop;
-using Puss.Api.Manager;
 using Puss.Api.Manager.MovieManager;
-using Puss.Application.Common;
 using Puss.BusinessCore;
 using Puss.Data.Enum;
 using Puss.Data.Models;
 using Puss.Enties;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Puss.Api.Controllers
@@ -25,17 +20,17 @@ namespace Puss.Api.Controllers
         private readonly IMovieManager MovieManager;
         private readonly IMovie_CityManager Movie_CityManager;
         private readonly IMovie_CinemasManager Movie_CinemasManager;
-        private readonly DbContext _dbContext; 
+        private readonly DbContext DbContext;
 
         /// <summary>
         /// 电影
         /// </summary>
-        public MovieController(IMovieManager MovieManager, IMovie_CityManager Movie_CityManager, IMovie_CinemasManager Movie_CinemasManager, DbContext _dbContext)
+        public MovieController(IMovieManager MovieManager, IMovie_CityManager Movie_CityManager, IMovie_CinemasManager Movie_CinemasManager, DbContext DbContext)
         {
             this.MovieManager = MovieManager;
             this.Movie_CityManager = Movie_CityManager;
             this.Movie_CinemasManager = Movie_CinemasManager;
-            this._dbContext = _dbContext;
+            this.DbContext = DbContext;
         }
 
         /// <summary>
@@ -46,8 +41,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public async Task<ReturnResult> Test()
         {
-            await MovieManager.StartUpdateHotShowingMovies();
-            return new ReturnResult(ReturnResultStatus.Succeed);
+            return new ReturnResult<List<ResultShows>>(ReturnResultStatus.Succeed, await MovieManager.QueryShows("334"));
         }
 
         /// <summary>
@@ -59,9 +53,24 @@ namespace Puss.Api.Controllers
         public async Task<ReturnResult> Start()
         {
 #if DEBUG
-            await MovieManager.StartUpdateCinemas();
+            int count = DbContext.Db.Queryable<Movie_Cinemas>().Count(x => true);
+            //查出所有影院场次
+            List<Movie_Shows> lMovieShows = await DbContext.Db.Queryable<Movie_Shows>().ToListAsync();
+            int page = 10;
+            int size = count / page;
+            if (count % page > 0)
+                page++;
+            for (int index = 0; index <= page; index++)
+            {
+                BackgroundJob.Enqueue(() => MovieManager.StartUpdateShows(index, size, count, lMovieShows)); 
+            }
 #else
-            BackgroundJob.Enqueue(() => MovieManager.StartUpdateCinemas());
+            int count = DbContext.Db.Queryable<Movie_Cinemas>().Count(x => true);
+            int size = count / 10;
+            for (int i = 0; i <= 10; i++) 
+            {
+                BackgroundJob.Enqueue(() => MovieManager.StartUpdateShows(i, size));
+            }
 #endif
             return new ReturnResult(ReturnResultStatus.Succeed);
         }

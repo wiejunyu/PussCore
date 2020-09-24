@@ -123,7 +123,7 @@ namespace Puss.Api.Controllers
             if (string.IsNullOrWhiteSpace(request.Name)) throw new AppException("栏目名称不能为空");
             KeySection keySection = await KeySectionManager.GetByIdAsync(int.Parse(request.ID));
             int iUID = LoginManager.GetUserID();
-            if (keySection.CreateUserID != iUID) throw new AppException((int)ReturnResultStatus.Illegal,"0", "非法操作");
+            if (keySection.CreateUserID != iUID) throw new AppException(ReturnResultStatus.Illegal,"非法操作");
 
             var mapper = new MapperConfiguration(x => x.CreateMap<EditKeySection, KeySection>()).CreateMapper();
             keySection = mapper.Map<KeySection>(request);
@@ -149,7 +149,7 @@ namespace Puss.Api.Controllers
             if (string.IsNullOrWhiteSpace(request.Name)) throw new AppException("栏目名称不能为空");
             KeySection keySection = await KeySectionManager.GetByIdAsync(int.Parse(request.ID));
             int iUID = LoginManager.GetUserID();
-            if (keySection.CreateUserID != iUID) throw new AppException((int)ReturnResultStatus.Illegal, "0", "非法操作");
+            if (keySection.CreateUserID != iUID) throw new AppException(ReturnResultStatus.Illegal,"非法操作");
             keySection.Name = request.Name;
             return ReturnResult.ResultCalculation(() => KeySectionManager.Update(keySection));
         }
@@ -166,7 +166,7 @@ namespace Puss.Api.Controllers
             {
                 if (id <= 0) throw new AppException("栏目ID不能为空");
                 int iUID = LoginManager.GetUserID();
-                if(!KeySectionManager.IsAny(x => x.CreateUserID == iUID && x.ID == id)) throw new AppException((int)ReturnResultStatus.Illegal, "0", "非法操作");
+                if(!KeySectionManager.IsAny(x => x.CreateUserID == iUID && x.ID == id)) throw new AppException(ReturnResultStatus.Illegal, "非法操作");
                 DbContext.Db.Ado.UseTran(() =>
                 {
                     KeySectionManager.Delete(id);
@@ -186,7 +186,7 @@ namespace Puss.Api.Controllers
             if (ID <= 0) throw new AppException("密匙栏目不能为空");
             int iUID = LoginManager.GetUserID();
             KeySection keySection = await KeySectionManager.GetSingleAsync(x => x.CreateUserID == iUID && x.ID == ID);
-            if (keySection == null) throw new AppException((int)ReturnResultStatus.Illegal, "0", "非法操作");
+            if (keySection == null) throw new AppException(ReturnResultStatus.Illegal, "非法操作");
             return new ReturnResult(ReturnResultStatus.Succeed, JsonConvert.SerializeObject(new
             {
                 keySection.ID,
@@ -232,7 +232,7 @@ namespace Puss.Api.Controllers
             if (ID <= 0) throw new AppException("密匙不能为空");
             int iUID = LoginManager.GetUserID();
             KeyContent keyContent = await KeyContentManager.GetSingleAsync(x => x.CreateUserID == iUID && x.ID == ID);
-            if(keyContent == null) throw new AppException((int)ReturnResultStatus.Illegal, "0", "非法操作");
+            if(keyContent == null) throw new AppException(ReturnResultStatus.Illegal,"非法操作");
             keyContent = await KeyManager.DecryptKey(keyContent);
             return new ReturnResult(ReturnResultStatus.Succeed, JsonConvert.SerializeObject(new 
             {
@@ -281,7 +281,7 @@ namespace Puss.Api.Controllers
             if (string.IsNullOrWhiteSpace(request.Name)) throw new AppException("名称不能为空");
             KeyContent keyContent = await KeyContentManager.GetByIdAsync(int.Parse(request.ID));
             int iUID = LoginManager.GetUserID();
-            if (keyContent.CreateUserID != iUID) throw new AppException((int)ReturnResultStatus.Illegal, "0", "非法操作");
+            if (keyContent.CreateUserID != iUID) throw new AppException(ReturnResultStatus.Illegal, "非法操作");
             var mapper = new MapperConfiguration(x => x.CreateMap<EditKey, KeyContent>()).CreateMapper();
             mapper.Map(request, keyContent);
             keyContent.CreateUserID = iUID;
@@ -301,7 +301,7 @@ namespace Puss.Api.Controllers
             {
                 if (id <= 0) throw new AppException("栏目ID不能为空");
                 int iUID = LoginManager.GetUserID();
-                if (!KeyContentManager.IsAny(x => x.CreateUserID == iUID && x.ID == id)) throw new AppException((int)ReturnResultStatus.Illegal, "0", "非法操作");  
+                if (!KeyContentManager.IsAny(x => x.CreateUserID == iUID && x.ID == id)) throw new AppException(ReturnResultStatus.Illegal,"非法操作");  
                 return ReturnResult.ResultCalculation(() => KeyContentManager.Delete(id));
             });
         }

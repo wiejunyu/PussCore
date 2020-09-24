@@ -41,7 +41,18 @@ namespace Puss.Data.Models
         /// <summary>
         /// MDM Token
         /// </summary>
-        public static string MDM_Token { get { return "MDM_Token"; } }
+        public static string MDM_Token { get { return "MDM:Token"; } }
+        #endregion
+
+        #region 电影
+        /// <summary>
+        /// 更新影院
+        /// </summary>
+        public static string MovieManager_UpdateCinemas { get { return "MovieManager:UpdateCinemas"; } }
+        /// <summary>
+        /// 更新场次
+        /// </summary>
+        public static string MovieManager_UpdateShows { get { return "MovieManager:UpdateShows:"; } }
         #endregion
     }
 }
