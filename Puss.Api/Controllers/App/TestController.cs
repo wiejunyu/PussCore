@@ -19,7 +19,6 @@ namespace Puss.Api.Controllers
     public class TestController : AdminBaseController
     {
         private readonly IUserManager UserManager;
-        private readonly ILogJobManager LogJobManager;
         private readonly IRabbitMQPushService RabbitMQPushService;
 
         /// <summary>
@@ -28,10 +27,9 @@ namespace Puss.Api.Controllers
         /// <param name="UserManager"></param>
         /// <param name="LogJobManager"></param>
         /// <param name="RabbitMQPushService"></param>
-        public TestController(IUserManager UserManager, ILogJobManager LogJobManager, IRabbitMQPushService RabbitMQPushService)
+        public TestController(IUserManager UserManager, IRabbitMQPushService RabbitMQPushService)
         {
             this.UserManager = UserManager;
-            this.LogJobManager = LogJobManager;
             this.RabbitMQPushService = RabbitMQPushService;
         }
 
@@ -99,21 +97,6 @@ namespace Puss.Api.Controllers
         {
             var User = await UserManager.GetByIdAsync(29);
             return new ReturnResult(ReturnResultStatus.Succeed, User.Email);
-        }
-
-        /// <summary>
-        /// 执行后台作业
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<ReturnResult> SetBackgroundJob()
-        {
-            return await Task.Run(() =>
-            {
-                LogJobManager.Log();
-                return new ReturnResult(ReturnResultStatus.Succeed);
-            });
         }
 
         /// <summary>

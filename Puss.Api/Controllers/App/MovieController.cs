@@ -59,9 +59,9 @@ namespace Puss.Api.Controllers
         public async Task<ReturnResult> Start()
         {
 #if DEBUG
-            await MovieManager.StartUpdate();
+            await MovieManager.StartUpdateCinemas();
 #else
-            BackgroundJob.Enqueue(() => MovieManager.Start());
+            BackgroundJob.Enqueue(() => MovieManager.StartUpdateCinemas());
 #endif
             return new ReturnResult(ReturnResultStatus.Succeed);
         }

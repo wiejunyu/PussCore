@@ -21,7 +21,6 @@ namespace Puss.Api.Job
         private readonly TimeSpan _dueTime;
         private readonly TimeSpan _periodTime;
         private readonly IJobExecutor _jobExcutor;
-        //private readonly ILogService LogService;
         private readonly ILogger<BaseJobTrigger> Logger;
 
         /// <summary>
@@ -116,11 +115,8 @@ namespace Puss.Api.Job
 
         private void Error(string Name, Exception ex)
         {
-            #region 日志记录
             //日志收集
-            //LogService.LogCollectPush(QueueKey.LogJob, ex, Name, LogService.GetLoggerRepository());
             Logger.LogInformation($"[CreateTime]:{DateTime.Now}[Name]:{Name}[Exception]:{JsonConvert.SerializeObject(ex)}");
-            #endregion
         }
     }
 }

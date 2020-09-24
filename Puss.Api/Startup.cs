@@ -235,7 +235,7 @@ namespace Puss.Api
             #endregion
 
             #region 定时计划
-            services.AddHostedService<PriceJobTrigger>();
+            services.AddHostedService<UpdateCitysAndCinemasJobTrigger>();
             //services.AddHostedService<LogJobTrigger>();
             #endregion
 

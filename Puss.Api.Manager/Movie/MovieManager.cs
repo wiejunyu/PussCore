@@ -242,58 +242,61 @@ namespace Puss.Api.Manager.MovieManager
         /// <returns></returns>
         public async Task StartUpdateCinemas()
         {
-            var lMovieCinemas = await Movie_CinemasManager.GetListAsync();
-            //查出所有影院场次
-            List<Movie_Shows> lMovieShows = await Movie_ShowsManager.GetListAsync();
-            //最终需要提交的影院场次
-            List<Movie_Shows> lInsertMovieShows = new List<Movie_Shows>();
-            //最终需要删除的影院场次
-            List<Movie_Shows> lDeleteMovieShows = new List<Movie_Shows>();
-            foreach (var temp in lMovieCinemas)
+            while (true)
             {
-                List<ResultShows> lResultShows = new List<ResultShows>();
-                List<Movie_Shows> lResultMovieShows = new List<Movie_Shows>();
-                try
+                var lMovieCinemas = await Movie_CinemasManager.GetListAsync();
+                //查出所有影院场次
+                List<Movie_Shows> lMovieShows = await Movie_ShowsManager.GetListAsync();
+                //最终需要提交的影院场次
+                List<Movie_Shows> lInsertMovieShows = new List<Movie_Shows>();
+                //最终需要删除的影院场次
+                List<Movie_Shows> lDeleteMovieShows = new List<Movie_Shows>();
+                foreach (var temp in lMovieCinemas)
                 {
-                    lResultShows = await QueryShows(temp.cinemaId.ToString());
-                    lResultMovieShows = lResultShows.MapToList<ResultShows, Movie_Shows>();
+                    List<ResultShows> lResultShows = new List<ResultShows>();
+                    List<Movie_Shows> lResultMovieShows = new List<Movie_Shows>();
+                    try
+                    {
+                        lResultShows = await QueryShows(temp.cinemaId.ToString());
+                        lResultMovieShows = lResultShows.MapToList<ResultShows, Movie_Shows>();
+                    }
+                    catch (Exception ex)
+                    {
+                        continue;
+                    }
+
+                    //返回当前没有的场次列表
+                    var lInsertTemp = lResultMovieShows.Where(x => !lMovieShows.Any(p => p.showId == x.showId)).ToList();
+                    //写入影院ID
+                    lInsertTemp.ForEach(x =>
+                    {
+                        x.cinemaId = temp.cinemaId;
+                        x.createTime = DateTime.Now;
+                    });
+                    lInsertMovieShows.AddRange(lInsertTemp);
+
+                    //返回当前需要删除的影院列表
+                    var lDeleteTemp = lMovieShows.Where(x => x.cinemaId == temp.cinemaId && !lResultMovieShows.Any(p => p.showId == x.showId)).ToList();
+                    lDeleteMovieShows.AddRange(lDeleteTemp);
                 }
-                catch (Exception ex)
+
+                //数据库操作
+                DbContext.Db.Ado.UseTran(() =>
                 {
-                    continue;
-                }
-
-                //返回当前没有的场次列表
-                var lInsertTemp = lResultMovieShows.Where(x => !lMovieShows.Any(p => p.showId == x.showId)).ToList();
-                //写入影院ID
-                lInsertTemp.ForEach(x =>
-                {
-                    x.cinemaId = temp.cinemaId;
-                    x.createTime = DateTime.Now;
-                });
-                lInsertMovieShows.AddRange(lInsertTemp);
-
-                //返回当前需要删除的影院列表
-                var lDeleteTemp = lMovieShows.Where(x => x.cinemaId == temp.cinemaId && !lResultMovieShows.Any(p => p.showId == x.showId)).ToList();
-                lDeleteMovieShows.AddRange(lDeleteTemp);
-            }
-
-            //数据库操作
-            DbContext.Db.Ado.UseTran(() =>
-            {
                 //提交数据
                 if (lInsertMovieShows.Any())
-                {
-                    Movie_ShowsManager.Insert(lInsertMovieShows);
-                }
+                    {
+                        Movie_ShowsManager.Insert(lInsertMovieShows);
+                    }
                 //删除数据
                 if (lDeleteMovieShows.Any())
-                {
-                    Movie_ShowsManager.Delete(lDeleteMovieShows.Select(x => x.showId));
-                }
-                DateTime now = DateTime.Now.Date;
-                Movie_ShowsManager.Delete(x => x.createTime < now);
-            });
+                    {
+                        Movie_ShowsManager.Delete(lDeleteMovieShows.Select(x => x.showId));
+                    }
+                    DateTime now = DateTime.Now.Date;
+                    Movie_ShowsManager.Delete(x => x.createTime < now);
+                });
+            }
         }
     }
 }
