@@ -74,6 +74,36 @@ namespace Puss.Data.Models
             bool result = await func();
             return (result ? new ReturnResult(ReturnResultStatus.Succeed) : new ReturnResult());
         }
+
+        /// <summary>
+        /// 返回成功结果
+        /// </summary>
+        /// <param name="Message">消息</param>
+        /// <returns></returns>
+        public static ReturnResult Success(string Message)
+        {
+            return new ReturnResult(ReturnResultStatus.Succeed, Message);
+        }
+
+        /// <summary>
+        /// 根据状态返回结果
+        /// </summary>
+        /// <param name="Status"></param>
+        /// <param name="Message">消息</param>
+        /// <returns></returns>
+        public static ReturnResult ResultMsg(ReturnResultStatus Status, string Message)
+        {
+            return new ReturnResult(Status, Message);
+        }
+
+        /// <summary>
+        /// 返回成功结果
+        /// </summary>
+        /// <returns></returns>
+        public static ReturnResult Success()
+        {
+            return new ReturnResult(ReturnResultStatus.Succeed);
+        }
     }
 
     /// <summary>
@@ -113,6 +143,16 @@ namespace Puss.Data.Models
             : base(Status)
         {
             this.Data = Data;
+        }
+
+        /// <summary>
+        /// 返回成功结果
+        /// </summary>
+        /// <param name="Data">数据</param>
+        /// <returns></returns>
+        public static ReturnResult<T> Success(T Data)
+        {
+            return new ReturnResult<T>(ReturnResultStatus.Succeed, Data);
         }
     }
 }

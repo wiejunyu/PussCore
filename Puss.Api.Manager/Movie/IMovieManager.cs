@@ -56,6 +56,6 @@ namespace Puss.Api.Manager.MovieManager
         /// 开始更新热映影片
         /// </summary>
         /// <returns></returns>
-        Task<List<Movie_Film>> StartUpdateHotShowingMovies();
+        Task StartUpdateHotShowingMovies();
     }
 }

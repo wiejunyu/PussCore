@@ -325,15 +325,15 @@ namespace Puss.Api.Manager.MovieManager
         /// <returns></returns>
         public async Task StartUpdateHotShowingMovies()
         {
-            List<ResultFilm> lMovieCinemas = await HotShowingMovies();
+            /*List<ResultFilm> lResultMovieCinemas = await HotShowingMovies();
             //电影列表
-            List<Movie_Film> lMovieFilm = lMovieCinemas.MapToList<ResultFilm, Movie_Film>();
+            List<Movie_Film> lResultMovieFilm = lResultMovieCinemas.MapToList<ResultFilm, Movie_Film>();
             //成员列表
-            List<Movie_Member> lMovieMember = new List<Movie_Member>();
-            lMovieCinemas.ForEach(x => 
+            List<Movie_Member> lResultMovieMember = new List<Movie_Member>();
+            lResultMovieCinemas.ForEach(x =>
             {
                 //导演列表
-                lMovieMember.AddRange(x.actors.director.Select(p => new Movie_Member
+                lResultMovieMember.AddRange(x.actors.director.Select(p => new Movie_Member
                 {
                     sc_name = p.sc_name,
                     en_name = p.en_name,
@@ -343,7 +343,7 @@ namespace Puss.Api.Manager.MovieManager
                     filmId = x.filmId,
                 }));
                 //演员列表
-                lMovieMember.AddRange(x.actors.actors.Select(p => new Movie_Member
+                lResultMovieMember.AddRange(x.actors.actors.Select(p => new Movie_Member
                 {
                     sc_name = p.sc_name,
                     en_name = p.en_name,
@@ -354,11 +354,13 @@ namespace Puss.Api.Manager.MovieManager
                 }));
             });
 
+            Movie_FilmManager.GetListAsync(x => x.c);
+
             DbContext.Db.Ado.UseTran(() =>
             {
                 Movie_FilmManager.Insert(lMovieFilm);
                 Movie_MemberManager.Insert(lMovieMember);
-            });
+            });*/
         }
     }
 }

@@ -18,49 +18,27 @@ namespace Puss.Data.Models
         public int ErrorStatus { get; set; }
 
         /// <summary>
-        /// 错误码
-        /// </summary>
-        public string ErrorCode { get; set; }
-
-        /// <summary>
-        /// 级别
-        /// </summary>
-        public int Level { get; set; }
-
-        /// <summary>
         /// App异常
         /// </summary>
-        /// <param name="level">级别</param>
         /// <param name="errorStatus">错误状态</param>
-        /// <param name="errorCode">错误码</param>
         /// <param name="message">消息</param>
         /// <param name="exception">异常</param>
-        public AppException(int level, int errorStatus, string errorCode, string message, Exception exception)
+        /// <param name="fun">委托</param>
+        public AppException(ReturnResultStatus errorStatus, string message, Exception exception, Func<bool> fun = null)
             : base(message, exception)
         {
-            this.ErrorStatus = errorStatus;
-            this.Level = level;
-            this.ErrorCode = errorCode;
+            this.ErrorStatus = (int)errorStatus;
+            fun?.Invoke();
         }
 
         /// <summary>
         /// App异常
         /// </summary>
         /// <param name="errorStatus">错误状态</param>
-        /// <param name="errorCode">错误码</param>
         /// <param name="message">消息</param>
-        public AppException(int errorStatus, string errorCode, string message)
-            : this(0, errorStatus, errorCode, message, null)
-        {
-        }
-
-        /// <summary>
-        /// App异常
-        /// </summary>
-        /// <param name="errorCode">错误码</param>
-        /// <param name="message">消息</param>
-        public AppException(string errorCode, string message)
-            : this((int)ReturnResultStatus.BLLError, errorCode, message)
+        /// <param name="fun">委托</param>
+        public AppException(ReturnResultStatus errorStatus, string message, Func<bool> fun = null)
+            : this(errorStatus, message, null, fun)
         {
         }
 
@@ -68,8 +46,9 @@ namespace Puss.Data.Models
         /// App异常
         /// </summary>
         /// <param name="message">消息</param>
-        public AppException(string message)
-            : this(string.Empty, message)
+        /// <param name="fun">委托</param>
+        public AppException(string message, Func<bool> fun = null)
+            : this(ReturnResultStatus.BLLError, message, fun)
         {
         }
 
@@ -77,9 +56,11 @@ namespace Puss.Data.Models
         /// App异常
         /// </summary>
         /// <param name="e">异常</param>
-        public AppException(Exception e)
+        /// <param name="fun">委托</param>
+        public AppException(Exception e, Func<bool> fun = null)
             : base(e.Message, e)
         {
+            fun?.Invoke();
         }
     }
 }
