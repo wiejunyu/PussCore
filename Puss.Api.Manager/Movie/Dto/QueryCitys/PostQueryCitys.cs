@@ -50,143 +50,6 @@ namespace Puss.Api.Manager.MovieManager
     }
     #endregion
 
-    #region 获取热门
-    /// <summary>
-    /// 人员信息
-    /// </summary>
-    public class ResultHotUserDesc
-    {
-        /// <summary>
-        /// 中文名字
-        /// </summary>
-        public string sc_name { get; set; }
-        /// <summary>
-        /// 英文名字
-        /// </summary>
-        public string en_name { get; set; }
-        /// <summary>
-        /// 角色名字
-        /// </summary>
-        public string act_name { get; set; }
-        /// <summary>
-        /// 头像地址
-        /// </summary>
-        public string avatar { get; set; }
-    }
-
-    /// <summary>
-    /// 导演和演员
-    /// </summary>
-    public class ResultHotUser
-    {
-        /// <summary>
-        /// 导演
-        /// </summary>
-        public List<ResultHotUserDesc> director { get; set; }
-        /// <summary>
-        /// 演员
-        /// </summary>
-        public List<ResultHotUserDesc> actors { get; set; }
-    }
-
-    /// <summary>
-    /// 影片列表
-    /// </summary>
-    public class ResultHotFilmList
-    {
-        /// <summary>
-        /// 影片ID
-        /// </summary>
-        public int filmId { get; set; }
-        /// <summary>
-        /// 影片评分
-        /// </summary>
-        public string grade { get; set; }
-        /// <summary>
-        /// 中国大陆,中国香港
-        /// </summary>
-        public string moviearea { get; set; }
-        /// <summary>
-        /// 影片名称
-        /// </summary>
-        public string name { get; set; }
-        /// <summary>
-        /// 影片时长
-        /// </summary>
-        public int duration { get; set; }
-        /// <summary>
-        /// 影片上映日期
-        /// </summary>
-        public string publishDate { get; set; }
-        /// <summary>
-        /// 影片导演
-        /// </summary>
-        public string director { get; set; }
-        /// <summary>
-        /// 影片主演
-        /// </summary>
-        public string cast { get; set; }
-        /// <summary>
-        /// 影片简介
-        /// </summary>
-        public string intro { get; set; }
-        /// <summary>
-        /// 上映类型
-        /// </summary>
-        public string versionTypes { get; set; }
-        /// <summary>
-        /// 影片语言
-        /// </summary>
-        public string language { get; set; }
-        /// <summary>
-        /// 影片类型
-        /// </summary>
-        public string filmTypes { get; set; }
-        /// <summary>
-        /// 海报URL地址
-        /// </summary>
-        public string pic { get; set; }
-        /// <summary>
-        /// 剧情照URL地址
-        /// </summary>
-        public List<string> imgs { get; set; }
-        /// <summary>
-        /// 想看人数
-        /// </summary>
-        public int like { get; set; }
-        /// <summary>
-        /// 导演、演员名字头像
-        /// </summary>
-        public ResultHotUser actors { get; set; }
-        /// <summary>
-        /// 专资办影片统一编码11位(12位编码去除第四位)
-        /// </summary>
-        public string filmCode { get; set; }
-    }
-
-    /// <summary>
-    /// 结果数据
-    /// </summary>
-    public class ResultHotResultData
-    {
-        /// <summary>
-        /// 列表
-        /// </summary>
-        public List<ResultHotFilmList> filmList { get; set; }
-    }
-
-    /// <summary>
-    /// 结果
-    /// </summary>
-    public class ResultHotResult : ResultBase
-    {
-        /// <summary>
-        /// 返回结果
-        /// </summary>
-        public ResultHotResultData result { get; set; }
-    }
-    #endregion
-
     #region 影院
     /// <summary>
     /// 影院列表
@@ -352,6 +215,145 @@ namespace Puss.Api.Manager.MovieManager
         public ResultQueryShowsData result { get; set; }
     }
 
+    #endregion
+
+    #region 获取热门
+    /// <summary>
+    /// 获取当前热映影片数据
+    /// </summary>
+    public class ResultHotResultData
+    {
+        /// <summary>
+        /// 影片列表
+        /// </summary>
+        public List<ResultFilm> filmList { get; set; }
+    }
+
+    /// <summary>
+    /// 获取当前热映影片
+    /// </summary>
+    public class ResultHotResult : ResultBase
+    {
+        /// <summary>
+        /// 获取当前热映影片
+        /// </summary>
+        public ResultHotResultData result { get; set; }
+    }
+    #endregion
+
+    #region 影片
+    /// <summary>
+    /// 人员信息
+    /// </summary>
+    public class ResultActorsDirectorDesc
+    {
+        /// <summary>
+        /// 中文名字
+        /// </summary>
+        public string sc_name { get; set; }
+        /// <summary>
+        /// 英文名字
+        /// </summary>
+        public string en_name { get; set; }
+        /// <summary>
+        /// 角色名字
+        /// </summary>
+        public string act_name { get; set; }
+        /// <summary>
+        /// 头像地址
+        /// </summary>
+        public string avatar { get; set; }
+    }
+
+    /// <summary>
+    /// 导演和演员
+    /// </summary>
+    public class ResultActorsDirector
+    {
+        /// <summary>
+        /// 导演
+        /// </summary>
+        public List<ResultActorsDirectorDesc> director { get; set; }
+        /// <summary>
+        /// 演员
+        /// </summary>
+        public List<ResultActorsDirectorDesc> actors { get; set; }
+    }
+
+    /// <summary>
+    /// 影片
+    /// </summary>
+    public class ResultFilm
+    {
+        /// <summary>
+        /// 影片ID
+        /// </summary>
+        public int filmId { get; set; }
+        /// <summary>
+        /// 影片评分
+        /// </summary>
+        public string grade { get; set; }
+        /// <summary>
+        /// 中国大陆,中国香港
+        /// </summary>
+        public string moviearea { get; set; }
+        /// <summary>
+        /// 影片名称
+        /// </summary>
+        public string name { get; set; }
+        /// <summary>
+        /// 影片时长
+        /// </summary>
+        public int duration { get; set; }
+        /// <summary>
+        /// 影片上映日期
+        /// </summary>
+        public string publishDate { get; set; }
+        /// <summary>
+        /// 影片导演
+        /// </summary>
+        public string director { get; set; }
+        /// <summary>
+        /// 影片主演
+        /// </summary>
+        public string cast { get; set; }
+        /// <summary>
+        /// 影片简介
+        /// </summary>
+        public string intro { get; set; }
+        /// <summary>
+        /// 上映类型
+        /// </summary>
+        public string versionTypes { get; set; }
+        /// <summary>
+        /// 影片语言
+        /// </summary>
+        public string language { get; set; }
+        /// <summary>
+        /// 影片类型
+        /// </summary>
+        public string filmTypes { get; set; }
+        /// <summary>
+        /// 海报URL地址
+        /// </summary>
+        public string pic { get; set; }
+        /// <summary>
+        /// 剧情照URL地址
+        /// </summary>
+        public List<string> imgs { get; set; }
+        /// <summary>
+        /// 想看人数
+        /// </summary>
+        public int like { get; set; }
+        /// <summary>
+        /// 导演、演员名字头像
+        /// </summary>
+        public ResultActorsDirector actors { get; set; }
+        /// <summary>
+        /// 专资办影片统一编码11位(12位编码去除第四位)
+        /// </summary>
+        public string filmCode { get; set; }
+    }
     #endregion
 
     /// <summary>

@@ -31,7 +31,7 @@ namespace Puss.Api.Manager.MovieManager
         /// 获取当前热映影片
         /// </summary>
         /// <returns></returns>
-        Task<List<ResultHotFilmList>> HotShowingMovies();
+        Task<List<ResultFilm>> HotShowingMovies();
 
 
         /// <summary>
@@ -51,5 +51,11 @@ namespace Puss.Api.Manager.MovieManager
         /// </summary>
         /// <returns></returns>
         Task StartUpdateCinemas();
+
+        /// <summary>
+        /// 开始更新热映影片
+        /// </summary>
+        /// <returns></returns>
+        Task<List<Movie_Film>> StartUpdateHotShowingMovies();
     }
 }

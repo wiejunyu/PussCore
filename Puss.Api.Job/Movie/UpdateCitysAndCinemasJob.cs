@@ -35,7 +35,10 @@ namespace Puss.Api.Job
         /// </summary>
         public void StartJob()
         {
+#if DEBUG
+#else
             MovieManager.StartUpdateCitysAndCinemas();
+#endif
         }
 
         /// <summary>

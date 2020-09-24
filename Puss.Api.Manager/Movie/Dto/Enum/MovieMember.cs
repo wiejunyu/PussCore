@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 namespace Puss.Data.Enum
 {
     /// <summary>
-    /// 验证方式枚举
+    /// 导演和演员
     /// </summary>
-    public enum CodeType
+    public enum MovieMember
     {
         /// <summary>
-        /// 邮箱验证
+        /// 导演
         /// </summary>
-        [Description("邮箱验证")]
-        Email,
+        [Description("导演")]
+        Director,
         /// <summary>
-        ///手机验证
+        ///演员
         /// </summary>
-        [Description("手机验证")]
-        Phone,
+        [Description("演员")]
+        Actors,
     }
 }

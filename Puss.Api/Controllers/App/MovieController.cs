@@ -46,8 +46,7 @@ namespace Puss.Api.Controllers
         [AllowAnonymous]
         public async Task<ReturnResult> Test()
         {
-            await MovieManager.StartUpdateCinemas();
-            return new ReturnResult(ReturnResultStatus.Succeed);
+            return new ReturnResult<List<Movie_Film>>(ReturnResultStatus.Succeed,await MovieManager.StartUpdateHotShowingMovies());
         }
 
         /// <summary>

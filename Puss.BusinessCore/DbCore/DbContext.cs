@@ -108,6 +108,8 @@ namespace Puss.BusinessCore
        public SimpleClient<Movie_Cinemas> Movie_CinemasDb { get { return new SimpleClient<Movie_Cinemas>(Db); } }//用来处理Movie_Cinemas表的常用操作
        public SimpleClient<Movie_City> Movie_CityDb { get { return new SimpleClient<Movie_City>(Db); } }//用来处理Movie_City表的常用操作
        public SimpleClient<Movie_Shows> Movie_ShowsDb { get { return new SimpleClient<Movie_Shows>(Db); } }//用来处理Movie_Shows表的常用操作
+       public SimpleClient<Movie_Film> Movie_FilmDb { get { return new SimpleClient<Movie_Film>(Db); } }//用来处理Movie_Film表的常用操作
+       public SimpleClient<Movie_Member> Movie_MemberDb { get { return new SimpleClient<Movie_Member>(Db); } }//用来处理Movie_Member表的常用操作
         
         /// <summary>
         /// 获取所有

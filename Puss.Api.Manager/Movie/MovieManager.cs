@@ -7,6 +7,7 @@ using System.Linq;
 using Puss.BusinessCore;
 using Puss.Enties;
 using System;
+using Puss.Data.Enum;
 
 namespace Puss.Api.Manager.MovieManager
 {
@@ -18,14 +19,24 @@ namespace Puss.Api.Manager.MovieManager
         private readonly IMovie_CityManager Movie_CityManager;
         private readonly IMovie_CinemasManager Movie_CinemasManager;
         private readonly IMovie_ShowsManager Movie_ShowsManager;
+        private readonly IMovie_FilmManager Movie_FilmManager;
+        private readonly IMovie_MemberManager Movie_MemberManager;
         private readonly DbContext DbContext;
 
-        public MovieManager(DbContext DbContext, IMovie_CityManager Movie_CityManager, IMovie_CinemasManager Movie_CinemasManager, IMovie_ShowsManager Movie_ShowsManager)
+        public MovieManager(
+            DbContext DbContext, 
+            IMovie_CityManager Movie_CityManager, 
+            IMovie_CinemasManager Movie_CinemasManager, 
+            IMovie_ShowsManager Movie_ShowsManager, 
+            IMovie_FilmManager Movie_FilmManager,
+            IMovie_MemberManager Movie_MemberManager)
         {
+            this.DbContext = DbContext;
             this.Movie_CinemasManager = Movie_CinemasManager;
             this.Movie_CityManager = Movie_CityManager;
             this.Movie_ShowsManager = Movie_ShowsManager;
-            this.DbContext = DbContext;
+            this.Movie_FilmManager = Movie_FilmManager;
+            this.Movie_MemberManager = Movie_MemberManager;
         }
 
         /// <summary>
@@ -128,7 +139,7 @@ namespace Puss.Api.Manager.MovieManager
         /// 获取当前热映影片
         /// </summary>
         /// <returns></returns>
-        public async Task<List<ResultHotFilmList>> HotShowingMovies()
+        public async Task<List<ResultFilm>> HotShowingMovies()
         {
             return await Task.Run(() =>
             {
@@ -138,7 +149,7 @@ namespace Puss.Api.Manager.MovieManager
                 PostHotShowingMovies temp = new PostHotShowingMovies();
                 temp.channelId = channelId;
                 temp.sign = sign;
-                string url = $"{http}/manman/index.php/open/partner/hotShowingMovies";
+                string url = $"{http}manman/index.php/open/partner/hotShowingMovies";
                 string result = HttpPostHelper.DoHttpPost(url, JsonConvert.SerializeObject(temp));
                 ResultHotResult resultData = JsonConvert.DeserializeObject<ResultHotResult>(result);
                 if (resultData.code == 0)
@@ -155,8 +166,11 @@ namespace Puss.Api.Manager.MovieManager
         /// <returns></returns>
         public async Task StartUpdate()
         {
+#if DEBUG
+#else
             StartUpdateCitysAndCinemas();
             StartUpdateCinemas();
+#endif
         }
 
         /// <summary>
@@ -165,6 +179,8 @@ namespace Puss.Api.Manager.MovieManager
         /// <returns></returns>
         public async Task StartUpdateCitysAndCinemas()
         {
+            #if DEBUG
+#else
             List<ResultQueryCitysDataList> lResultCitys = new List<ResultQueryCitysDataList>();
             List<Movie_City> lResultMovieCity = new List<Movie_City>();
             try
@@ -234,6 +250,7 @@ namespace Puss.Api.Manager.MovieManager
                     Movie_CinemasManager.Delete(lDeleteMovieCinemas.Select(x => x.cinemaId));
                 }
             });
+#endif
         }
 
         /// <summary>
@@ -242,6 +259,8 @@ namespace Puss.Api.Manager.MovieManager
         /// <returns></returns>
         public async Task StartUpdateCinemas()
         {
+#if DEBUG
+#else
             while (true)
             {
                 var lMovieCinemas = await Movie_CinemasManager.GetListAsync();
@@ -297,6 +316,49 @@ namespace Puss.Api.Manager.MovieManager
                     Movie_ShowsManager.Delete(x => x.createTime < now);
                 });
             }
+#endif
+        }
+
+        /// <summary>
+        /// 开始更新热映影片
+        /// </summary>
+        /// <returns></returns>
+        public async Task StartUpdateHotShowingMovies()
+        {
+            List<ResultFilm> lMovieCinemas = await HotShowingMovies();
+            //电影列表
+            List<Movie_Film> lMovieFilm = lMovieCinemas.MapToList<ResultFilm, Movie_Film>();
+            //成员列表
+            List<Movie_Member> lMovieMember = new List<Movie_Member>();
+            lMovieCinemas.ForEach(x => 
+            {
+                //导演列表
+                lMovieMember.AddRange(x.actors.director.Select(p => new Movie_Member
+                {
+                    sc_name = p.sc_name,
+                    en_name = p.en_name,
+                    act_name = p.act_name,
+                    avatar = p.avatar,
+                    type = (int)MovieMember.Director,
+                    filmId = x.filmId,
+                }));
+                //演员列表
+                lMovieMember.AddRange(x.actors.actors.Select(p => new Movie_Member
+                {
+                    sc_name = p.sc_name,
+                    en_name = p.en_name,
+                    act_name = p.act_name,
+                    avatar = p.avatar,
+                    type = (int)MovieMember.Actors,
+                    filmId = x.filmId,
+                }));
+            });
+
+            DbContext.Db.Ado.UseTran(() =>
+            {
+                Movie_FilmManager.Insert(lMovieFilm);
+                Movie_MemberManager.Insert(lMovieMember);
+            });
         }
     }
 }

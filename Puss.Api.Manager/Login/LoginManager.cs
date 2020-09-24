@@ -140,7 +140,7 @@ namespace Puss.Api.Manager.LoginManager
             DateTime dt = DateTime.Now.Date;
             //批量删除今天之前的验证码
             var t5 = DbContext.Db.Deleteable<Code>().Where(x => x.time < dt).ExecuteCommand();
-            Code cModel = await CodeManager.GetSingleAsync(x => x.email == Email && x.time > dt && x.type == (int)CodeType.Email);
+            Code cModel = await CodeManager.GetSingleAsync(x => x.email == Email && x.time > dt && x.type == (int)MovieMember.Email);
             //判断验证码是否超出次数
             if (cModel != null ? cModel.count >= 6 : false) throw new AppException("发送超出次数");
             //获得验证码
@@ -153,7 +153,7 @@ namespace Puss.Api.Manager.LoginManager
             {
                 cModel = new Code()
                 {
-                    type = (int)CodeType.Email,
+                    type = (int)MovieMember.Email,
                     email = Email,
                     time = DateTime.Now,
                     count = 1
