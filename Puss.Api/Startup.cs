@@ -153,6 +153,7 @@ namespace Puss.Api
                 {
                     c.IncludeXmlComments(Path.Combine(basePath, "Puss.Api.xml"));
                     c.IncludeXmlComments(Path.Combine(basePath, "Puss.Data.xml"));
+                    c.IncludeXmlComments(Path.Combine(basePath, "Puss.Api.Manager.xml"));
                 }
                 c.OperationFilter<CustomOperationFilter>();
             });
