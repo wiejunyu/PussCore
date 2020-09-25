@@ -65,12 +65,12 @@ namespace Puss.Api.Controllers
                 BackgroundJob.Enqueue(() => MovieManager.StartUpdateShows(index, size, count, lMovieShows)); 
             }
 #else
-            int count = DbContext.Db.Queryable<Movie_Cinemas>().Count(x => true);
-            int size = count / 10;
-            for (int i = 0; i <= 10; i++) 
-            {
-                BackgroundJob.Enqueue(() => MovieManager.StartUpdateShows(i, size));
-            }
+            //int count = DbContext.Db.Queryable<Movie_Cinemas>().Count(x => true);
+            //int size = count / 10;
+            //for (int i = 0; i <= 10; i++) 
+            //{
+            //    BackgroundJob.Enqueue(() => MovieManager.StartUpdateShows(i, size));
+            //}
 #endif
             return new ReturnResult(ReturnResultStatus.Succeed);
         }

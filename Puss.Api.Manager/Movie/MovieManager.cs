@@ -178,8 +178,8 @@ namespace Puss.Api.Manager.MovieManager
         {
 #if DEBUG
 #else
-            StartUpdateCitysAndCinemas();
-            StartUpdateShows();
+/*            StartUpdateCitysAndCinemas();
+            StartUpdateShows();*/
 #endif
         }
 
@@ -215,21 +215,21 @@ namespace Puss.Api.Manager.MovieManager
             //最终需要删除的影院列表
             List<Movie_Cinemas> lDeleteMovieCinemas = new List<Movie_Cinemas>();
 
-            //记录信息
-            UpdateCount updateCount = new UpdateCount
-            {
-                count = lMovieCity.Count,
-                name = "",
-                status = (int)UpdateCountStatus.Start,
-                current = 0
-            };
-            await RedisService.SetAsync(CommentConfig.MovieManager_UpdateCinemas, updateCount);
+            ////记录信息
+            //UpdateCount updateCount = new UpdateCount
+            //{
+            //    count = lMovieCity.Count,
+            //    name = "",
+            //    status = (int)UpdateCountStatus.Start,
+            //    current = 0
+            //};
+            //await RedisService.SetAsync(CommentConfig.MovieManager_UpdateCinemas, updateCount);
             foreach (var temp in lMovieCity)
             {
                 //记录信息
-                updateCount.name = temp.cityName;
-                updateCount.current++;
-                await RedisService.SetAsync(CommentConfig.MovieManager_UpdateCinemas, updateCount);
+                //updateCount.name = temp.cityName;
+                //updateCount.current++;
+                //await RedisService.SetAsync(CommentConfig.MovieManager_UpdateCinemas, updateCount);
 
                 List<ResultCinemasList> lResultCinemas = new List<ResultCinemasList>();
                 List<Movie_Cinemas> lResultMovieCinemas = new List<Movie_Cinemas>();
@@ -256,9 +256,9 @@ namespace Puss.Api.Manager.MovieManager
             lMovieCinemas.AddRange(lInsertMovieCinemas);
 
             //记录信息
-            updateCount.name = "";
-            updateCount.status = (int)UpdateCountStatus.Save;
-            await RedisService.SetAsync(CommentConfig.MovieManager_UpdateCinemas, updateCount);
+            //updateCount.name = "";
+            //updateCount.status = (int)UpdateCountStatus.Save;
+            //await RedisService.SetAsync(CommentConfig.MovieManager_UpdateCinemas, updateCount);
 
             //数据库操作
             DbContext.Db.Ado.UseTran(() =>
@@ -280,9 +280,9 @@ namespace Puss.Api.Manager.MovieManager
             });
 
             //记录信息
-            updateCount.name = "";
-            updateCount.status = (int)UpdateCountStatus.Success;
-            await RedisService.SetAsync(CommentConfig.MovieManager_UpdateCinemas, updateCount);
+            //updateCount.name = "";
+            //updateCount.status = (int)UpdateCountStatus.Success;
+            //await RedisService.SetAsync(CommentConfig.MovieManager_UpdateCinemas, updateCount);
             Logger.LogInformation($"[Url]:EndUpdateCitysAndCinemas(结束更新城市和影院)[Time]:{DateTime.Now}");
         }
 
@@ -309,13 +309,13 @@ namespace Puss.Api.Manager.MovieManager
             });
 
             //记录信息
-            UpdateCount updateCount = new UpdateCount
-            {
-                count = lMovieCinemas.Count,
-                name = "",
-                status = (int)UpdateCountStatus.Start,
-                current = 0
-            };
+            //UpdateCount updateCount = new UpdateCount
+            //{
+            //    count = lMovieCinemas.Count,
+            //    name = "",
+            //    status = (int)UpdateCountStatus.Start,
+            //    current = 0
+            //};
             await RedisService.SetAsync(redisKey, count);
 
             try
@@ -330,9 +330,9 @@ namespace Puss.Api.Manager.MovieManager
                 foreach (var temp in lMovieCinemas)
                 {
                     //记录信息
-                    updateCount.name = temp.cityName;
-                    updateCount.current++;
-                    await RedisService.SetAsync(redisKey, updateCount);
+                    //updateCount.name = temp.cityName;
+                    //updateCount.current++;
+                    //await RedisService.SetAsync(redisKey, updateCount);
                     try
                     {
                         lResultMovieShows.AddRange(await QueryShows(temp.cinemaId.ToString()));
@@ -358,9 +358,9 @@ namespace Puss.Api.Manager.MovieManager
                 //返回当前需要删除的影院列表
                 lDeleteMovieShows = lMovieShows.Where(x => !lResultMovieShows.Any(p => int.Parse(p.showId) == x.showId)).ToList();
                 //记录信息
-                updateCount.name = "";
-                updateCount.status = (int)UpdateCountStatus.Save;
-                await RedisService.SetAsync(redisKey, updateCount);
+                //updateCount.name = "";
+                //updateCount.status = (int)UpdateCountStatus.Save;
+                //await RedisService.SetAsync(redisKey, updateCount);
 
                 //数据库操作
                 DbContext.Db.Ado.UseTran(() =>
@@ -378,9 +378,9 @@ namespace Puss.Api.Manager.MovieManager
                 });
 
                 //记录信息
-                updateCount.name = "";
-                updateCount.status = (int)UpdateCountStatus.Success;
-                await RedisService.SetAsync(redisKey, updateCount);
+                //updateCount.name = "";
+                //updateCount.status = (int)UpdateCountStatus.Success;
+                //await RedisService.SetAsync(redisKey, updateCount);
                 Logger.LogInformation($"[Url]:EndUpdateShows(结束更新城市和影院)[Index]:{index}[Time]:{DateTime.Now}");
             }
             catch (Exception ex)
@@ -388,9 +388,9 @@ namespace Puss.Api.Manager.MovieManager
                 JsonSerializerSettings settings = new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore };
                 Logger.LogError($"[Url]:ErrorUpdateShows(更新场次错误)[Exception]:{JsonConvert.SerializeObject(ex, settings)}");
                 //记录信息
-                updateCount.name = "";
-                updateCount.status = (int)UpdateCountStatus.Error;
-                await RedisService.SetAsync(redisKey, updateCount);
+                //updateCount.name = "";
+                //updateCount.status = (int)UpdateCountStatus.Error;
+                //await RedisService.SetAsync(redisKey, updateCount);
 
             }
         }
