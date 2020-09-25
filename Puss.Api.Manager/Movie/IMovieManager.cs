@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Puss.Api.Manager.MovieManager
 {
     /// <summary>
-    /// 验证码
+    /// 影院接口
     /// </summary>
     public interface IMovieManager
     {
